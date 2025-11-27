@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Oficios - Ministerio Público</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+    
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; padding: 20px; color: #333; }
+        .container { max-width: 950px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h1 { text-align: center; color: #b71c1c; margin-bottom: 20px; border-bottom: 2px solid #b71c1c; padding-bottom: 10px; }
+        .section-title { background-color: #f1f3f5; border-left: 5px solid #b71c1c; padding: 10px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; color: #2c3e50; }
+        .form-row { display: flex; gap: 20px; margin-bottom: 15px; }
+        .form-col { flex: 1; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; color: #495057; font-size: 13px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
+        textarea { height: 70px; resize: vertical; }
+        textarea.large { height: 100px; }
+        #contenedorDelitos { background: #fffdfd; padding: 15px; border-radius: 5px; border: 1px dashed #e6b0aa; }
+        .delito-item { margin-bottom: 10px; }
+        button { width: 100%; padding: 15px; background-color: #b71c1c; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 30px; }
+        button:hover { background-color: #921616; }
+        .note { font-size: 12px; color: #666; margin-top: -5px; margin-bottom: 10px; font-style: italic; }
+        #estadoImagen { text-align: center; font-size: 12px; margin-bottom: 20px; padding: 5px; border-radius: 4px; }
+        .img-ok { background-color: #d4edda; color: #155724; }
+        .img-error { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Generador de Oficio - Para mi reina</h1>
+    <div id="estadoImagen" style="background-color: #e2e3e5; color: #383d41;">⌛ Buscando imagen del logo...</div>
+    
+    <div class="section-title">1. Datos Generales</div>
+    <div class="form-row">
+        <div class="form-col">
+            <label>N° Oficio / Carpeta Fiscal (Código único):</label>
+            <input type="text" id="codigoUnico" placeholder="Ej: 244-2023">
+        </div>
+        <div class="form-col">
+            <label>Año:</label>
+            <input type="text" id="anio" value="2025">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-col">
+            <label>Día:</label>
+            <select id="dia"></select>
+        </div>
+        <div class="form-col">
+            <label>Mes:</label>
+            <select id="mes">
+                <option value="enero">Enero</option>
+                <option value="febrero">Febrero</option>
+                <option value="marzo">Marzo</option>
+                <option value="abril">Abril</option>
+                <option value="mayo">Mayo</option>
+                <option value="junio">Junio</option>
+                <option value="julio">Julio</option>
+                <option value="agosto">Agosto</option>
+                <option value="septiembre">Septiembre</option>
+                <option value="octubre">Octubre</option>
+                <option value="noviembre">Noviembre</option>
+                <option value="diciembre">Diciembre</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="section-title">2. Cuerpo Principal</div>
+    <div class="form-row">
+        <div class="form-col">
+            <label>N° de Disposición:</label>
+            <select id="numDisposicion"></select>
+        </div>
+        <div class="form-col">
+            <label>Decisión:</label>
+            <select id="decision">
+                <option value="FORMALIZAR Y CONTINUAR LA INVESTIGACIÓN PREPARATORIA">FORMALIZAR Y CONTINUAR...</option>
+                <option value="ABRIR DILIGENCIAS PRELIMINARES">ABRIR DILIGENCIAS PRELIMINARES</option>
+            </select>
+        </div>
+    </div>
+
+    <label>Imputados (Lista de nombres):</label>
+    <textarea id="imputados" placeholder="Nombres de los imputados..."></textarea>
+
+    <div class="form-row" style="margin-top: 15px;">
+        <div class="form-col" style="flex: 0 0 150px;">
+            <label>Cantidad de Delitos:</label>
+            <select id="cantidadDelitos" onchange="generarCamposDelitos()">
+                <option value="1">1 Delito</option>
+                <option value="2">2 Delitos</option>
+                <option value="3">3 Delitos</option>
+                <option value="4">4 Delitos</option>
+                <option value="5">5 Delitos</option>
+            </select>
+        </div>
+        <div class="form-col">
+            <label>Selección de Delitos:</label>
+            <div id="contenedorDelitos"></div>
+        </div>
+    </div>
+
+    <label>Plazo de investigación (Meses):</label>
+    <select id="plazoMeses">
+        <option value="1">1 mes</option>
+        <option value="8" selected>8 meses</option>
+        <option value="12">12 meses</option>
+        <option value="18">18 meses</option>
+        <option value="36">36 meses</option>
+    </select>
+
+    <div class="section-title">3. Objeto de la Pericia (Detalle)</div>
+    <p class="note">Llena los recuadros para generar la lista con viñetas automáticamente.</p>
+    
+    <label>A) Contexto (Licitación/Proceso):</label>
+    <input type="text" id="objContexto" placeholder="Ej: la Licitación Pública 001-2021-UGEL07-1">
+    
+    <label>B) Primer objeto (Texto completo):</label>
+    <textarea class="large" id="objAdquisicion1" placeholder="Respecto al primer objeto..."></textarea>
+    
+    <label>C) Segundo objeto (Texto completo):</label>
+    <textarea class="large" id="objAdquisicion2" placeholder="Respecto al segundo objeto..."></textarea>
+
+    <div class="section-title">4. Tabla de Contacto</div>
+    <div class="form-row">
+        <div class="form-col">
+            <label>Correo Mesa de Partes:</label>
+            <input type="text" id="emailMesa" value="fecoflima_1f2d@mpfn.gob.pe">
+        </div>
+        <div class="form-col">
+            <label>Correo Fiscal:</label>
+            <input type="text" id="emailFiscal" value="ncordova@mpfn.gob.pe">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-col">
+            <label>Teléfono Fiscal:</label>
+            <input type="text" id="telFiscal" value="945 112 224">
+        </div>
+        <div class="form-col">
+            <label>Teléfono Asistente:</label>
+            <input type="text" id="telAsistente" value="957 691 331">
+        </div>
+    </div>
+
+    <button onclick="generarPDF()">GENERAR OFICIO PDF</button>
+</div>
+
+<script>
+    const NOMBRE_ARCHIVO_IMAGEN = "logo.png"; 
+
+    let logoBase64 = null; 
+    const listaDelitos = [
+        "Colusión Simple", "Colusión Agravada", "Negociación Incompatible", 
+        "Peculado", "Peculado Doloso", "Peculado Culposo", 
+        "Tráfico de Influencias", "Concusión", "Cohecho", 
+        "Cohecho Pasivo", "Cohecho Activo", "Cohecho Pasivo Propio", 
+        "Cohecho Pasivo Impropio", "Usurpación de Funciones"
+    ];
+
+    function cargarImagenDesdeArchivo() {
+        const estado = document.getElementById('estadoImagen');
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                logoBase64 = reader.result;
+                estado.innerHTML = "✅ Logo cargado correctamente: " + NOMBRE_ARCHIVO_IMAGEN;
+                estado.className = "img-ok";
+            }
+            reader.readAsDataURL(xhr.response);
+        };
+        xhr.onerror = function() {
+            estado.innerHTML = "❌ No se encontró el archivo: " + NOMBRE_ARCHIVO_IMAGEN + ". Sube ambos a GitHub para ver el logo.";
+            estado.className = "img-error";
+            logoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAaSURBVHhe7cEBDQAAAMKg909tDwcFAAAAAwYIEAABDxuT6wAAAABJRU5ErkJggg==";
+        };
+        xhr.open('GET', NOMBRE_ARCHIVO_IMAGEN);
+        xhr.responseType = 'blob';
+        xhr.send();
+    }
+    
+    window.onload = function() {
+        cargarImagenDesdeArchivo();
+        generarCamposDelitos(); 
+        
+        const selectDia = document.getElementById('dia');
+        for (let i = 1; i <= 31; i++) {
+            let opt = document.createElement('option');
+            opt.value = i; opt.innerHTML = i;
+            selectDia.appendChild(opt);
+        }
+        const selectDispo = document.getElementById('numDisposicion');
+        for (let i = 1; i <= 100; i++) {
+            let val = i.toString().padStart(2, '0');
+            let opt = document.createElement('option');
+            opt.value = val; opt.innerHTML = val;
+            selectDispo.appendChild(opt);
+        }
+    };
+
+    function generarCamposDelitos() {
+        const cantidad = document.getElementById('cantidadDelitos').value;
+        const contenedor = document.getElementById('contenedorDelitos');
+        contenedor.innerHTML = ""; 
+
+        for (let i = 0; i < cantidad; i++) {
+            let div = document.createElement('div');
+            div.className = 'delito-item';
+            let label = document.createElement('label');
+            label.innerText = `Delito ${i + 1}:`;
+            let select = document.createElement('select');
+            select.id = `delitoSeleccionado_${i}`;
+            listaDelitos.forEach(delito => {
+                let opt = document.createElement('option');
+                opt.value = delito; opt.text = delito;
+                select.appendChild(opt);
+            });
+            div.appendChild(label);
+            div.appendChild(select);
+            contenedor.appendChild(div);
+        }
+    }
+
+    function convertirNumeroALetras(num) {
+        const mapa = { "1": "un (01)", "2": "dos (02)", "8": "ocho (08)", "12": "doce (12)", "18": "dieciocho (18)", "36": "treinta y seis (36)" };
+        return mapa[num] || num + " (" + num.toString().padStart(2, '0') + ")";
+    }
+
+    function generarPDF() {
+        if (!logoBase64) { alert("Espera a que cargue el logo..."); return; }
+
+        const dia = document.getElementById('dia').value;
+        const mes = document.getElementById('mes').value;
+        const anio = document.getElementById('anio').value;
+        const codigoUnico = document.getElementById('codigoUnico').value;
+        const numOficio = codigoUnico;
+        const carpeta = codigoUnico;
+        const encargado = "MANUEL FRANCISCO ELÍAS JURADO";
+        const numDispo = document.getElementById('numDisposicion').value;
+        const decision = document.getElementById('decision').value;
+        const imputados = document.getElementById('imputados').value;
+        
+        const cantidadDelitos = document.getElementById('cantidadDelitos').value;
+        let listaDelitosTexto = [];
+        for(let i=0; i<cantidadDelitos; i++) {
+            let el = document.getElementById(`delitoSeleccionado_${i}`);
+            listaDelitosTexto.push(el.value);
+        }
+        let textoDelitosFinal = "";
+        if (listaDelitosTexto.length === 1) {
+            textoDelitosFinal = listaDelitosTexto[0];
+        } else {
+            const ultimo = listaDelitosTexto.pop();
+            textoDelitosFinal = listaDelitosTexto.join(", ") + " y " + ultimo;
+        }
+
+        const objContexto = document.getElementById('objContexto').value;
+        const objAdquisicion1 = document.getElementById('objAdquisicion1').value;
+        const objAdquisicion2 = document.getElementById('objAdquisicion2').value;
+        const emailMesa = document.getElementById('emailMesa').value;
+        const emailFiscal = document.getElementById('emailFiscal').value;
+        const telFiscal = document.getElementById('telFiscal').value;
+        const telAsistente = document.getElementById('telAsistente').value;
+        const valPlazo = document.getElementById('plazoMeses').value;
+        const textoPlazo = convertirNumeroALetras(valPlazo) + " meses";
+
+        var docDefinition = {
+            pageSize: 'A4',
+            pageMargins: [85, 71, 85, 160], 
+            
+            defaultStyle: {
+                lineHeight: 1.15,
+                font: 'Roboto'
+            },
+
+            footer: function(currentPage, pageCount) {
+                return {
+                    text: [
+                        'Teléfono: (01) 625-5555\n',
+                        'Anexos: 11706 / 11705\n',
+                        'E-mail: fecoflima_1f2d@mpfn.gob.pe\n',
+                        'Dirección: Jr. Lampa N.° 597 – Cercado de Lima.'
+                    ],
+                    color: '#666',
+                    fontSize: 7,
+                    margin: [85, 100, 0, 0] 
+                };
+            },
+
+            content: [
+                // --- ENCABEZADO ---
+                {
+                    columns: [
+                        {
+                            stack: [
+                                { image: logoBase64, width: 50, alignment: 'center' },
+                                { text: 'MINISTERIO PÚBLICO', style: 'headerUnified', margin: [0, 5, 0, 0] },
+                                { text: 'PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-', style: 'headerUnified' }
+                            ],
+                            width: 250, 
+                            margin: [-105, -50, 0, 0] 
+                        },
+                        {
+                            stack: [
+                                { text: '“Año de la recuperación y consolidación de la economía peruana”', style: 'anioTexto', alignment: 'center' },
+                                { text: `Lima, ${dia} de ${mes} del ${anio}`, style: 'fechaTexto', alignment: 'right', margin: [0, 30, 0, 0] }
+                            ],
+                            margin: [10, 10, 0, 0] 
+                        }
+                    ],
+                    margin: [0, 0, 0, 30] 
+                },
+
+                // --- OFICIO ---
+                { text: `OFICIO N° ${numOficio}-${anio}-MP-FN-2D-1FPCEDCF-LIMA.`, bold: true, decoration: 'underline', alignment: 'left', margin: [0, 0, 0, 10], fontSize: 10 },
+
+                { text: `SEÑOR(A):`, bold: true, fontSize: 10 },
+                { text: encargado, bold: true, fontSize: 10 },
+                { text: 'Gerente de la Oficina de Peritajes', style: 'cargo', bold: true },
+                { text: 'Ministerio Público Fiscalía de la Nación', style: 'cargo', bold: true },
+                { text: 'PRESENTE.-', decoration: 'underline', margin: [0, 20, 0, 15], fontSize: 10 },
+
+                {
+                    stack: [
+                        { text: [{ text: 'ASUNTO: ', bold: true }, 'SOLICITUD DE DESIGNACIÓN DE PERITO CONTABLE'], bold: true, decoration: 'underline' },
+                        { text: [{ text: 'Referencia: ', bold: true }, `Carpeta Fiscal N.° ${carpeta}`], bold: true, margin: [0, 2, 0, 0] }
+                    ],
+                    alignment: 'left', 
+                    margin: [220, 0, 0, 20], 
+                    fontSize: 9
+                },
+
+                {
+                    text: [
+                        'Tengo a bien dirigirme a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, con el propósito de remitir adjunta a la presente comunicación oficial, la disposición N.° ',
+                        { text: numDispo, bold: true },
+                        ', recaída en la carpeta fiscal de la referencia, en virtud del cual este despacho ha decidido ',
+                        { text: decision,  }, 
+                        ' seguida en contra de los imputados: ',
+                        { text: imputados,  },
+                        ', por la presunta comisión del delito contra la Administración Pública, en la modalidad de ',
+                        { text: textoDelitosFinal,  },
+                        ', fijando el término de las actuaciones en ',
+                        { text: textoPlazo,  },
+                        '.'
+                    ],
+                    alignment: 'justify',
+                    leadingIndent: 30,
+                    fontSize: 10,
+                    margin: [0, 0, 0, 10],
+                    bold: false 
+                },
+
+                {
+                    text: 'En ese sentido, solicitamos que por su intermedio, se designe a un perito contable a efectos de que ejecute la pericia dispuesta en la presente investigación preparatoria, con el siguiente objeto:',
+                    alignment: 'justify',
+                    leadingIndent: 30,
+                    fontSize: 10,
+                    margin: [0, 0, 0, 5],
+                    bold: false
+                },
+
+                {
+                    ul: [
+                        { text: ['DETERMINAR, la existencia de un perjuicio patrimonial en ', { text: objContexto, bold: true }], listType: 'disc', margin: [10, 0, 0, 5] }
+                    ],
+                    fontSize: 10,
+                    margin: [30, 0, 0, 0]
+                },
+                {
+                    stack: [
+                        { text: ['- ', { text: objAdquisicion1 }], margin: [0, 0, 0, 5] },
+                        { text: ['- ', { text: objAdquisicion2 }], margin: [0, 0, 0, 5] }
+                    ],
+                    margin: [50, 0, 0, 10],
+                    fontSize: 10
+                },
+                
+                {
+                    text: 'De manera que, tras la designación del perito que se avocará a la realización del examen ordenado, este se deberá poner en contacto con este despacho fiscal a través de los canales que se detallan, a fin de remitir la información necesaria para su elaboración.',
+                    alignment: 'justify',
+                    leadingIndent: 30,
+                    fontSize: 10,
+                    margin: [0, 10, 0, 15],
+                    bold: false
+                },
+
+                // --- TABLA DE CONTACTOS (PROTEGIDA) ---
+                {
+                    stack: [
+                        {
+                            table: {
+                                widths: [250, '*'],
+                                body: [
+                                    [{text: 'CORREO ELECTRÓNICO DE MESA DE PARTES DEL DESPACHO FISCAL', bold: true}, emailMesa],
+                                    [{text: 'CORREO ELECTRÓNICO DEL FISCAL ENCARGADO', bold: true}, emailFiscal],
+                                    [{text: 'NÚMERO TELEFÓNICO DE LA FISCAL ENCARGADA', bold: true}, telFiscal],
+                                    [{text: 'NÚMERO TELEFÓNICO DEL ASISTENTE ENCARGADO', bold: true}, telAsistente]
+                                ]
+                            }
+                        }
+                    ],
+                    fontSize: 9,
+                    margin: [0, 0, 0, 20],
+                    unbreakable: true // <--- ¡ESTO IMPIDE QUE SE ROMPA!
+                },
+
+                {
+                    text: 'Sin otro particular que nos concierna, hago propicia la oportunidad para expresarle mi mayor consideración y deferencia.',
+                    alignment: 'justify',
+                    leadingIndent: 30,
+                    fontSize: 10,
+                    margin: [0, 0, 0, 40],
+                    bold: false
+                },
+                
+                { text: 'Atentamente,', alignment: 'center', fontSize: 10 },
+                
+            ],
+
+            styles: {
+                headerUnified: { fontSize: 6.5, bold: true, alignment: 'center' }, 
+                cargo: { fontSize: 10 },
+                anioTexto: { fontSize: 9, italics: true, color: 'black' },
+                fechaTexto: { fontSize: 10, color: 'black' }
+            }
+        };
+
+        pdfMake.createPdf(docDefinition).open();
+    }
+</script>
+</body>
+</html>
