@@ -97,7 +97,7 @@
             <div class="form-row">
                 <div class="form-col"><label>Decisión:</label>
                     <select id="p_decision">
-                        <option value="LA AMPLIACIÓN SUPLEMENTARIA DE LA INVESTIGACIÓN PREPARATORIA">LA AMPLIACIÓN SUPLEMENTARIA DE LA INVESTIGACIÓN PREPARATORIA</option>
+                        <option value="La AMPLIACIÓN SUPLEMENTARIA DE LA INVESTIGACIÓN PREPARATORIA">La AMPLIACIÓN SUPLEMENTARIA DE LA INVESTIGACIÓN PREPARATORIA</option>
                         <option value="INICIO DE DILIGENCIAS PRELIMINARES">INICIO DE DILIGENCIAS PRELIMINARES</option>
                         <option value="FORMALIZACIÓN DE LA INVESTIGACIÓN PREPARATORIA">FORMALIZACIÓN DE LA INVESTIGACIÓN PREPARATORIA</option>
                     </select>
@@ -493,7 +493,6 @@
         const ini = document.getElementById('m_horaInicio').value;
         const fin = document.getElementById('m_horaFin').value;
         let fechaServicio = "FECHA POR DEFINIR";
-        
         if(diaServ && ini && fin) {
             const dateObj = new Date(diaServ + 'T00:00:00');
             const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -563,7 +562,8 @@
     function construirEncabezado(logo, fecha) {
         const { Paragraph, TextRun, Table, TableRow, TableCell, ImageRun, AlignmentType, WidthType, BorderStyle } = docx;
         
-        let logoRun = logo ? new ImageRun({ data: logo, transformation: { width: 84, height: 94 } }) : new TextRun("");
+        // 1. Aumentar tamaño del logo: 3.7cm x 3.52cm -> 140px x 133px
+        let logoRun = logo ? new ImageRun({ data: logo, transformation: { width: 140, height: 133 } }) : new TextRun("");
         
         return [
             new Table({
@@ -572,20 +572,46 @@
                 rows: [
                     new TableRow({
                         children: [
-                            new TableCell({ width: { size: 40, type: WidthType.PERCENTAGE }, margins: { left: -1000 }, children: [
-                                new Paragraph({ children: [logoRun], alignment: AlignmentType.CENTER }),
-                                new Paragraph({ children: [new TextRun({ text: "MINISTERIO PÚBLICO", bold: false, size: 14, font: "Arial Narrow" })], alignment: AlignmentType.CENTER }),
-                                new Paragraph({ children: [new TextRun({ text: "PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-", bold: false, size: 14, font: "Arial Narrow" })], alignment: AlignmentType.CENTER })
-                            ]}),
-                            new TableCell({ width: { size: 60, type: WidthType.PERCENTAGE }, children: [
-                                new Paragraph({ 
-                                    children: [new TextRun({ text: "“Año de la recuperación y consolidación de la economía peruana”", italics: true, size: 18, font: "Arial Narrow" })], 
-                                    alignment: AlignmentType.RIGHT, // CAMBIO: A la derecha
-                                    spacing: { before: 800 } // CAMBIO: Espaciado para bajarlo 3cm
-                                }),
-                                new Paragraph({ text: "" }),
-                                new Paragraph({ children: [new TextRun({ text: fecha, size: 24, font: "Arial Narrow" })], alignment: AlignmentType.RIGHT })
-                            ]})
+                            new TableCell({ 
+                                width: { size: 40, type: WidthType.PERCENTAGE }, 
+                                margins: { left: -1000 }, 
+                                children: [
+                                    new Paragraph({ children: [logoRun], alignment: AlignmentType.CENTER }),
+                                    new Paragraph({ children: [new TextRun({ text: "MINISTERIO PÚBLICO", bold: false, size: 20, font: "Arial Narrow" })], alignment: AlignmentType.CENTER }),
+                                    new Paragraph({ 
+                                        children: [new TextRun({ 
+                                            text: "PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-", 
+                                            bold: false, 
+                                            size: 20, 
+                                            font: "Arial Narrow" 
+                                        })], 
+                                        alignment: AlignmentType.CENTER 
+                                    })
+                                ]
+                            }),
+                            new TableCell({ 
+                                width: { size: 60, type: WidthType.PERCENTAGE }, 
+                                children: [
+                                    new Paragraph({ 
+                                        children: [new TextRun({ 
+                                            text: "“Año de la recuperación y consolidación de la economía peruana”", 
+                                            italics: true, 
+                                            size: 18, 
+                                            font: "Arial Narrow" 
+                                        })], 
+                                        alignment: AlignmentType.LEFT 
+                                    }),
+                                    new Paragraph({ text: "" }),
+                                    new Paragraph({ 
+                                        children: [new TextRun({ 
+                                            text: fecha, 
+                                            size: 24, 
+                                            font: "Arial Narrow" 
+                                        })], 
+                                        alignment: AlignmentType.RIGHT 
+                                    })
+                                ]
+                            })
                         ]
                     })
                 ]
@@ -640,7 +666,8 @@
         const { Document, Packer, Footer, Paragraph, TextRun } = docx;
         const doc = new Document({
             sections: [{ 
-                properties: { pageMargins: { top: 900, right: 1701, bottom: 1417, left: 1701 } }, 
+                // 2. Margen superior reducido a 1cm (567 Twips) para subir el logo
+                properties: { pageMargins: { top: 567, right: 1701, bottom: 1417, left: 1701 } }, 
                 children: children,
                 footers: { default: new Footer({ children: [
                     new Paragraph({ children: [new TextRun({ text: "Teléfono: (01) 625-5555", size: 22, font: "Arial Narrow", color: "333333" })] }),
