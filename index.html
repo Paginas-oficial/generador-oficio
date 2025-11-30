@@ -480,7 +480,7 @@
     }
 
     // =========================================================
-    // GENERAR WORD: MOVILIDAD (CORREGIDO Y AJUSTADO)
+    // GENERAR WORD: MOVILIDAD
     // =========================================================
     function generarWordMovilidad() {
         const { Document, Packer, Paragraph, TextRun, AlignmentType, UnderlineType } = docx;
@@ -493,6 +493,7 @@
         const ini = document.getElementById('m_horaInicio').value;
         const fin = document.getElementById('m_horaFin').value;
         let fechaServicio = "FECHA POR DEFINIR";
+        
         if(diaServ && ini && fin) {
             const dateObj = new Date(diaServ + 'T00:00:00');
             const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -516,11 +517,11 @@
         const children = [];
         children.push(...construirEncabezado(logoArrayBuffer, `Lima, ${fechaDoc}`));
 
-        children.push(crearParrafo(`OFICIO N.° ${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.`, true, true));
+        children.push(crearParrafo(`OFICIO N.° ${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.`, true, true)); 
         children.push(crearParrafo("Sr. Dr.", true));
         children.push(crearParrafo("MIRKO DINO CANO GAMERO", true));
         children.push(crearParrafo("FISCAL ADJUNTO SUPREMO TITULAR COORDINADOR NACIONAL DE LAS FISCALÍAS ESPECIALIZADAS EN DELITOS DE CORRUPCIÓN DE FUNCIONARIOS.", true));
-        children.push(crearParrafo("PRESENTE.-", true, true));
+        children.push(crearParrafo("PRESENTE.-", true, true)); 
 
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
         children.push(new Paragraph({ indent: { left: 4000 }, children: [new TextRun({ text: "ASUNTO: SOLICITUD DE ATENCIÓN DE MOVILIDAD", bold: true, size: 24, font: "Arial Narrow" })], spacing: { line: 276 } }));
@@ -562,62 +563,29 @@
     function construirEncabezado(logo, fecha) {
         const { Paragraph, TextRun, Table, TableRow, TableCell, ImageRun, AlignmentType, WidthType, BorderStyle } = docx;
         
-        // 1. Aumentar tamaño del logo: 50x50 -> 60x60
-        let logoRun = logo ? new ImageRun({ data: logo, transformation: { width: 60, height: 60 } }) : new TextRun("");
+        let logoRun = logo ? new ImageRun({ data: logo, transformation: { width: 84, height: 94 } }) : new TextRun("");
         
         return [
             new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
-                // Aseguramos que no haya bordes
                 borders: { top: {style: BorderStyle.NONE}, bottom: {style: BorderStyle.NONE}, left: {style: BorderStyle.NONE}, right: {style: BorderStyle.NONE}, insideVertical: {style: BorderStyle.NONE}, insideHorizontal: {style: BorderStyle.NONE} },
                 rows: [
                     new TableRow({
                         children: [
-                            // Columna Izquierda (Logo y Despacho)
-                            new TableCell({ 
-                                width: { size: 40, type: WidthType.PERCENTAGE }, 
-                                margins: { left: -1000 }, 
-                                children: [
-                                    new Paragraph({ children: [logoRun], alignment: AlignmentType.CENTER }),
-                                    // 2. Reducir tamaño de fuente del encabezado a 20 (aprox. 13pt)
-                                    new Paragraph({ children: [new TextRun({ text: "MINISTERIO PÚBLICO", bold: false, size: 20, font: "Arial Narrow" })], alignment: AlignmentType.CENTER }),
-                                    new Paragraph({ 
-                                        children: [new TextRun({ 
-                                            text: "PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-", 
-                                            bold: false, 
-                                            size: 20, 
-                                            font: "Arial Narrow" 
-                                        })], 
-                                        alignment: AlignmentType.CENTER 
-                                    })
-                                ]
-                            }),
-                            // Columna Derecha (Año y Fecha)
-                            new TableCell({ 
-                                width: { size: 60, type: WidthType.PERCENTAGE }, 
-                                children: [
-                                    // 3. Texto del Año alineado a la IZQUIERDA de la celda.
-                                    new Paragraph({ 
-                                        children: [new TextRun({ 
-                                            text: "“Año de la recuperación y consolidación de la economía peruana”", 
-                                            italics: true, 
-                                            size: 18, 
-                                            font: "Arial Narrow" 
-                                        })], 
-                                        alignment: AlignmentType.LEFT // Cambiado de RIGHT a LEFT
-                                    }),
-                                    new Paragraph({ text: "" }),
-                                    // 3. Fecha alineada a la DERECHA de la celda.
-                                    new Paragraph({ 
-                                        children: [new TextRun({ 
-                                            text: fecha, 
-                                            size: 24, 
-                                            font: "Arial Narrow" 
-                                        })], 
-                                        alignment: AlignmentType.RIGHT 
-                                    })
-                                ]
-                            })
+                            new TableCell({ width: { size: 40, type: WidthType.PERCENTAGE }, margins: { left: -1000 }, children: [
+                                new Paragraph({ children: [logoRun], alignment: AlignmentType.CENTER }),
+                                new Paragraph({ children: [new TextRun({ text: "MINISTERIO PÚBLICO", bold: false, size: 14, font: "Arial Narrow" })], alignment: AlignmentType.CENTER }),
+                                new Paragraph({ children: [new TextRun({ text: "PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-", bold: false, size: 14, font: "Arial Narrow" })], alignment: AlignmentType.CENTER })
+                            ]}),
+                            new TableCell({ width: { size: 60, type: WidthType.PERCENTAGE }, children: [
+                                new Paragraph({ 
+                                    children: [new TextRun({ text: "“Año de la recuperación y consolidación de la economía peruana”", italics: true, size: 18, font: "Arial Narrow" })], 
+                                    alignment: AlignmentType.RIGHT, // CAMBIO: A la derecha
+                                    spacing: { before: 800 } // CAMBIO: Espaciado para bajarlo 3cm
+                                }),
+                                new Paragraph({ text: "" }),
+                                new Paragraph({ children: [new TextRun({ text: fecha, size: 24, font: "Arial Narrow" })], alignment: AlignmentType.RIGHT })
+                            ]})
                         ]
                     })
                 ]
@@ -672,7 +640,6 @@
         const { Document, Packer, Footer, Paragraph, TextRun } = docx;
         const doc = new Document({
             sections: [{ 
-                // Margen superior reducido de 1417 (2.5cm) a 900 (aprox. 1.6cm) para subir el logo.
                 properties: { pageMargins: { top: 900, right: 1701, bottom: 1417, left: 1701 } }, 
                 children: children,
                 footers: { default: new Footer({ children: [
