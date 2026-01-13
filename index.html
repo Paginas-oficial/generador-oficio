@@ -3,28 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Documentos</title>
+    <title>Generador de Documentos Híbrido</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
+        /* --- ESTILOS ORIGINALES (MANTENIDOS) --- */
         body { font-family: 'Segoe UI', sans-serif; background-color: #f3f4f6; padding: 40px 20px; color: #1f2937; margin: 0; }
-        
-        /* MENU STYLE */
         .menu-wrapper { max-width: 900px; margin: 0 auto; background: white; padding: 50px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
         .menu-title { color: #1e3a8a; font-size: 2.5rem; margin-bottom: 10px; font-weight: 700; }
         .menu-subtitle { color: #6b7280; font-size: 1.1rem; margin-bottom: 40px; }
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
         .card { border: 2px solid #e5e7eb; border-radius: 12px; padding: 30px; cursor: pointer; transition: all 0.3s ease; background: white; }
         .card:hover { border-color: #1e3a8a; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(30, 58, 138, 0.1); }
         .card-icon { font-size: 40px; margin-bottom: 15px; display: block; }
         .card h3 { color: #1f2937; margin: 10px 0; font-size: 1.2rem; }
         .card p { color: #9ca3af; font-size: 0.9rem; margin: 0; }
-        .card-disabled { opacity: 0.5; border: 2px dashed #d1d5db; background: #f9fafb; cursor: default; }
-        .card-disabled:hover { transform: none; box-shadow: none; border-color: #d1d5db; }
-
-        /* APP STYLE */
+        
         .app-container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: none; }
         .btn-back { background-color: transparent; color: #64748b; padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; transition: 0.2s; }
         .btn-back:hover { background-color: #f1f5f9; color: #334155; }
@@ -42,10 +38,39 @@
         .upload-area { background: #f0fdf4; border: 1px dashed #16a34a; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 20px; font-size: 12px; }
         #estadoImagen { font-weight: bold; margin-left: 10px; }
         .text-ok { color: #15803d; } .text-err { color: #b91c1c; }
-        
-        /* Estilos nuevos para tiempo */
         .time-box { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
         .preview-text { font-size: 13px; color: #059669; font-weight: bold; margin-top: 10px; font-style: italic; background: #d1fae5; padding: 5px; border-radius: 4px; display: none; }
+
+        /* --- NUEVOS ESTILOS PARA EL CHATBOT DE VOZ --- */
+        .chat-container { width: 100%; max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; height: 80vh; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; position: relative; }
+        .chat-header { background-color: #075e54; color: white; padding: 15px 20px; display: flex; align-items: center; gap: 15px; }
+        
+        /* Avatar Animado */
+        .avatar-container { position: relative; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; }
+        .avatar { width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 2; position: relative; }
+        .voice-wave { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(255,255,255,0.3); z-index: 1; opacity: 0; }
+        .is-speaking .voice-wave { animation: ripple 1.5s infinite; }
+        @keyframes ripple { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.5); opacity: 0; } }
+
+        .chat-box { flex: 1; padding: 20px; overflow-y: auto; background-color: #e5ddd5; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        .message { max-width: 80%; padding: 12px 18px; border-radius: 10px; position: relative; font-size: 16px; line-height: 1.5; }
+        .bot-msg { align-self: flex-start; background: white; border-radius: 0 15px 15px 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .user-msg { align-self: flex-end; background: #dcf8c6; border-radius: 15px 0 15px 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        
+        .input-area { background: #f0f0f0; padding: 15px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #ddd; position: relative; }
+        .input-field { flex: 1; padding: 15px; border-radius: 30px; border: 1px solid #fff; outline: none; font-size: 16px; }
+        .send-btn { background: #075e54; color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        
+        .chat-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .chat-option-btn { background: #e0f2f1; color: #00695c; border: 1px solid #b2dfdb; padding: 10px 18px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; transition: 0.2s; }
+        
+        /* Botón Micrófono */
+        #btn-mic { background: #128c7e; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .is-listening { animation: pulse-red 1.5s infinite; background: #dc2626 !important; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+        
+        .typing { font-style: italic; color: #888; font-size: 12px; margin-left: 20px; display: none; }
+        .audio-control { cursor: pointer; font-size: 20px; margin-right: 15px; }
     </style>
 </head>
 <body>
@@ -62,12 +87,17 @@
             <div class="card" onclick="navegar('app-pericias')">
                 <span class="card-icon">⚖️</span>
                 <h3>Oficio de Pericias</h3>
-                <p>Solicitud de peritos contables, económicos, etc.</p>
+                <p>Formulario manual detallado.</p>
             </div>
             <div class="card" onclick="navegar('app-movilidad')">
                 <span class="card-icon">🚗</span>
                 <h3>Oficio de Movilidad</h3>
-                <p>Solicitud de vehículo institucional y chofer.</p>
+                <p>Formulario manual detallado.</p>
+            </div>
+            <div class="card" style="background:#e0f2f1; border-color:#075e54;" onclick="navegar('app-voice-assistant')">
+                <span class="card-icon">🗣️</span>
+                <h3 style="color:#075e54;">Asistente de Voz IA</h3>
+                <p>Conversación interactiva y automática.</p>
             </div>
         </div>
     </div>
@@ -221,12 +251,42 @@
         <button class="btn-generate" onclick="generarWordMovilidad()">🚗 GENERAR OFICIO MOVILIDAD</button>
     </div>
 
+    <div id="app-voice-assistant" class="app-container" style="padding: 0;">
+        <div class="chat-container">
+            <div class="chat-header">
+                <button class="btn-back" onclick="navegar('screen-menu')" style="margin-right: 10px; background: transparent; border-color: rgba(255,255,255,0.5); color: white; margin-bottom:0;">⬅ Salir</button>
+                <div class="avatar-container" id="avatar-anim">
+                    <div class="voice-wave"></div>
+                    <div class="avatar">👩‍⚖️</div>
+                </div>
+                <div class="header-info">
+                    <h2 style="margin:0; font-size:18px;">Asistente Fiscal</h2>
+                    <p id="status-text" style="margin:0; font-size:12px; opacity:0.9;">En línea</p>
+                </div>
+                <div style="margin-left: auto;">
+                    <span id="btn-audio-toggle" class="audio-control" onclick="toggleAudio()">🔊</span>
+                </div>
+            </div>
+
+            <div id="chat-box" class="chat-box"></div>
+            <div id="typing-indicator" class="typing">Escribiendo...</div>
+
+            <div class="input-area" id="input-area">
+                <div id="btn-mic" onclick="clickMicManual()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" viewBox="0 0 16 16"><path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/><path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3.5 8V7a.5.5 0 0 1 .5-.5z"/></svg>
+                </div>
+                <input type="text" id="user-input" class="input-field" placeholder="Escribe o habla..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="enviarRespuesta()">Enviar</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     // === CONFIGURACIÓN GLOBAL ===
     const NOMBRE_ARCHIVO_IMAGEN = "logo.png"; 
     let logoArrayBuffer = null;
 
-    // Listas de datos
+    // Listas de datos (Para Manual)
     const listaOpcionesDelito = ["Colusión Simple", "Colusión Agravada", "Negociación Incompatible", "Peculado", "Peculado Doloso", "Peculado Culposo", "Tráfico de Influencias", "Concusión", "Cohecho", "Cohecho Pasivo", "Cohecho Activo", "Cohecho Pasivo Propio", "Cohecho Pasivo Impropio", "Usurpación de Funciones"];
     const listaPlazos = ["treinta (30) días naturales", "sesenta (60) días naturales", "noventa (90) días naturales", "ciento veinte (120) días naturales", "ciento cincuenta (150) días naturales", "ciento ochenta (180) días naturales"];
     const listaLugares = [
@@ -242,6 +302,12 @@
         if (pantalla) {
             pantalla.style.display = 'block';
             window.scrollTo(0,0);
+        }
+        // Lógica de Voz
+        if (idPantalla === 'app-voice-assistant') {
+            iniciarChatbot();
+        } else {
+            detenerTodoAudio();
         }
     }
 
@@ -267,7 +333,7 @@
 
     function toggleSection(id) { document.getElementById(id).classList.toggle('hidden'); }
 
-    // === LÓGICA PERICIAS (APP 1) ===
+    // === LÓGICA MANUAL: PERICIAS (APP 1) ===
     function inicializarPericias() {
         const selMes = document.getElementById('p_mes');
         const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
@@ -322,7 +388,7 @@
         document.getElementById('p_boxEvidencia').classList.toggle('hidden', val !== 'si');
     }
 
-    // === LÓGICA MOVILIDAD (APP 2) ===
+    // === LÓGICA MANUAL: MOVILIDAD (APP 2) ===
     function inicializarMovilidad() {
         generarCamposDestinos();
     }
@@ -379,21 +445,352 @@
         }
     }
 
+    // === LÓGICA DEL ASISTENTE DE VOZ (NUEVO) ===
+    let audioEnabled = true;
+    let datos = {};
+    let pasoActual = 0;
+    let flujoActual = "";
+    let preguntasActivas = [];
+    let isListening = false;
+    let silenceTimer = null;
+
+    // Configuración API de Voz
+    const synth = window.speechSynthesis;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+    if (recognition) {
+        recognition.lang = 'es-PE';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+    }
+
+    const flujos = {
+        'INICIO': [
+            { id: 'inicio', texto: "¡Hola Dra.! Soy su asistente virtual. ¿Qué redactamos hoy?", tipo: 'opciones', opciones: ['Oficio de Movilidad', 'Oficio de Pericias'] }
+        ],
+        'MOVILIDAD': [
+            { id: 'm_oficio', texto: "Perfecto, Movilidad. Dígame el Número de Oficio.", tipo: 'texto', placeholder: "Ej: 523-2025" },
+            { id: 'm_fecha', texto: "¿Con qué fecha emitiremos el documento?", tipo: 'fecha' },
+            { id: 'm_destinos', texto: "¿A cuántos lugares se realizará el traslado? ¿Uno, dos o tres?", tipo: 'opciones', opciones: ['1 Lugar', '2 Lugares', '3 Lugares'] },
+            // Destinos se inyectan
+            { id: 'm_servicio', texto: "Dígame la fecha y hora del servicio.", tipo: 'texto', placeholder: "Ej: Miércoles 5... de 10 a 12..." },
+            { id: 'm_celular', texto: "¿A qué celular coordinamos?", tipo: 'opciones_texto', opciones: ['957691331', 'Otro'] },
+            { id: 'm_asistente', texto: "¿Quién es el Asistente Responsable?", tipo: 'opciones_texto', opciones: ['DEBORA JASMIN SOTELO AHUANARI', 'Otro'] },
+            { id: 'fin_movilidad', texto: "Tengo los datos. Presione el botón para generar.", tipo: 'final' }
+        ]
+    };
+
+    function iniciarChatbot() {
+        document.getElementById('chat-box').innerHTML = '';
+        datos = {};
+        pasoActual = 0;
+        flujoActual = "";
+        setTimeout(() => agregarMensajeBot(flujos.INICIO[0]), 800);
+    }
+
+    function agregarMensajeBot(preguntaObj) {
+        const chatBox = document.getElementById('chat-box');
+        const typing = document.getElementById('typing-indicator');
+        
+        typing.style.display = 'block';
+        document.getElementById('input-area').style.display = 'none';
+
+        setTimeout(() => {
+            typing.style.display = 'none';
+            // Renderizar Burbuja
+            const div = document.createElement('div');
+            div.className = 'message bot-msg';
+            div.innerHTML = preguntaObj.texto.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            
+            // Opciones
+            if (preguntaObj.tipo === 'opciones' || preguntaObj.tipo === 'opciones_texto') {
+                const optsDiv = document.createElement('div');
+                optsDiv.className = 'chat-options';
+                preguntaObj.opciones.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'chat-option-btn';
+                    btn.innerText = opt;
+                    btn.onclick = () => procesarRespuesta(opt);
+                    optsDiv.appendChild(btn);
+                });
+                div.appendChild(optsDiv);
+            }
+            // Final
+            if (preguntaObj.tipo === 'final') {
+                const btn = document.createElement('button');
+                btn.className = 'chat-option-btn';
+                btn.style.backgroundColor = '#128c7e'; btn.style.color = 'white';
+                btn.innerText = "📄 DESCARGAR WORD";
+                btn.onclick = () => generarWordMovilidadDesdeChat();
+                div.appendChild(btn);
+            }
+
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Hablar y luego Escuchar
+            hablar(preguntaObj.texto, () => {
+                if (preguntaObj.tipo !== 'final') {
+                    configurarInput(preguntaObj);
+                    activarEscuchaAutomatica();
+                }
+            });
+
+        }, 500);
+    }
+
+    function hablar(texto, callback) {
+        if (!audioEnabled) { if (callback) callback(); return; }
+        
+        synth.cancel();
+        const textoLimpio = texto.replace(/\*\*/g, '').replace(/\*/g, '');
+        const utterThis = new SpeechSynthesisUtterance(textoLimpio);
+        utterThis.lang = 'es-ES';
+        utterThis.rate = 1.1;
+
+        utterThis.onstart = () => document.getElementById('avatar-anim').classList.add('is-speaking');
+        utterThis.onend = () => {
+            document.getElementById('avatar-anim').classList.remove('is-speaking');
+            if (callback) callback();
+        };
+        synth.speak(utterThis);
+    }
+
+    function activarEscuchaAutomatica() {
+        if (!recognition) return;
+        try {
+            recognition.start();
+            document.getElementById('btn-mic').classList.add('is-listening');
+            document.getElementById('status-text').innerText = "🔴 Escuchando... (10s)";
+            isListening = true;
+            
+            clearTimeout(silenceTimer);
+            silenceTimer = setTimeout(() => {
+                if (isListening) detenerEscucha();
+            }, 10000); // 10s timeout
+        } catch(e) { console.log("Mic ocupado"); }
+    }
+
+    function detenerEscucha() {
+        if (recognition) recognition.stop();
+        isListening = false;
+        document.getElementById('btn-mic').classList.remove('is-listening');
+        document.getElementById('status-text').innerText = "En línea";
+        clearTimeout(silenceTimer);
+    }
+
+    if (recognition) {
+        recognition.onresult = (event) => {
+            clearTimeout(silenceTimer);
+            const transcript = event.results[0][0].transcript;
+            detenerEscucha();
+            document.getElementById('user-input').value = transcript;
+            setTimeout(() => enviarRespuesta(), 800);
+        };
+        recognition.onerror = () => detenerEscucha();
+    }
+
+    function procesarRespuesta(texto) {
+        const chatBox = document.getElementById('chat-box');
+        const div = document.createElement('div');
+        div.className = 'message user-msg';
+        div.innerText = texto;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        if (!flujoActual) {
+            if (texto.toLowerCase().includes('movilidad')) {
+                flujoActual = 'MOVILIDAD';
+                preguntasActivas = [...flujos.MOVILIDAD];
+                pasoActual = 0;
+                agregarMensajeBot(preguntasActivas[0]);
+            } else {
+                agregarMensajeBot({ texto: "Solo tengo activo el modo Movilidad. Intente de nuevo." });
+            }
+        } else {
+            const preg = preguntasActivas[pasoActual];
+            datos[preg.id] = texto;
+
+            // Destinos dinámicos
+            if (preg.id === 'm_destinos') {
+                let num = 1;
+                const t = texto.toLowerCase();
+                if (t.includes('2') || t.includes('dos')) num = 2;
+                if (t.includes('3') || t.includes('tres')) num = 3;
+                if (t.includes('4') || t.includes('cuatro')) num = 4;
+
+                for (let i = num; i >= 1; i--) {
+                    preguntasActivas.splice(pasoActual + 1, 0, {
+                        id: `m_lugar_${i}`, texto: `Dirección del Destino ${i}:`, tipo: 'texto'
+                    });
+                }
+            }
+
+            pasoActual++;
+            if (pasoActual < preguntasActivas.length) {
+                agregarMensajeBot(preguntasActivas[pasoActual]);
+            }
+        }
+    }
+
+    // Controles UI del Chat
+    function configurarInput(pregunta) {
+        const area = document.getElementById('input-area');
+        const field = document.getElementById('user-input');
+        area.style.display = 'flex';
+        field.value = '';
+        field.type = pregunta.tipo === 'fecha' ? 'date' : 'text';
+        field.placeholder = pregunta.placeholder || "Responde aquí...";
+        field.focus();
+    }
+    function clickMicManual() { if (isListening) detenerEscucha(); else activarEscuchaAutomatica(); }
+    function enviarRespuesta() { const val = document.getElementById('user-input').value; if (val) procesarRespuesta(val); }
+    function handleKeyPress(e) { if (e.key === 'Enter') enviarRespuesta(); }
+    function toggleAudio() { 
+        audioEnabled = !audioEnabled; 
+        document.getElementById('btn-audio-toggle').innerText = audioEnabled ? "🔊" : "🔇"; 
+        if(!audioEnabled) detenerTodoAudio();
+    }
+    function detenerTodoAudio() { synth.cancel(); detenerEscucha(); }
+
+
     // === UTILIDADES ===
     function formatearFechaLarga(fechaStr) {
         if (!fechaStr) return "_______";
+        if (!fechaStr.includes('-')) return fechaStr; // Si viene del chat como texto natural
         const partes = fechaStr.split("-");
         const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
         return `${parseInt(partes[2])} de ${meses[parseInt(partes[1])-1]} de ${partes[0]}`;
     }
 
+    function construirEncabezado(logo, fecha) {
+        const { Paragraph, TextRun, Table, TableRow, TableCell, ImageRun, AlignmentType, WidthType, BorderStyle } = docx;
+        
+        // 1. Aumentar tamaño del logo: 140px x 133px
+        let logoRun = logo ? new ImageRun({ data: logo, transformation: { width: 140, height: 133 } }) : new TextRun("");
+        
+        return [
+            new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                borders: { top: {style: BorderStyle.NONE}, bottom: {style: BorderStyle.NONE}, left: {style: BorderStyle.NONE}, right: {style: BorderStyle.NONE}, insideVertical: {style: BorderStyle.NONE}, insideHorizontal: {style: BorderStyle.NONE} },
+                rows: [
+                    new TableRow({
+                        children: [
+                            new TableCell({ 
+                                width: { size: 40, type: WidthType.PERCENTAGE }, 
+                                margins: { left: -1000 }, 
+                                children: [
+                                    new Paragraph({ children: [logoRun], alignment: AlignmentType.CENTER }),
+                                    new Paragraph({ children: [new TextRun({ text: "MINISTERIO PÚBLICO", bold: false, size: 20, font: "Arial Narrow" })], alignment: AlignmentType.CENTER }),
+                                    new Paragraph({ 
+                                        children: [new TextRun({ 
+                                            text: "PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-", 
+                                            bold: false, 
+                                            size: 20, 
+                                            font: "Arial Narrow" 
+                                        })], 
+                                        alignment: AlignmentType.CENTER 
+                                    })
+                                ]
+                            }),
+                            new TableCell({ 
+                                width: { size: 60, type: WidthType.PERCENTAGE }, 
+                                children: [
+                                    new Paragraph({ 
+                                        children: [new TextRun({ 
+                                            text: "“Año de la recuperación y consolidación de la economía peruana”", 
+                                            italics: true, 
+                                            size: 18, 
+                                            font: "Arial Narrow" 
+                                        })], 
+                                        alignment: AlignmentType.RIGHT, 
+                                        spacing: { before: 800 } 
+                                    }),
+                                    new Paragraph({ text: "" }),
+                                    new Paragraph({ 
+                                        children: [new TextRun({ 
+                                            text: fecha, 
+                                            size: 24, 
+                                            font: "Arial Narrow" 
+                                        })], 
+                                        alignment: AlignmentType.RIGHT 
+                                    })
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            }),
+            new Paragraph({ text: "" })
+        ];
+    }
+
+    function crearParrafo(texto, negrita=false, subrayado=false) {
+        const { Paragraph, TextRun, UnderlineType } = docx;
+        return new Paragraph({ children: [new TextRun({ text: texto, bold: negrita, underline: subrayado ? {type: UnderlineType.SINGLE} : undefined, size: 24, font: "Arial Narrow" })], spacing: { line: 276 } });
+    }
+
+    function crearParrafoConSangria(texto, negrita=false, subrayado=false) {
+        const { Paragraph, TextRun, UnderlineType } = docx;
+        return new Paragraph({ indent: { left: 4000 }, children: [new TextRun({ text: texto, bold: negrita, underline: subrayado ? {type: UnderlineType.SINGLE} : undefined, size: 24, font: "Arial Narrow" })], spacing: { line: 276 } });
+    }
+
+    function crearParrafoJustificado(partes, sangriaPrimeraLinea=false) {
+        const { Paragraph, TextRun, AlignmentType } = docx;
+        let children = partes.map(p => {
+            if(typeof p === 'string') return new TextRun({ text: p, size: 24, font: "Arial Narrow" });
+            return new TextRun({ text: p.text, bold: p.bold, size: 24, font: "Arial Narrow" });
+        });
+        return new Paragraph({ children: children, alignment: AlignmentType.JUSTIFIED, spacing: { line: 276 }, indent: sangriaPrimeraLinea ? { firstLine: 720 } : undefined });
+    }
+
+    function crearViñeta(titulo, valor) {
+        const { Paragraph, TextRun } = docx;
+        return new Paragraph({ bullet: { level: 0 }, indent: { left: 1440 }, children: [ new TextRun({ text: titulo, bold: true, size: 24, font: "Arial Narrow" }), new TextRun({ text: valor, size: 24, font: "Arial Narrow" }) ], spacing: { line: 276 } });
+    }
+
+    function crearTablaContacto(m, f, tf, ta) {
+        const { Table, TableRow, TableCell, Paragraph, TextRun, WidthType, HeightRule } = docx;
+        return new Table({
+            width: { size: 90, type: WidthType.PERCENTAGE }, indent: { size: 720, type: WidthType.DXA },
+            rows: [
+                crearFilaContacto("CORREO ELECTRÓNICO MESA DE PARTES", m),
+                crearFilaContacto("CORREO ELECTRÓNICO FISCAL ENCARGADO", f),
+                crearFilaContacto("TELÉFONO FISCAL", tf),
+                crearFilaContacto("TELÉFONO ASISTENTE", ta)
+            ]
+        });
+    }
+
+    function crearFilaContacto(label, val) {
+        const { TableRow, TableCell, Paragraph, TextRun, HeightRule } = docx;
+        return new TableRow({ height: { value: 500, rule: HeightRule.AT_LEAST }, cantSplit: true, children: [ new TableCell({ children: [new Paragraph({children:[new TextRun({text: label, bold: true, size: 20, font: "Arial Narrow"})]})] }), new TableCell({ children: [new Paragraph({children:[new TextRun({text: val, size: 20, font: "Arial Narrow"})]})] }) ] });
+    }
+
+    function crearYDescargarDoc(children, nombreArchivo) {
+        const { Document, Packer, Footer, Paragraph, TextRun } = docx;
+        const doc = new Document({
+            sections: [{ 
+                // 2. Margen superior reducido a 1cm (567 Twips) para subir el logo
+                properties: { pageMargins: { top: 567, right: 1701, bottom: 1417, left: 1701 } }, 
+                children: children,
+                footers: { default: new Footer({ children: [
+                    new Paragraph({ children: [new TextRun({ text: "Teléfono: (01) 625-5555", size: 22, font: "Arial Narrow", color: "333333" })] }),
+                    new Paragraph({ children: [new TextRun({ text: "Anexos: 11706 / 11705", size: 22, font: "Arial Narrow", color: "333333" })] }),
+                    new Paragraph({ children: [new TextRun({ text: "E-mail: fecoflima_1f2d@mpfn.gob.pe", size: 22, font: "Arial Narrow", color: "333333" })] }),
+                    new Paragraph({ children: [new TextRun({ text: "Dirección: Jr. Lampa N.° 597 – Cercado de Lima.", size: 22, font: "Arial Narrow", color: "333333" })] })
+                ]})}
+            }]
+        });
+        Packer.toBlob(doc).then(blob => { saveAs(blob, nombreArchivo); });
+    }
+
     // =========================================================
-    // GENERAR WORD: PERICIAS
+    // GENERAR WORD: PERICIAS (MANUAL) - IGUAL QUE V34
     // =========================================================
     function generarWordPericias() {
         const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, ImageRun, AlignmentType, UnderlineType, BorderStyle, Footer, HeightRule } = docx;
         
-        // Recoger datos (usando prefijo p_)
         const codigo = document.getElementById('p_codigoUnico').value;
         const fechaTexto = `${document.getElementById('p_dia').value} de ${document.getElementById('p_mes').value} del ${document.getElementById('p_anio').value}`;
         const numDispo = document.getElementById('p_numDisposicion').value;
@@ -480,7 +877,7 @@
     }
 
     // =========================================================
-    // GENERAR WORD: MOVILIDAD
+    // GENERAR WORD: MOVILIDAD (MANUAL) - IGUAL QUE V34
     // =========================================================
     function generarWordMovilidad() {
         const { Document, Packer, Paragraph, TextRun, AlignmentType, UnderlineType } = docx;
@@ -558,126 +955,74 @@
         crearYDescargarDoc(children, `Oficio_Movilidad_${oficio}.docx`);
     }
 
-    // === HELPERS DE WORD (REUTILIZABLES) ===
-    function construirEncabezado(logo, fecha) {
-        const { Paragraph, TextRun, Table, TableRow, TableCell, ImageRun, AlignmentType, WidthType, BorderStyle } = docx;
+    // =========================================================
+    // GENERAR WORD: MOVILIDAD DESDE CHAT (NUEVA FUNCIÓN ADAPTADA)
+    // =========================================================
+    function generarWordMovilidadDesdeChat() {
+        const { Document, Packer, Paragraph, TextRun, AlignmentType, UnderlineType } = docx;
+
+        const fechaDoc = formatearFechaLarga(datos['m_fecha']);
+        const oficio = datos['m_oficio'];
+        const servicio = datos['m_servicio'];
+        const celular = datos['m_celular'];
+        const asistente = datos['m_asistente'];
+
+        // Construir destinos
+        let destinosArr = [];
+        Object.keys(datos).forEach(key => {
+            if(key.startsWith('m_lugar_')) destinosArr.push(datos[key]);
+        });
         
-        // 1. Aumentar tamaño del logo: 3.7cm x 3.52cm -> 140px x 133px
-        let logoRun = logo ? new ImageRun({ data: logo, transformation: { width: 140, height: 133 } }) : new TextRun("");
-        
-        return [
-            new Table({
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                borders: { top: {style: BorderStyle.NONE}, bottom: {style: BorderStyle.NONE}, left: {style: BorderStyle.NONE}, right: {style: BorderStyle.NONE}, insideVertical: {style: BorderStyle.NONE}, insideHorizontal: {style: BorderStyle.NONE} },
-                rows: [
-                    new TableRow({
-                        children: [
-                            new TableCell({ 
-                                width: { size: 40, type: WidthType.PERCENTAGE }, 
-                                margins: { left: -1000 }, 
-                                children: [
-                                    new Paragraph({ children: [logoRun], alignment: AlignmentType.CENTER }),
-                                    new Paragraph({ children: [new TextRun({ text: "MINISTERIO PÚBLICO", bold: false, size: 20, font: "Arial Narrow" })], alignment: AlignmentType.CENTER }),
-                                    new Paragraph({ 
-                                        children: [new TextRun({ 
-                                            text: "PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-", 
-                                            bold: false, 
-                                            size: 20, 
-                                            font: "Arial Narrow" 
-                                        })], 
-                                        alignment: AlignmentType.CENTER 
-                                    })
-                                ]
-                            }),
-                            new TableCell({ 
-                                width: { size: 60, type: WidthType.PERCENTAGE }, 
-                                children: [
-                                    new Paragraph({ 
-                                        children: [new TextRun({ 
-                                            text: "“Año de la recuperación y consolidación de la economía peruana”", 
-                                            italics: true, 
-                                            size: 18, 
-                                            font: "Arial Narrow" 
-                                        })], 
-                                        alignment: AlignmentType.LEFT 
-                                    }),
-                                    new Paragraph({ text: "" }),
-                                    new Paragraph({ 
-                                        children: [new TextRun({ 
-                                            text: fecha, 
-                                            size: 24, 
-                                            font: "Arial Narrow" 
-                                        })], 
-                                        alignment: AlignmentType.RIGHT 
-                                    })
-                                ]
-                            })
-                        ]
-                    })
-                ]
-            }),
-            new Paragraph({ text: "" })
-        ];
-    }
+        // Formatear destinos (igual que V34)
+        let destinosTexto = destinosArr.length > 1 ? destinosArr.join("; ") : (destinosArr[0] || "Lugar indicado");
+        if(destinosArr.length > 1) {
+             const ultimo = destinosArr.pop();
+             destinosTexto = destinosArr.join("; ") + " y " + ultimo;
+        }
 
-    function crearParrafo(texto, negrita=false, subrayado=false) {
-        const { Paragraph, TextRun, UnderlineType } = docx;
-        return new Paragraph({ children: [new TextRun({ text: texto, bold: negrita, underline: subrayado ? {type: UnderlineType.SINGLE} : undefined, size: 24, font: "Arial Narrow" })], spacing: { line: 276 } });
-    }
+        const children = [];
+        children.push(...construirEncabezado(logoArrayBuffer, `Lima, ${fechaDoc}`));
 
-    function crearParrafoConSangria(texto, negrita=false, subrayado=false) {
-        const { Paragraph, TextRun, UnderlineType } = docx;
-        return new Paragraph({ indent: { left: 4000 }, children: [new TextRun({ text: texto, bold: negrita, underline: subrayado ? {type: UnderlineType.SINGLE} : undefined, size: 24, font: "Arial Narrow" })], spacing: { line: 276 } });
-    }
+        children.push(crearParrafo(`OFICIO N.° ${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.`, true, true)); 
+        children.push(crearParrafo("Sr. Dr.", true));
+        children.push(crearParrafo("MIRKO DINO CANO GAMERO", true));
+        children.push(crearParrafo("FISCAL ADJUNTO SUPREMO TITULAR COORDINADOR NACIONAL DE LAS FISCALÍAS ESPECIALIZADAS EN DELITOS DE CORRUPCIÓN DE FUNCIONARIOS.", true));
+        children.push(crearParrafo("PRESENTE.-", true, true)); 
 
-    function crearParrafoJustificado(partes, sangriaPrimeraLinea=false) {
-        const { Paragraph, TextRun, AlignmentType } = docx;
-        let children = partes.map(p => {
-            if(typeof p === 'string') return new TextRun({ text: p, size: 24, font: "Arial Narrow" });
-            return new TextRun({ text: p.text, bold: p.bold, size: 24, font: "Arial Narrow" });
-        });
-        return new Paragraph({ children: children, alignment: AlignmentType.JUSTIFIED, spacing: { line: 276 }, indent: sangriaPrimeraLinea ? { firstLine: 720 } : undefined });
-    }
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+        children.push(new Paragraph({ indent: { left: 4000 }, children: [new TextRun({ text: "ASUNTO: SOLICITUD DE ATENCIÓN DE MOVILIDAD", bold: true, size: 24, font: "Arial Narrow" })], spacing: { line: 276 } }));
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
 
-    function crearViñeta(titulo, valor) {
-        const { Paragraph, TextRun } = docx;
-        return new Paragraph({ bullet: { level: 0 }, indent: { left: 1440 }, children: [ new TextRun({ text: titulo, bold: true, size: 24, font: "Arial Narrow" }), new TextRun({ text: valor, size: 24, font: "Arial Narrow" }) ], spacing: { line: 276 } });
-    }
+        children.push(crearParrafoJustificado([
+            "Tengo el honor de dirigirme a usted, a fin de saludarlo cordialmente, y a su vez, SOLICITAR, la asignación de una movilidad (Vehículo institucional) para nuestro despacho Fiscal, con el fin de poder trasladarnos a: ",
+            {text: destinosTexto, bold: true},
+            {text: "; y así dar cumplimiento con las diligencias pendientes, por lo que se solicita apoyo con carácter de "},
+            {text: "MUY URGENTE", bold: true}, {text: ", el vehículo institucional."}
+        ]));
 
-    function crearTablaContacto(m, f, tf, ta) {
-        const { Table, TableRow, TableCell, Paragraph, TextRun, WidthType, HeightRule } = docx;
-        return new Table({
-            width: { size: 90, type: WidthType.PERCENTAGE }, indent: { size: 720, type: WidthType.DXA },
-            rows: [
-                crearFilaContacto("CORREO ELECTRÓNICO MESA DE PARTES", m),
-                crearFilaContacto("CORREO ELECTRÓNICO FISCAL ENCARGADO", f),
-                crearFilaContacto("TELÉFONO FISCAL", tf),
-                crearFilaContacto("TELÉFONO ASISTENTE", ta)
-            ]
-        });
-    }
+        children.push(new Paragraph({ text: "" }));
 
-    function crearFilaContacto(label, val) {
-        const { TableRow, TableCell, Paragraph, TextRun, HeightRule } = docx;
-        return new TableRow({ height: { value: 500, rule: HeightRule.AT_LEAST }, cantSplit: true, children: [ new TableCell({ children: [new Paragraph({children:[new TextRun({text: label, bold: true, size: 20, font: "Arial Narrow"})]})] }), new TableCell({ children: [new Paragraph({children:[new TextRun({text: val, size: 20, font: "Arial Narrow"})]})] }) ] });
-    }
+        children.push(crearParrafoJustificado([
+            "En ese sentido, el 2° Despacho de la 1° Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, cumple con ", 
+            {text: "SOLICITAR", bold: true}, {text: " que nos ASIGNEN un vehículo para el día "},
+            {text: servicio, bold: true}, {text: "."}
+        ]));
 
-    function crearYDescargarDoc(children, nombreArchivo) {
-        const { Document, Packer, Footer, Paragraph, TextRun } = docx;
-        const doc = new Document({
-            sections: [{ 
-                // 2. Margen superior reducido a 1cm (567 Twips) para subir el logo
-                properties: { pageMargins: { top: 567, right: 1701, bottom: 1417, left: 1701 } }, 
-                children: children,
-                footers: { default: new Footer({ children: [
-                    new Paragraph({ children: [new TextRun({ text: "Teléfono: (01) 625-5555", size: 22, font: "Arial Narrow", color: "333333" })] }),
-                    new Paragraph({ children: [new TextRun({ text: "Anexos: 11706 / 11705", size: 22, font: "Arial Narrow", color: "333333" })] }),
-                    new Paragraph({ children: [new TextRun({ text: "E-mail: fecoflima_1f2d@mpfn.gob.pe", size: 22, font: "Arial Narrow", color: "333333" })] }),
-                    new Paragraph({ children: [new TextRun({ text: "Dirección: Jr. Lampa N.° 597 – Cercado de Lima.", size: 22, font: "Arial Narrow", color: "333333" })] })
-                ]})}
-            }]
-        });
-        Packer.toBlob(doc).then(blob => { saveAs(blob, nombreArchivo); });
+        children.push(new Paragraph({ text: "" }));
+
+        children.push(crearParrafoJustificado([
+            "Para efectos de la confirmación de la solicitud, y de toda coordinación, se pone de conocimiento el correo de Mesa de Partes del Despacho: ", 
+            {text: "fecoflima_1f2d@mpfn.gob.pe", bold: true}, {text: "; así como el teléfono celular N° "},
+            {text: celular, bold: true}, {text: " perteneciente a la Asistente en Función Fiscal "},
+            {text: asistente, bold: true}, {text: "."}
+        ]));
+
+        children.push(new Paragraph({ text: "" }));
+        children.push(crearParrafoJustificado(["Sin otro particular, aprovecho la ocasión para expresarle las muestras de mi especial consideración y estima personal."]));
+        children.push(new Paragraph({ text: "\n\n" }));
+        children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Arial Narrow" })], alignment: AlignmentType.CENTER }));
+
+        crearYDescargarDoc(children, `Oficio_Movilidad_${oficio}.docx`);
     }
 </script>
 </body>
