@@ -80,7 +80,7 @@
 <body>
 
     <div id="screen-menu" class="menu-wrapper">
-        <h1 class="menu-title">Bienvenida, Dra.</h1>
+        <h1 class="menu-title">Bienvenida, Mi Amorcito.</h1>
         <p class="menu-subtitle">Sistema de Gestión Fiscal 2026</p>
         <div class="upload-area"><label>📂 Configuración:</label><span id="estadoImagen" class="text-err">Buscando logo.png...</span></div>
 
@@ -404,7 +404,7 @@
     // ENCABEZADO (V43: Logo 0.5cm, Fuente Times New Roman, Texto Miniterio Tam 7)
     function construirEncabezado(logo, fecha, nombreAnio) {
         const {Paragraph,TextRun,Table,TableRow,TableCell,ImageRun,AlignmentType,WidthType,BorderStyle}=docx;
-        let logoRun=logo?new ImageRun({data:logo,transformation:{width:140,height:133}}):new TextRun("");
+        let logoRun=logo?new ImageRun({data:logo,transformation:{width:120,height:113}}):new TextRun("");
         let txtAnio=nombreAnio?`“${nombreAnio.replace(/“|”|"/g,'')}”`:"";
         return [ new Table({ width:{size:100,type:WidthType.PERCENTAGE}, borders:{top:{style:BorderStyle.NONE},bottom:{style:BorderStyle.NONE},left:{style:BorderStyle.NONE},right:{style:BorderStyle.NONE},insideVertical:{style:BorderStyle.NONE},insideHorizontal:{style:BorderStyle.NONE}}, rows:[ new TableRow({ children:[ new TableCell({width:{size:40,type:WidthType.PERCENTAGE},margins:{left:-1000},children:[new Paragraph({children:[logoRun],alignment:AlignmentType.CENTER}),new Paragraph({children:[new TextRun({text:"MINISTERIO PÚBLICO",bold:false,size:14,font:"Times New Roman"})],alignment:AlignmentType.CENTER}),new Paragraph({children:[new TextRun({text:"PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-",bold:false,size:14,font:"Times New Roman"})],alignment:AlignmentType.CENTER})]}) , new TableCell({width:{size:60,type:WidthType.PERCENTAGE},children:[new Paragraph({children:[new TextRun({text:txtAnio,italics:true,size:18,font:"Times New Roman"})],alignment:AlignmentType.LEFT,spacing:{before:800}}),new Paragraph({text:""}),new Paragraph({children:[new TextRun({text:fecha,bold:true,size:24,font:"Times New Roman"})],alignment:AlignmentType.RIGHT})]}) ] }) ] }), new Paragraph({text:""}) ];
     }
