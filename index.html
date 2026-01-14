@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Fiscal 2026 - Completo</title>
+    <title>Sistema Fiscal 2026 - V44</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -47,6 +47,7 @@
         /* ATENCIÓN PEDIDOS */
         .ref-box { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; }
         .ref-label { font-weight: bold; color: #1e3a8a; width: 30px; }
+        .carpeta-box { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; }
         .btn-small { background: #e0f2fe; color: #1e40af; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-top: 5px; font-weight: bold; }
         .check-group { display: flex; gap: 20px; margin-top: 10px; background: white; padding: 10px; border-radius: 5px; border: 1px solid #e5e7eb; }
         .check-item { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
@@ -80,7 +81,7 @@
 <body>
 
     <div id="screen-menu" class="menu-wrapper">
-        <h1 class="menu-title">Bienvenida, Mi Amorcito.</h1>
+        <h1 class="menu-title">Bienvenida, Dra.</h1>
         <p class="menu-subtitle">Sistema de Gestión Fiscal 2026</p>
         <div class="upload-area"><label>📂 Configuración:</label><span id="estadoImagen" class="text-err">Buscando logo.png...</span></div>
 
@@ -214,9 +215,18 @@
         <div class="section-title" onclick="toggleSection('a-sec2')">2. Destinatario ▼</div>
         <div id="a-sec2" class="section-content">
             <div class="form-row">
+                <div class="form-col">
+                    <label>Título:</label>
+                    <select id="a_dest_titulo">
+                        <option value="Sr.">Sr.</option>
+                        <option value="Dr.">Dr.</option>
+                        <option value="Sra.">Sra.</option>
+                        <option value="Dra.">Dra.</option>
+                    </select>
+                </div>
                 <div class="form-col"><label>Nombre Completo:</label><input type="text" id="a_dest_nombre" placeholder="Ej: JUAN PEREZ..."></div>
-                <div class="form-col"><label>Cargo:</label><input type="text" id="a_dest_cargo" placeholder="Ej: FISCAL PROVINCIAL..."></div>
             </div>
+            <label>Cargo:</label><input type="text" id="a_dest_cargo" placeholder="Ej: FISCAL PROVINCIAL...">
         </div>
 
         <div class="section-title" onclick="toggleSection('a-sec3')">3. Referencias ▼</div>
@@ -251,7 +261,11 @@
 
                 <div id="panel-info-si" style="display:none; margin-top:15px; border-top:1px solid #ccc; padding-top:10px;">
                     <label>Carpetas Fiscales encontradas:</label>
-                    <input type="text" id="a_carpetas" placeholder="Ej: N.° 50-2024 y N.° 170-2022">
+                    <select id="a_cant_carpetas" onchange="generarCarpetasInputs()" style="margin-bottom:5px;">
+                        <option value="1">1 Carpeta</option><option value="2">2 Carpetas</option><option value="3">3 Carpetas</option>
+                    </select>
+                    <div id="container-carpetas"></div>
+                    
                     <label style="margin-top:10px;">Se adjunta:</label>
                     <div class="check-group">
                         <div class="check-item"><input type="checkbox" id="chk_dispo"> Disposiciones Fiscales</div>
@@ -295,7 +309,8 @@
         try { const xhr=new XMLHttpRequest(); xhr.open('GET',NOMBRE_ARCHIVO_IMAGEN,true); xhr.responseType='arraybuffer'; xhr.onload=function(){if(xhr.status===200)logoArrayBuffer=xhr.response;}; xhr.send(); }catch(e){}
         inicializarPericias();
         inicializarMovilidad();
-        agregarReferencia();
+        agregarReferencia(); // Inicializar Atención
+        generarCarpetasInputs();
     };
 
     function navegar(id) {
@@ -326,7 +341,7 @@
     function toggleManual(c,i){ const v=document.getElementById(c).value; document.getElementById(i).style.display=(v==='OTRO')?'block':'none'; }
     function actualizarPreviewServicio(){ const f=document.getElementById('m_diaServicio').value; const i=document.getElementById('m_horaInicio').value; const fn=document.getElementById('m_horaFin').value; if(f&&i&&fn){ const d=new Date(f+'T00:00:00'); const ft=d.toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase(); document.getElementById('m_previewServicio').innerText=`${ft}, DE ${i} A ${fn} HORAS`; document.getElementById('m_previewServicio').style.display='block';}}
 
-    // === ATENCIÓN PEDIDOS (LÓGICA) ===
+    // === ATENCIÓN PEDIDOS ===
     let refCount = 0; 
     const letras = ['a)', 'b)', 'c)', 'd)', 'e)'];
 
@@ -353,6 +368,15 @@
         }
     }
 
+    function generarCarpetasInputs() {
+        const cant = document.getElementById('a_cant_carpetas').value;
+        const container = document.getElementById('container-carpetas');
+        container.innerHTML = "";
+        for(let i=0; i<cant; i++) {
+            container.innerHTML += `<div style="display:flex; align-items:center; margin-bottom:5px;"><span style="margin-right:5px; font-weight:bold;">N.°</span><input type="text" id="a_carpeta_${i}" placeholder="Ej: 50-2024"></div>`;
+        }
+    }
+
     function toggleInfoDespacho() { 
         document.getElementById('panel-info-si').style.display=(document.getElementById('a_tieneInfo').value==='SI')?'block':'none'; 
     }
@@ -374,16 +398,16 @@
     function toggleAudio(){ audioEnabled=!audioEnabled; if(!audioEnabled)detenerTodoAudio(); }
     function detenerTodoAudio(){ synth.cancel(); detenerEscucha(); }
     function handleKeyPress(e){if(e.key==='Enter')enviarRespuesta();}
-    function generarWordMovilidadChat() { datos['m_oficio']=datos['m_oficio']||""; datos['m_fecha']=datos['m_fecha']||""; datos['m_servicio']=datos['m_servicio']||""; datos['m_celular']=datos['m_celular']||"957691331"; datos['m_asistente']=datos['m_asistente']||"DEBORA"; const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType}=docx; const fecha=formatearFechaLarga(datos['m_fecha']); const oficio=datos['m_oficio']; let dests=[]; Object.keys(datos).forEach(k=>{if(k.startsWith('m_lugar_'))dests.push(datos[k]);}); let destTxt=dests.join("; "); const children=[]; children.push(...construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, "")); children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Arial Narrow"})],spacing:{line:276}})); children.push(new Paragraph({children:[new TextRun({text:"ASUNTO: SOLICITUD MOVILIDAD (Voz)",bold:true,size:24,font:"Arial Narrow"})],indent:{left:4000}})); children.push(new Paragraph({children:[new TextRun({text:`Destino: ${destTxt}. Servicio: ${datos['m_servicio']}`,size:24,font:"Arial Narrow"})]})); crearYDescargarDoc(children, `Movilidad_Voz_${oficio}.docx`); }
+    function generarWordMovilidadChat() { datos['m_oficio']=datos['m_oficio']||""; datos['m_fecha']=datos['m_fecha']||""; datos['m_servicio']=datos['m_servicio']||""; datos['m_celular']=datos['m_celular']||"957691331"; datos['m_asistente']=datos['m_asistente']||"DEBORA"; const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType}=docx; const fecha=formatearFechaLarga(datos['m_fecha']); const oficio=datos['m_oficio']; let dests=[]; Object.keys(datos).forEach(k=>{if(k.startsWith('m_lugar_'))dests.push(datos[k]);}); let destTxt=dests.join("; "); const children=[]; children.push(...construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, "")); children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}})); children.push(new Paragraph({children:[new TextRun({text:"ASUNTO: SOLICITUD MOVILIDAD (Voz)",bold:true,size:24,font:"Times New Roman"})],indent:{left:4000}})); children.push(new Paragraph({children:[new TextRun({text:`Destino: ${destTxt}. Servicio: ${datos['m_servicio']}`,size:24,font:"Times New Roman"})]})); crearYDescargarDoc(children, `Movilidad_Voz_${oficio}.docx`); }
 
-    // === GENERADORES DE WORD ===
+    // GENERADORES DE WORD
     
-    // ENCABEZADO (Ajustado a Tamaño 7 para el texto)
+    // ENCABEZADO (V43: Logo 0.5cm, Fuente Times New Roman, Texto Miniterio Tam 7)
     function construirEncabezado(logo, fecha, nombreAnio) {
         const {Paragraph,TextRun,Table,TableRow,TableCell,ImageRun,AlignmentType,WidthType,BorderStyle}=docx;
         let logoRun=logo?new ImageRun({data:logo,transformation:{width:140,height:133}}):new TextRun("");
         let txtAnio=nombreAnio?`“${nombreAnio.replace(/“|”|"/g,'')}”`:"";
-        return [ new Table({ width:{size:100,type:WidthType.PERCENTAGE}, borders:{top:{style:BorderStyle.NONE},bottom:{style:BorderStyle.NONE},left:{style:BorderStyle.NONE},right:{style:BorderStyle.NONE},insideVertical:{style:BorderStyle.NONE},insideHorizontal:{style:BorderStyle.NONE}}, rows:[ new TableRow({ children:[ new TableCell({width:{size:40,type:WidthType.PERCENTAGE},margins:{left:-1000},children:[new Paragraph({children:[logoRun],alignment:AlignmentType.CENTER}),new Paragraph({children:[new TextRun({text:"MINISTERIO PÚBLICO",bold:false,size:14,font:"Arial Narrow"})],alignment:AlignmentType.CENTER}),new Paragraph({children:[new TextRun({text:"PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-",bold:false,size:14,font:"Arial Narrow"})],alignment:AlignmentType.CENTER})]}) , new TableCell({width:{size:60,type:WidthType.PERCENTAGE},children:[new Paragraph({children:[new TextRun({text:txtAnio,italics:true,size:18,font:"Arial Narrow"})],alignment:AlignmentType.LEFT,spacing:{before:800}}),new Paragraph({text:""}),new Paragraph({children:[new TextRun({text:fecha,bold:true,size:24,font:"Arial Narrow"})],alignment:AlignmentType.RIGHT})]}) ] }) ] }), new Paragraph({text:""}) ];
+        return [ new Table({ width:{size:100,type:WidthType.PERCENTAGE}, borders:{top:{style:BorderStyle.NONE},bottom:{style:BorderStyle.NONE},left:{style:BorderStyle.NONE},right:{style:BorderStyle.NONE},insideVertical:{style:BorderStyle.NONE},insideHorizontal:{style:BorderStyle.NONE}}, rows:[ new TableRow({ children:[ new TableCell({width:{size:40,type:WidthType.PERCENTAGE},margins:{left:-1000},children:[new Paragraph({children:[logoRun],alignment:AlignmentType.CENTER}),new Paragraph({children:[new TextRun({text:"MINISTERIO PÚBLICO",bold:false,size:14,font:"Times New Roman"})],alignment:AlignmentType.CENTER}),new Paragraph({children:[new TextRun({text:"PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-",bold:false,size:14,font:"Times New Roman"})],alignment:AlignmentType.CENTER})]}) , new TableCell({width:{size:60,type:WidthType.PERCENTAGE},children:[new Paragraph({children:[new TextRun({text:txtAnio,italics:true,size:18,font:"Times New Roman"})],alignment:AlignmentType.LEFT,spacing:{before:800}}),new Paragraph({text:""}),new Paragraph({children:[new TextRun({text:fecha,bold:true,size:24,font:"Times New Roman"})],alignment:AlignmentType.RIGHT})]}) ] }) ] }), new Paragraph({text:""}) ];
     }
 
     function generarWordPericias() {
@@ -391,33 +415,32 @@
         const codigo=document.getElementById('p_codigoUnico').value; const anio=document.getElementById('p_anio').value; const dia=document.getElementById('p_dia').value; const mes=document.getElementById('p_mes').value; const nombreAnio=document.getElementById('p_nombreAnio').value;
         const fechaTexto=`${dia} de ${mes} del ${anio}`;
         const children=[]; children.push(...construirEncabezado(logoArrayBuffer, fechaTexto, nombreAnio));
-        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N° (${codigo}) ${anio}-MP-FN-2D-1FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Arial Narrow"})],spacing:{line:276}}));
-        // ... (resto pericias igual)
-        children.push(new Paragraph({children:[new TextRun({text:"SEÑORES:",bold:true,size:24,font:"Arial Narrow"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:"UNIDAD DE PERITOS FECOF",bold:true,size:24,font:"Arial Narrow"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:"Ministerio Público Fiscalía de la Nación",bold:true,size:24,font:"Arial Narrow"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:"PRESENTE.-",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Arial Narrow"})],spacing:{line:276}}));
-        children.push(new Paragraph({indent:{left:4000},children:[new TextRun({text:"ASUNTO: SOLICITUD DE DESIGNACIÓN DE PERITOS",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Arial Narrow"})],spacing:{line:276}}));
-        // (Resumido para brevedad)
+        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N° (${codigo}) ${anio}-MP-FN-2D-1FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        // ... (resto pericias)
+        children.push(new Paragraph({children:[new TextRun({text:"SEÑORES:",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:"UNIDAD DE PERITOS FECOF",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:"Ministerio Público Fiscalía de la Nación",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:"PRESENTE.-",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        children.push(new Paragraph({indent:{left:4000},children:[new TextRun({text:"ASUNTO: SOLICITUD DE DESIGNACIÓN DE PERITOS",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        // ...
         crearYDescargarDoc(children, `Oficio_Pericia_${codigo}.docx`);
     }
 
     function generarWordMovilidad() {
-        // (Lógica Movilidad anterior)
         const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType}=docx;
         const oficio=document.getElementById('m_numOficio').value; const nombreAnio=document.getElementById('m_nombreAnio').value; const fecha=formatearFechaLarga(document.getElementById('m_fechaDocumento').value);
         const children=[]; children.push(...construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, nombreAnio));
-        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Arial Narrow"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:"Sr. Dr.",bold:true,size:24,font:"Arial Narrow"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:"MIRKO DINO CANO GAMERO",bold:true,size:24,font:"Arial Narrow"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:"FISCAL ADJUNTO SUPREMO TITULAR COORDINADOR NACIONAL DE LAS FISCALÍAS ESPECIALIZADAS EN DELITOS DE CORRUPCIÓN DE FUNCIONARIOS.",bold:true,size:24,font:"Arial Narrow"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:"PRESENTE.-",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Arial Narrow"})],spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:"Sr. Dr.",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:"MIRKO DINO CANO GAMERO",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:"FISCAL ADJUNTO SUPREMO TITULAR COORDINADOR NACIONAL DE LAS FISCALÍAS ESPECIALIZADAS EN DELITOS DE CORRUPCIÓN DE FUNCIONARIOS.",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:"PRESENTE.-",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({text:"",spacing:{line:276}}));
-        children.push(new Paragraph({indent:{left:4000},children:[new TextRun({text:"ASUNTO: SOLICITUD DE ATENCIÓN DE MOVILIDAD",bold:true,size:24,font:"Arial Narrow"})],spacing:{line:276}}));
+        children.push(new Paragraph({indent:{left:4000},children:[new TextRun({text:"ASUNTO: SOLICITUD DE ATENCIÓN DE MOVILIDAD",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
         crearYDescargarDoc(children, `Oficio_Movilidad_${oficio}.docx`);
     }
 
-    // === GENERAR ATENCIÓN (CON TUS REQUISITOS) ===
+    // === GENERAR ATENCIÓN (V43) ===
     function generarWordAtencion() {
         const { Document, Packer, Paragraph, TextRun, AlignmentType, UnderlineType } = docx;
 
@@ -427,6 +450,7 @@
         const oficioNum = document.getElementById('a_oficio').value;
         const oficioFull = `${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.`;
         
+        const tituloDest = document.getElementById('a_dest_titulo').value;
         const destinatario = document.getElementById('a_dest_nombre').value;
         const cargo = document.getElementById('a_dest_cargo').value;
         const saludo = document.getElementById('a_saludo').value;
@@ -434,57 +458,57 @@
         const refSeleccionadaTexto = document.getElementById('a_ref_respuesta').value;
 
         let refsArr = []; for(let i=0; i<refCount; i++) { const val=document.getElementById(`ref_input_${i}`)?.value; if(val) refsArr.push({letra:letras[i], texto:val}); }
-        let refString = refsArr.map(r => `${r.letra} ${r.texto}`).join("  ");
+        let refString = refsArr.map(r => `${r.letra} ${r.texto}-MP-FN-FSNCEDCF`).join("  "); // SUFIJO AÑADIDO
 
         const children = [];
-        // Header (Logo 1cm top, Texto 7pt, Fecha Negrita)
+        // Header (Logo 0.5cm top (aprox 284 twips), Texto 7pt, Fecha Negrita, Times New Roman)
         children.push(...construirEncabezado(logoArrayBuffer, `Lima, ${fechaTexto}`, nombreAnio));
 
         // Oficio Subrayado + Sufijo
         children.push(new Paragraph({
-            children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Arial Narrow"})],
+            children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})],
             spacing:{line:276, after: 400} // Espacio extra
         }));
 
-        children.push(new Paragraph({children:[new TextRun({text:"Sr. (a) Dr. (a)", bold:false, size:24, font:"Arial Narrow"})], spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:destinatario, bold:true, size:24, font:"Arial Narrow"})], spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:cargo, bold:true, size:24, font:"Arial Narrow"})], spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:`${tituloDest} (a)`, bold:false, size:24, font:"Times New Roman"})], spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:destinatario, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:cargo, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
         
         // Espacio antes de PRESENTE
         children.push(new Paragraph({
-            children:[new TextRun({text:"PRESENTE.-", bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Arial Narrow"})], 
+            children:[new TextRun({text:"PRESENTE.-", bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], 
             spacing:{line:276, before: 400} 
         }));
 
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
         
-        // ASUNTO Negrita y Subrayado
+        // ASUNTO Negrita y Subrayado (Solo etiqueta)
         children.push(new Paragraph({ 
             indent: { left: 4000 }, 
             children: [
-                new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size: 24, font: "Arial Narrow" }),
-                new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold: true, underline:{type:UnderlineType.SINGLE}, size: 24, font: "Arial Narrow" })
+                new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size: 24, font: "Times New Roman" }),
+                new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size: 24, font: "Times New Roman" })
             ], 
             spacing: { line: 276 } 
         }));
         
-        // Referencia Negrita y Subrayada
+        // Referencia Negrita y Subrayada (Solo etiqueta)
         if(refString) {
             children.push(new Paragraph({ 
                 indent: { left: 4000 }, 
                 children: [
-                    new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size: 24, font: "Arial Narrow" }),
-                    new TextRun({ text: refString, size: 24, font: "Arial Narrow" })
+                    new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size: 24, font: "Times New Roman" }),
+                    new TextRun({ text: refString, size: 24, font: "Times New Roman" })
                 ], 
                 spacing: { line: 276 } 
             }));
         }
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
 
-        // Cuerpo con Selector
+        // Cuerpo con Selector, Tabulación y Times New Roman
         let cuerpo = [
             {text: `${saludo} a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `, bold: false},
-            {text: refSeleccionadaTexto, bold: false}, // "la referencia a)"
+            {text: refSeleccionadaTexto, bold: false}, 
             {text: ", ", bold: false},
             {text: "CUMPLO CON INFORMAR", bold: true}
         ];
@@ -494,11 +518,19 @@
             cuerpo.push({text: "NO CUENTA", bold: true});
             cuerpo.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento.", bold: false});
         } else {
-            const carpetas = document.getElementById('a_carpetas').value;
+            // Carpetas Dinámicas
+            const cantCarp = document.getElementById('a_cant_carpetas').value;
+            let carpetasArr = [];
+            for(let i=0; i<cantCarp; i++) {
+                let v = document.getElementById(`a_carpeta_${i}`).value;
+                if(v) carpetasArr.push(`N.° ${v}`); // Añadir N.°
+            }
+            let carpetasTexto = carpetasArr.join(" y ");
+
             cuerpo.push({text: " que este despacho ", bold: false});
             cuerpo.push({text: "SÍ CUENTA", bold: true});
             cuerpo.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento, encontrándose los mismos comprendidos en las Carpetas Fiscales ", bold: false});
-            cuerpo.push({text: carpetas, bold: true});
+            cuerpo.push({text: carpetasTexto, bold: true});
             cuerpo.push({text: ".", bold: false});
         }
         children.push(crearParrafoJustificado(cuerpo));
@@ -524,21 +556,21 @@
         children.push(new Paragraph({ text: "" }));
         children.push(crearParrafoJustificado([{text: "Sin otro particular, renuevo a usted las expresiones de mi especial consideración y estima personal.", bold: false}]));
         children.push(new Paragraph({ text: "\n\n" }));
-        children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Arial Narrow" })], alignment: AlignmentType.CENTER }));
+        children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
         children.push(new Paragraph({ text: "\n" }));
-        children.push(new Paragraph({ children: [new TextRun({ text: "NICA/ djsa.", size: 20, font: "Arial Narrow" })] }));
+        children.push(new Paragraph({ children: [new TextRun({ text: "NICA/ djsa.", size: 20, font: "Times New Roman" })] }));
 
         crearYDescargarDoc(children, `Oficio_Atencion_${oficioNum}.docx`);
     }
 
     // UTILS
     function formatearFechaLarga(f){ if(!f)return"_______"; const p=f.split("-"); const m=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]; return `${parseInt(p[2])} de ${m[parseInt(p[1])-1]} de ${p[0]}`; }
-    function crearParrafo(t, b, u=false) { const {Paragraph,TextRun,UnderlineType}=docx; return new Paragraph({children:[new TextRun({text:t, bold:b, underline:u?{type:UnderlineType.SINGLE}:undefined, size:24, font:"Arial Narrow"})], spacing:{line:276}}); }
-    function crearParrafoConSangria(t, b, u=false) { const {Paragraph,TextRun,UnderlineType}=docx; return new Paragraph({indent:{left:4000}, children:[new TextRun({text:t, bold:b, underline:u?{type:UnderlineType.SINGLE}:undefined, size:24, font:"Arial Narrow"})], spacing:{line:276}}); }
-    function crearParrafoJustificado(partes) { const {Paragraph,TextRun,AlignmentType}=docx; let ch=partes.map(p=>new TextRun({text:p.text, bold:p.bold, size:24, font:"Arial Narrow"})); return new Paragraph({children:ch, alignment:AlignmentType.JUSTIFIED, spacing:{line:276}}); }
-    function crearFilaContacto(label, val) {const { TableRow, TableCell, Paragraph, TextRun, HeightRule } = docx; return new TableRow({ height: { value: 500, rule: HeightRule.AT_LEAST }, cantSplit: true, children: [ new TableCell({ children: [new Paragraph({children:[new TextRun({text: label, bold: true, size: 20, font: "Arial Narrow"})]})] }), new TableCell({ children: [new Paragraph({children:[new TextRun({text: val, size: 20, font: "Arial Narrow"})]})] }) ] });}
+    function crearParrafo(t, b, u=false) { const {Paragraph,TextRun,UnderlineType}=docx; return new Paragraph({children:[new TextRun({text:t, bold:b, underline:u?{type:UnderlineType.SINGLE}:undefined, size:24, font:"Times New Roman"})], spacing:{line:276}}); }
+    function crearParrafoConSangria(t, b, u=false) { const {Paragraph,TextRun,UnderlineType}=docx; return new Paragraph({indent:{left:4000}, children:[new TextRun({text:t, bold:b, underline:u?{type:UnderlineType.SINGLE}:undefined, size:24, font:"Times New Roman"})], spacing:{line:276}}); }
+    function crearParrafoJustificado(partes) { const {Paragraph,TextRun,AlignmentType}=docx; let ch=partes.map(p=>new TextRun({text:p.text, bold:p.bold, size:24, font:"Times New Roman"})); return new Paragraph({children:ch, alignment:AlignmentType.JUSTIFIED, spacing:{line:276}, indent:{firstLine:720}}); }
+    function crearFilaContacto(label, val) {const { TableRow, TableCell, Paragraph, TextRun, HeightRule } = docx; return new TableRow({ height: { value: 500, rule: HeightRule.AT_LEAST }, cantSplit: true, children: [ new TableCell({ children: [new Paragraph({children:[new TextRun({text: label, bold: true, size: 20, font: "Times New Roman"})]})] }), new TableCell({ children: [new Paragraph({children:[new TextRun({text: val, size: 20, font: "Times New Roman"})]})] }) ] });}
     function crearTablaContacto(m, f, tf, ta) {const { Table, TableRow, TableCell, Paragraph, TextRun, WidthType, HeightRule } = docx;return new Table({width: { size: 90, type: WidthType.PERCENTAGE }, indent: { size: 720, type: WidthType.DXA },rows: [crearFilaContacto("CORREO ELECTRÓNICO MESA DE PARTES", m),crearFilaContacto("CORREO ELECTRÓNICO FISCAL ENCARGADO", f),crearFilaContacto("TELÉFONO FISCAL", tf),crearFilaContacto("TELÉFONO ASISTENTE", ta)]});}
-    function crearYDescargarDoc(children, nombre) { const {Document,Packer,Footer,Paragraph,TextRun}=docx; const doc=new Document({sections:[{properties:{pageMargins:{top:567,right:1701,bottom:1417,left:1701}},children:children,footers:{default:new Footer({children:[new Paragraph({children:[new TextRun({text:"Teléfono: (01) 625-5555", size:22, font:"Arial Narrow", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Anexos: 11706 / 11705", size:22, font:"Arial Narrow", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"E-mail: fecoflima_1f2d@mpfn.gob.pe", size:22, font:"Arial Narrow", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Dirección: Jr. Lampa N.° 597 – Cercado de Lima.", size:22, font:"Arial Narrow", color:"333333"})]})]})}}]}); Packer.toBlob(doc).then(b=>saveAs(b, nombre)); }
+    function crearYDescargarDoc(children, nombre) { const {Document,Packer,Footer,Paragraph,TextRun}=docx; const doc=new Document({sections:[{properties:{pageMargins:{top:284,right:1701,bottom:1417,left:1701}},children:children,footers:{default:new Footer({children:[new Paragraph({children:[new TextRun({text:"Teléfono: (01) 625-5555", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Anexos: 11706 / 11705", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"E-mail: fecoflima_1f2d@mpfn.gob.pe", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Dirección: Jr. Lampa N.° 597 – Cercado de Lima.", size:22, font:"Times New Roman", color:"333333"})]})]})}}]}); Packer.toBlob(doc).then(b=>saveAs(b, nombre)); }
 </script>
 </body>
 </html>
