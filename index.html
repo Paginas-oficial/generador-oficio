@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Fiscal 2026 - V53 Final</title>
+    <title>Sistema Fiscal 2026 - V54 Blindada</title>
     
-    <script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
+    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #f3f4f6; padding: 40px 20px; color: #1f2937; margin: 0; }
-        
-        /* MENU */
         .menu-wrapper { max-width: 1000px; margin: 0 auto; background: white; padding: 50px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
         .menu-title { color: #1e3a8a; font-size: 2.5rem; margin-bottom: 10px; font-weight: 700; }
         .menu-subtitle { color: #6b7280; font-size: 1.1rem; margin-bottom: 40px; }
@@ -22,11 +20,8 @@
         .card-icon { font-size: 40px; margin-bottom: 15px; display: block; }
         .card h3 { color: #1f2937; margin: 10px 0; font-size: 1.1rem; font-weight: 700; }
         .card p { color: #9ca3af; font-size: 0.85rem; margin: 0; }
-
-        /* FORMULARIOS */
         .app-container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: none; }
         .btn-back { background-color: transparent; color: #64748b; padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; transition: 0.2s; }
-        .btn-back:hover { background-color: #f1f5f9; color: #334155; }
         .section-title { background-color: #e0f2fe; border-left: 5px solid #1e3a8a; padding: 10px 15px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; color: #1e40af; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .section-content { display: block; padding: 10px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 5px 5px; margin-bottom: 20px; }
         .hidden { display: none; }
@@ -36,9 +31,6 @@
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
         textarea { height: 70px; resize: vertical; }
         .btn-generate { width: 100%; padding: 16px; background-color: #1e3a8a; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 40px; transition: background 0.2s; }
-        .btn-generate:hover { background-color: #1e40af; }
-        
-        /* UTILIDADES */
         .upload-area { background: #f0fdf4; border: 1px dashed #16a34a; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 20px; font-size: 12px; }
         #estadoImagen { font-weight: bold; margin-left: 10px; }
         .text-ok { color: #15803d; } .text-err { color: #b91c1c; }
@@ -49,7 +41,6 @@
         .check-item { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
         .check-item input { width: auto; margin: 0; cursor: pointer; }
         .preview-text { font-size: 13px; color: #059669; font-weight: bold; margin-top: 10px; font-style: italic; background: #d1fae5; padding: 5px; border-radius: 4px; display: none; }
-
         /* CHATBOT */
         .chat-container { width: 100%; max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; height: 80vh; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; position: relative; }
         .chat-header { background-color: #075e54; color: white; padding: 15px 20px; display: flex; align-items: center; gap: 15px; }
@@ -77,7 +68,7 @@
 <body>
 
     <div id="screen-menu" class="menu-wrapper">
-        <h1 class="menu-title">Bienvenida, Mi Amorcito.</h1>
+        <h1 class="menu-title">Bienvenida, Mi Tesorito.</h1>
         <p class="menu-subtitle">Sistema de Gestión Fiscal 2026</p>
         <div class="upload-area"><label>📂 Configuración:</label><span id="estadoImagen" class="text-err">Buscando logo.png...</span></div>
 
@@ -177,20 +168,7 @@
         </div>
         <div class="section-title">2. Destinatario ▼</div>
         <div class="section-content">
-            <div class="form-row">
-                <div class="form-col">
-                    <label>Título:</label>
-                    <select id="a_dest_titulo">
-                        <option value="Sr.">Sr.</option>
-                        <option value="Dr.">Dr.</option>
-                        <option value="Sra.">Sra.</option>
-                        <option value="Dra.">Dra.</option>
-                        <option value="Sr. Dr.">Sr. Dr.</option>
-                        <option value="Sr. (a) Dr. (a)">Sr. (a) Dr. (a)</option>
-                    </select>
-                </div>
-                <div class="form-col"><label>Nombre:</label><input type="text" id="a_dest_nombre"></div>
-            </div>
+            <div class="form-row"><div class="form-col"><label>Título:</label><select id="a_dest_titulo"><option>Sr.</option><option>Dr.</option><option>Sra.</option><option>Dra.</option><option>Sr. Dr.</option><option>Sr. (a) Dr. (a)</option></select></div><div class="form-col"><label>Nombre:</label><input type="text" id="a_dest_nombre"></div></div>
             <label>Cargo:</label><input type="text" id="a_dest_cargo">
         </div>
         <div class="section-title">3. Referencias ▼</div>
@@ -305,7 +283,7 @@
     const synth=window.speechSynthesis; const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition; const recognition=SpeechRecognition?new SpeechRecognition():null; if(recognition){recognition.lang='es-PE'; recognition.interimResults=false;}
     let datos={}, pasoActual=0, flujoActual="", preguntasActivas=[], isListening=false, silenceTimer=null;
     const flujos = {
-        'INICIO': [{id:'ini',texto:"Hola Debora. Soy su asistente. ¿Qué redactamos?",tipo:'opciones',opciones:['Movilidad','Atención de Pedidos','Pericias']}],
+        'INICIO': [{id:'ini',texto:"Hola debora. Soy su asistente. ¿Qué redactamos?",tipo:'opciones',opciones:['Movilidad','Atención de Pedidos','Pericias']}],
         'MOVILIDAD': [{id:'m_oficio',texto:"Dígame el Número de Oficio.",tipo:'texto'},{id:'m_fecha',texto:"¿Qué fecha tiene?",tipo:'fecha'},{id:'m_destinos',texto:"¿Cuántos lugares? ¿Uno, dos o tres?",tipo:'opciones',opciones:['1 Lugar','2 Lugares']},{id:'m_servicio',texto:"Detalle fecha y hora del servicio.",tipo:'texto'},{id:'m_celular',texto:"¿Celular?",tipo:'opciones_texto',opciones:['957691331']},{id:'m_asistente',texto:"¿Asistente?",tipo:'opciones_texto',opciones:['DEBORA JASMIN SOTELO AHUANARI']},{id:'fin',texto:"Listo. Generando.",tipo:'final'}],
         'ATENCION': [{id:'a_oficio',texto:"Número de Oficio de Respuesta.",tipo:'texto'},{id:'a_fecha',texto:"¿Fecha de emisión?",tipo:'fecha'},{id:'a_dest_nombre',texto:"Nombre del Destinatario.",tipo:'texto'},{id:'a_dest_cargo',texto:"Cargo del Destinatario.",tipo:'texto'},{id:'a_tiene',texto:"¿El despacho cuenta con la información? Diga SI o NO.",tipo:'opciones',opciones:['SI','NO']},{id:'a_fin',texto:"Entendido. Generando.",tipo:'final'}],
         'PERICIAS': [{id:'p_codigo',texto:"Número de Carpeta.",tipo:'texto'},{id:'p_fecha',texto:"Fecha del oficio.",tipo:'fecha'},{id:'p_numDisp',texto:"Número de Disposición.",tipo:'texto'},{id:'p_imputado',texto:"Nombre del imputado.",tipo:'texto'},{id:'p_fin',texto:"Generando Pericia Básica.",tipo:'final'}]
@@ -346,7 +324,7 @@
 
     // === GENERADORES DE WORD ===
     
-    // HEADER: LOGO ARRIBA (0.5cm)
+    // ENCABEZADO V54: Logo 0.5cm
     function construirEncabezado(logo, fecha, nombreAnio) {
         const {Paragraph,TextRun,Table,TableRow,TableCell,ImageRun,AlignmentType,WidthType,BorderStyle}=docx;
         let logoRun=logo?new ImageRun({data:logo,transformation:{width:140,height:133}}):new TextRun("");
@@ -375,6 +353,7 @@
         const codigo=document.getElementById('p_codigoUnico').value; const anio=document.getElementById('p_anio').value; const dia=document.getElementById('p_dia').value; const mes=document.getElementById('p_mes').value; const nombreAnio=document.getElementById('p_nombreAnio').value;
         const fechaTexto=`${dia} de ${mes} del ${anio}`;
         const numDispo=document.getElementById('p_numDisposicion').value; const fechaDispo=formatearFechaLarga(document.getElementById('p_fechaDisposicion').value); const decision=document.getElementById('p_decision').value; const imputados=document.getElementById('p_imputados').value; const plazo=document.getElementById('p_plazoActuaciones').value;
+        
         let delitosArr=[]; for(let i=0;i<document.getElementById('p_cantDelitos').value;i++) delitosArr.push(document.getElementById(`p_delito_${i}`).value);
         let delitoTexto=delitosArr.join(", ");
         const etapa=document.getElementById('p_etapaProcesal').value; const vencimiento=formatearFechaLarga(document.getElementById('p_plazoVencimiento').value); const involucrados=document.getElementById('p_cantInvolucrados').value; const dispoOrdena=document.getElementById('p_dispoOrdena').value;
@@ -387,31 +366,52 @@
         children.push(new Paragraph({children:[new TextRun({text:"PRESENTE.-",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({indent:{left:2835},children:[new TextRun({text:"ASUNTO: SOLICITUD DE DESIGNACIÓN DE PERITOS",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({indent:{left:2835},children:[new TextRun({text:`Referencia: Carpeta Fiscal N.° ${codigo}`,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
-        children.push(crearParrafoJustificado([{text:"Tengo a bien dirigirme a usted... con el propósito de remitir adjunta la disposición N.° ",bold:false},{text:numDispo,bold:true},{text:" de fecha ",bold:false},{text:fechaDispo,bold:true},{text:", recaída en la carpeta fiscal... ha decidido ",bold:false},{text:decision,bold:true},{text:", seguida contra ",bold:false},{text:imputados,bold:true},{text:" por la presunta comisión del delito de ",bold:false},{text:delitoTexto,bold:true},{text:", fijando el término en ",bold:false},{text:plazo,bold:true},{text:".",bold:false}]));
-        children.push(new Paragraph({text:"",spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:`Respecto de las pericias solicitadas en la Carpeta Fiscal ${codigo}`,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],indent:{left:720},alignment:AlignmentType.CENTER,spacing:{line:276}}));
+        
+        children.push(crearParrafoJustificado([
+            {text:"Tengo a bien dirigirme a usted... con el propósito de remitir adjunta la disposición N.° ",bold:false},
+            {text:numDispo,bold:true}, {text:" de fecha ",bold:false}, {text:fechaDispo,bold:true},
+            {text:", recaída en la carpeta fiscal... ha decidido ",bold:false}, {text:decision,bold:true},
+            {text:", seguida contra ",bold:false}, {text:imputados,bold:true},
+            {text:" por la presunta comisión del delito de ",bold:false}, {text:delitoTexto,bold:true},
+            {text:", fijando el término en ",bold:false}, {text:plazo,bold:true}, {text:".",bold:false}
+        ]));
+
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+        children.push(new Paragraph({ children: [new TextRun({ text: `Respecto de las pericias solicitadas en la Carpeta Fiscal ${codigo}`, underline: { type: UnderlineType.SINGLE }, size: 24, font: "Times New Roman" })], indent: { left: 720 }, alignment: AlignmentType.CENTER, spacing: { line: 276 } }));
         children.push(crearViñeta("Etapa procesal: ", etapa));
         children.push(crearViñeta("Plazo de vencimiento: ", vencimiento));
         children.push(crearViñeta("Cantidad de involucrados: ", involucrados));
-        children.push(crearViñeta("Disposición que ordena las pericias: ", "Disposición N.° "+dispoOrdena));
+        children.push(crearViñeta("Disposición que ordena las pericias: ", "Disposición N.° " + dispoOrdena));
+
         const cantP=document.getElementById('p_cantPericias').value;
         for(let i=1; i<=cantP; i++){
-            let tipo=document.getElementById(`p_tipoPericia_${i}`).value; let obj=document.getElementById(`p_objPericia_${i}`).value; let det=document.getElementById(`p_detPericia_${i}`).value;
+            let tipo=document.getElementById(`p_tipoPericia_${i}`).value;
+            let obj=document.getElementById(`p_objPericia_${i}`).value;
+            let det=document.getElementById(`p_detPericia_${i}`).value;
             children.push(new Paragraph({children:[new TextRun({text:`${i}. RESPECTO DE LA PERICIA ${tipo}`,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
             children.push(crearParrafoJustificado([{text:obj,bold:false}]));
             if(det) children.push(crearParrafoJustificado([{text:det,bold:false}]));
         }
+
         if(document.getElementById('p_tieneEvidencia').value==='si'){
             children.push(new Paragraph({children:[new TextRun({text:"INDICACIÓN DE LA EVIDENCIA QUE SE ADJUNTA",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
             children.push(crearParrafoJustificado([{text:document.getElementById('p_descEvidencia').value,bold:false}]));
             children.push(new Paragraph({children:[new TextRun({text:document.getElementById('p_linkEvidencia').value,color:"0000FF",underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],alignment:AlignmentType.CENTER,spacing:{line:276}}));
         }
+
         children.push(new Paragraph({children:[new TextRun({text:"De manera que, tras la designación del perito... este se deberá poner en contacto...",size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({text:"\n\n"}));
-        children.push(crearTablaContacto(document.getElementById('p_emailMesa').value, document.getElementById('p_emailFiscal').value, document.getElementById('p_telFiscal').value, document.getElementById('p_telAsistente').value));
+        
+        children.push(crearTablaContacto(
+            document.getElementById('p_emailMesa').value,
+            document.getElementById('p_emailFiscal').value,
+            document.getElementById('p_telFiscal').value,
+            document.getElementById('p_telAsistente').value
+        ));
+
         children.push(new Paragraph({text:"\n\n"}));
         children.push(new Paragraph({children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})],alignment:AlignmentType.CENTER}));
-        
+
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, fechaTexto, nombreAnio), `Oficio_Pericia_${codigo}.docx`);
     }
 
@@ -430,70 +430,103 @@
         children.push(new Paragraph({text:"",spacing:{line:276}}));
         
         const cant=document.getElementById('m_cantDestinos').value; let dests=[]; for(let i=1;i<=cant;i++){let v=document.getElementById(`m_tipoDestino_${i}`).value; if(v==='OTRO')v=document.getElementById(`m_destinoManual_${i}`).value; if(v)dests.push(v);}
-        let destTxt=dests.join("; "); let serv=document.getElementById('m_previewServicio').innerText; if(serv.includes('Selecciona')) serv="FECHA POR DEFINIR";
+        let destTxt=dests.join("; ");
+        let serv=document.getElementById('m_previewServicio').innerText; if(serv.includes('Selecciona')) serv="FECHA POR DEFINIR";
 
-        children.push(crearParrafoJustificado([{text:"Tengo el honor de dirigirme a usted, a fin de saludarlo cordialmente, y a su vez, SOLICITAR, la asignación de una movilidad (Vehículo institucional) para nuestro despacho Fiscal, con el fin de poder trasladarnos a: ",bold:false},{text:destTxt,bold:true},{text:"; y así dar cumplimiento con las diligencias pendientes, por lo que se solicita apoyo con carácter de ",bold:false},{text:"MUY URGENTE",bold:true},{text:", el vehículo institucional.",bold:false}]));
+        children.push(crearParrafoJustificado([
+            {text:"Tengo el honor de dirigirme a usted, a fin de saludarlo cordialmente, y a su vez, SOLICITAR, la asignación de una movilidad (Vehículo institucional) para nuestro despacho Fiscal, con el fin de poder trasladarnos a: ",bold:false},
+            {text:destTxt,bold:true},
+            {text:"; y así dar cumplimiento con las diligencias pendientes, por lo que se solicita apoyo con carácter de ",bold:false},
+            {text:"MUY URGENTE",bold:true}, {text:", el vehículo institucional.",bold:false}
+        ]));
         children.push(new Paragraph({text:""}));
-        children.push(crearParrafoJustificado([{text:"En ese sentido, el 2° Despacho de la 1° Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, cumple con ",bold:false},{text:"SOLICITAR",bold:true},{text:" que nos ASIGNEN un vehículo para el día ",bold:false},{text:serv,bold:true},{text:".",bold:false}]));
+        children.push(crearParrafoJustificado([
+            {text:"En ese sentido, el 2° Despacho de la 1° Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, cumple con ",bold:false}, {text:"SOLICITAR",bold:true},
+            {text:" que nos ASIGNEN un vehículo para el día ",bold:false}, {text:serv,bold:true}, {text:".",bold:false}
+        ]));
         children.push(new Paragraph({text:""}));
         
         let cel=document.getElementById('m_comboCelular').value; if(cel==='OTRO')cel=document.getElementById('m_celularManual').value;
         let asis=document.getElementById('m_comboAsistente').value; if(asis==='OTRO')asis=document.getElementById('m_asistenteManual').value;
-        children.push(crearParrafoJustificado([{text:"Para efectos de la confirmación de la solicitud, y de toda coordinación, se pone de conocimiento el correo de Mesa de Partes del Despacho: ",bold:false},{text:"fecoflima_1f2d@mpfn.gob.pe",bold:true},{text:"; así como el teléfono celular N° ",bold:false},{text:cel,bold:true},{text:" perteneciente a la Asistente en Función Fiscal ",bold:false},{text:asis,bold:true},{text:".",bold:false}]));
+        children.push(crearParrafoJustificado([
+            {text:"Para efectos de la confirmación de la solicitud, y de toda coordinación, se pone de conocimiento el correo de Mesa de Partes del Despacho: ",bold:false}, {text:"fecoflima_1f2d@mpfn.gob.pe",bold:true},
+            {text:"; así como el teléfono celular N° ",bold:false}, {text:cel,bold:true},
+            {text:" perteneciente a la Asistente en Función Fiscal ",bold:false}, {text:asis,bold:true}, {text:".",bold:false}
+        ]));
+
         children.push(new Paragraph({text:""}));
         children.push(crearParrafoJustificado([{text:"Sin otro particular, aprovecho la ocasión para expresarle las muestras de mi especial consideración y estima personal.",bold:false}]));
         children.push(new Paragraph({text:"\n\n"}));
         children.push(new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})]}));
-        
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, nombreAnio), `Oficio_Movilidad_${oficio}.docx`);
     }
 
     // 3. GENERAR ATENCIÓN (COMPLETO)
     function generarWordAtencion() {
         const { Document, Packer, Paragraph, TextRun, AlignmentType, UnderlineType, Header } = docx;
-        const nombreAnio = document.getElementById('a_nombreAnio').value; const fecha=formatearFechaLarga(document.getElementById('a_fecha').value); const oficioNum=document.getElementById('a_oficio').value;
+        const nombreAnio = document.getElementById('a_nombreAnio').value;
+        const fechaRaw = document.getElementById('a_fecha').value;
+        const fechaTexto = fechaRaw ? formatearFechaLarga(fechaRaw) : "_______";
+        const oficioNum = document.getElementById('a_oficio').value;
         const oficioFull = `${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.`;
-        const tituloDest=document.getElementById('a_dest_titulo').value; const destinatario=document.getElementById('a_dest_nombre').value; const cargo=document.getElementById('a_dest_cargo').value;
-        const saludo=document.getElementById('a_saludo').value; const tieneInfo=document.getElementById('a_tieneInfo').value; const refSel=document.getElementById('a_ref_respuesta').value;
+        
+        const tituloDest = document.getElementById('a_dest_titulo').value;
+        const destinatario = document.getElementById('a_dest_nombre').value;
+        const cargo = document.getElementById('a_dest_cargo').value;
+        const saludo = document.getElementById('a_saludo').value;
+        const tieneInfo = document.getElementById('a_tieneInfo').value;
+        const refSeleccionadaTexto = document.getElementById('a_ref_respuesta').value;
 
+        // Prefijo "Oficio N.° "
         let refsArr = []; for(let i=0; i<refCount; i++) { const val=document.getElementById(`ref_input_${i}`)?.value; if(val) refsArr.push({letra:letras[i], texto:`Oficio N.° ${val}`}); }
         let refString = refsArr.map(r => `${r.letra} ${r.texto}-MP-FN-FSNCEDCF`).join("  ");
 
         const children = [];
-        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${oficioFull}`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276,after:400}}));
-        children.push(new Paragraph({children:[new TextRun({text:`${tituloDest}`,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:destinatario,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:cargo,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:"PRESENTE.-",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276,before:400}}));
-        children.push(new Paragraph({text:"",spacing:{line:276}}));
-        children.push(new Paragraph({indent:{left:2835},children:[new TextRun({text:"ASUNTO: ",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"}),new TextRun({text:"ATIENDE PEDIDO DE INFORMACIÓN",bold:false,size:24,font:"Times New Roman"})],spacing:{line:276}}));
-        if(refString) children.push(new Paragraph({indent:{left:2835},children:[new TextRun({text:"Referencia: ",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"}),new TextRun({text:refString,size:24,font:"Times New Roman"})],spacing:{line:276}}));
-        children.push(new Paragraph({text:"",spacing:{line:276}}));
+        children.push(new Paragraph({
+            children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})],
+            spacing:{line:276, after: 400}
+        }));
 
-        let cuerpo = [{text:`${saludo} a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `,bold:false}, {text:refSel,bold:false}, {text:", ",bold:false}, {text:"CUMPLO CON INFORMAR",bold:true}];
-        if(tieneInfo==="NO"){ cuerpo.push({text:" que este despacho ",bold:false}); cuerpo.push({text:"NO CUENTA",bold:true}); cuerpo.push({text:" con investigaciones relacionadas con los hechos materia del requerimiento.",bold:false}); }
+        children.push(new Paragraph({children:[new TextRun({text:`${tituloDest}`, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:destinatario, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:cargo, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
+        
+        children.push(new Paragraph({
+            children:[new TextRun({text:"PRESENTE.-", bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], 
+            spacing:{line:276, before: 400} 
+        }));
+
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+        children.push(new Paragraph({ indent: { left: 2835 }, children: [new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size: 24, font: "Times New Roman" })], spacing: { line: 276 } }));
+        if(refString) { children.push(new Paragraph({ indent: { left: 2835 }, children: [new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size: 24, font: "Times New Roman" }), new TextRun({ text: refString, size: 24, font: "Times New Roman" })], spacing: { line: 276 } })); }
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+
+        let cuerpo = [{text: `${saludo} a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `, bold: false}, {text: refSeleccionadaTexto, bold: false}, {text: ", ", bold: false}, {text: "CUMPLO CON INFORMAR", bold: true}];
+        if(tieneInfo === "NO") { cuerpo.push({text: " que este despacho ", bold: false}); cuerpo.push({text: "NO CUENTA", bold: true}); cuerpo.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento.", bold: false}); }
         else {
-            const cant=document.getElementById('a_cant_carpetas').value; let carpetasArr=[]; for(let i=0;i<cant;i++){ let v=document.getElementById(`a_carpeta_${i}`).value; if(v)carpetasArr.push(`N.° ${v}`); }
-            cuerpo.push({text:" que este despacho ",bold:false}); cuerpo.push({text:"SÍ CUENTA",bold:true}); cuerpo.push({text:" con investigaciones relacionadas con los hechos materia del requerimiento, encontrándose los mismos comprendidos en las Carpetas Fiscales ",bold:false}); cuerpo.push({text:carpetasArr.join(" y "),bold:true}); cuerpo.push({text:".",bold:false});
+            const cantCarp = document.getElementById('a_cant_carpetas').value;
+            let carpetasArr = []; for(let i=0; i<cantCarp; i++) { let v = document.getElementById(`a_carpeta_${i}`).value; if(v) carpetasArr.push(`N.° ${v}`); }
+            let carpetasTexto = carpetasArr.join(" y ");
+            cuerpo.push({text: " que este despacho ", bold: false}); cuerpo.push({text: "SÍ CUENTA", bold: true}); cuerpo.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento, encontrándose los mismos comprendidos en las Carpetas Fiscales ", bold: false}); cuerpo.push({text: carpetasTexto, bold: true}); cuerpo.push({text: ".", bold: false});
         }
         children.push(crearParrafoJustificado(cuerpo));
 
-        if(tieneInfo==="SI"){
-            const d=document.getElementById('chk_dispo').checked; const dc=document.getElementById('chk_declara').checked;
-            let adj=""; if(d&&dc)adj="las disposiciones fiscales y declaraciones pertinentes"; else if(d)adj="las disposiciones fiscales pertinentes"; else if(dc)adj="las declaraciones pertinentes";
-            if(adj){ children.push(new Paragraph({text:""})); children.push(crearParrafoJustificado([{text:"En tal sentido, se adjuntan ",bold:false},{text:adj,bold:false},{text:" para conocimiento y fines correspondientes.",bold:false}])); }
+        if(tieneInfo === "SI") {
+            const d = document.getElementById('chk_dispo').checked; const dc = document.getElementById('chk_declara').checked;
+            let adj = ""; if(d && dc) adj = "las disposiciones fiscales y declaraciones pertinentes"; else if(d) adj = "las disposiciones fiscales pertinentes"; else if(dc) adj = "las declaraciones pertinentes";
+            if(adj) { children.push(new Paragraph({ text: "" })); children.push(crearParrafoJustificado([{text: "En tal sentido, se adjuntan ", bold: false}, {text: adj, bold: false}, {text: " para conocimiento y fines correspondientes.", bold: false}])); }
         }
 
-        children.push(new Paragraph({text:""}));
-        children.push(crearParrafoJustificado([{text:"Sin otro particular, renuevo a usted las expresiones de mi especial consideración y estima personal.",bold:false}]));
-        children.push(new Paragraph({text:"\n\n"}));
-        children.push(new Paragraph({children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})],alignment:AlignmentType.CENTER}));
-        
+        children.push(new Paragraph({ text: "" }));
+        children.push(crearParrafoJustificado([{text: "Sin otro particular, renuevo a usted las expresiones de mi especial consideración y estima personal.", bold: false}]));
+        children.push(new Paragraph({ text: "\n\n" }));
+        children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fechaTexto}`, nombreAnio), `Oficio_Atencion_${oficioNum}.docx`);
     }
 
-    // 4. CHAT
+    // 4. CHAT GENERATORS
     function generarWordMovilidadChat() {
+        datos['m_oficio']=datos['m_oficio']||""; datos['m_fecha']=datos['m_fecha']||""; datos['m_servicio']=datos['m_servicio']||""; 
         const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType}=docx; const fecha=formatearFechaLarga(datos['m_fecha']);
         const children=[];
         children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${datos['m_oficio']}-MP-FN-2D-1°FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276,after:400}}));
@@ -501,6 +534,7 @@
         children.push(new Paragraph({children:[new TextRun({text:`Servicio: ${datos['m_servicio']}`,size:24,font:"Times New Roman"})]}));
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, ""), `Movilidad_Voz_${datos['m_oficio']}.docx`);
     }
+    
     function generarWordAtencionChat(){
         const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType}=docx; const fecha=formatearFechaLarga(datos['a_fecha']);
         const children=[];
@@ -522,11 +556,13 @@
 
     // UTILS
     function formatearFechaLarga(f){if(!f)return"_______"; const p=f.split("-"); const m=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]; return `${parseInt(p[2])} de ${m[parseInt(p[1])-1]} de ${p[0]}`;}
-    function crearParrafoJustificado(partes){ const {Paragraph,TextRun,AlignmentType}=docx; let ch=partes.map(p=>new TextRun({text:p.text,bold:p.bold,size:24,font:"Times New Roman"})); return new Paragraph({children:ch,alignment:AlignmentType.JUSTIFIED,spacing:{line:276},indent:{firstLine:720}}); }
-    function crearViñeta(t,v){const {Paragraph,TextRun}=docx; return new Paragraph({bullet:{level:0},indent:{left:1440},children:[new TextRun({text:t,bold:true,size:24,font:"Times New Roman"}),new TextRun({text:v,size:24,font:"Times New Roman"})],spacing:{line:276}});}
+    function crearParrafo(t, b, u=false) { const {Paragraph,TextRun,UnderlineType}=docx; return new Paragraph({children:[new TextRun({text:t, bold:b, underline:u?{type:UnderlineType.SINGLE}:undefined, size:24, font:"Times New Roman"})], spacing:{line:276}}); }
+    function crearParrafoConSangria(t, b, u=false) { const {Paragraph,TextRun,UnderlineType}=docx; return new Paragraph({indent:{left:4000}, children:[new TextRun({text:t, bold:b, underline:u?{type:UnderlineType.SINGLE}:undefined, size:24, font:"Times New Roman"})], spacing:{line:276}}); }
+    function crearParrafoJustificado(partes) { const {Paragraph,TextRun,AlignmentType}=docx; let ch=partes.map(p=>new TextRun({text:p.text, bold:p.bold, size:24, font:"Times New Roman"})); return new Paragraph({children:ch, alignment:AlignmentType.JUSTIFIED, spacing:{line:276}, indent:{firstLine:720}}); }
     function crearFilaContacto(label, val) {const { TableRow, TableCell, Paragraph, TextRun, HeightRule } = docx; return new TableRow({ height: { value: 500, rule: HeightRule.AT_LEAST }, cantSplit: true, children: [ new TableCell({ children: [new Paragraph({children:[new TextRun({text: label, bold: true, size: 20, font: "Times New Roman"})]})] }), new TableCell({ children: [new Paragraph({children:[new TextRun({text: val, size: 20, font: "Times New Roman"})]})] }) ] });}
     function crearTablaContacto(m, f, tf, ta) {const { Table, TableRow, TableCell, Paragraph, TextRun, WidthType, HeightRule } = docx;return new Table({width: { size: 90, type: WidthType.PERCENTAGE }, indent: { size: 720, type: WidthType.DXA },rows: [crearFilaContacto("CORREO ELECTRÓNICO MESA DE PARTES", m),crearFilaContacto("CORREO ELECTRÓNICO FISCAL ENCARGADO", f),crearFilaContacto("TELÉFONO FISCAL", tf),crearFilaContacto("TELÉFONO ASISTENTE", ta)]});}
-
+    function crearViñeta(t,v){const {Paragraph,TextRun}=docx; return new Paragraph({bullet:{level:0},indent:{left:1440},children:[new TextRun({text:t,bold:true,size:24,font:"Times New Roman"}),new TextRun({text:v,size:24,font:"Times New Roman"})],spacing:{line:276}});}
+    
     // DOC GENERATOR (HEADER SEPARADO: Margen Header 0.5cm, Cuerpo 4.5cm, Laterales 4cm)
     function crearYDescargarDoc(children, headerContent, nombre) { 
         const {Document,Packer,Footer,Paragraph,TextRun,Header}=docx; 
@@ -534,11 +570,11 @@
             sections:[{
                 properties:{
                     pageMargins:{
-                        top: 2551, // 4.5 cm (Cuerpo baja)
+                        top: 2551, // 4.5 cm PARA EL TEXTO
                         right: 2268, // 4 cm
                         bottom: 1417, // 2.5 cm
                         left: 2268, // 4 cm
-                        header: 284 // 0.5 cm (Header sube)
+                        header: 284 // 0.5 cm PARA EL LOGO
                     }
                 },
                 headers: { default: new Header({ children: [headerContent] }) },
