@@ -3,215 +3,362 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Fiscal 2026 - Completo V47</title>
+    <title>Sistema Fiscal 2026 - Versión Maestra V50</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
-        /* ESTILOS GENERALES */
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f3f4f6; padding: 40px 20px; color: #1f2937; margin: 0; }
-        .menu-wrapper { max-width: 1000px; margin: 0 auto; background: white; padding: 50px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
-        .menu-title { color: #1e3a8a; font-size: 2.5rem; margin-bottom: 10px; font-weight: 700; }
-        .menu-subtitle { color: #6b7280; font-size: 1.1rem; margin-bottom: 40px; }
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-        .card { border: 2px solid #e5e7eb; border-radius: 12px; padding: 30px 20px; cursor: pointer; transition: all 0.3s ease; background: white; }
-        .card:hover { border-color: #1e3a8a; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(30, 58, 138, 0.1); }
-        .card-icon { font-size: 40px; margin-bottom: 15px; display: block; }
-        .card h3 { color: #1f2937; margin: 10px 0; font-size: 1.1rem; font-weight: 700; }
-        .card p { color: #9ca3af; font-size: 0.85rem; margin: 0; }
-
-        /* APP */
-        .app-container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: none; }
-        .btn-back { background-color: transparent; color: #64748b; padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; transition: 0.2s; }
-        .section-title { background-color: #e0f2fe; border-left: 5px solid #1e3a8a; padding: 10px 15px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; color: #1e40af; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .section-content { display: block; padding: 10px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 5px 5px; margin-bottom: 20px; }
-        .hidden { display: none; }
-        .form-row { display: flex; gap: 20px; margin-bottom: 15px; }
-        .form-col { flex: 1; }
-        label { display: block; font-weight: 600; margin-bottom: 5px; color: #374151; font-size: 13px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-        textarea { height: 70px; resize: vertical; }
-        .btn-generate { width: 100%; padding: 16px; background-color: #1e3a8a; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 40px; transition: background 0.2s; }
-        .upload-area { background: #f0fdf4; border: 1px dashed #16a34a; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 20px; font-size: 12px; }
-        #estadoImagen { font-weight: bold; margin-left: 10px; }
-        .text-ok { color: #15803d; } .text-err { color: #b91c1c; }
+        /* --- ESTILOS GENERALES (DISEÑO) --- */
+        body { font-family: 'Segoe UI', 'Times New Roman', sans-serif; background-color: #f3f4f6; padding: 30px; color: #1f2937; margin: 0; }
         
-        /* ESPECÍFICOS */
-        .pericia-box, .destino-box { border: 1px dashed #2563eb; padding: 10px; margin-bottom: 10px; background: #eff6ff; border-radius: 5px; }
-        .ref-box { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; }
-        .ref-label { font-weight: bold; color: #1e3a8a; width: 30px; }
-        .btn-small { background: #e0f2fe; color: #1e40af; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-top: 5px; font-weight: bold; }
-        .preview-text { font-size: 13px; color: #059669; font-weight: bold; margin-top: 10px; font-style: italic; background: #d1fae5; padding: 5px; border-radius: 4px; display: none; }
+        /* MENÚ PRINCIPAL */
+        .menu-wrapper { max-width: 1100px; margin: 0 auto; background: white; padding: 50px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; }
+        .menu-title { color: #1e3a8a; font-size: 2.8rem; margin-bottom: 10px; font-weight: 800; font-family: 'Segoe UI', sans-serif; }
+        .menu-subtitle { color: #6b7280; font-size: 1.2rem; margin-bottom: 40px; }
+        
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; }
+        .card { border: 2px solid #e5e7eb; border-radius: 15px; padding: 35px 20px; cursor: pointer; transition: all 0.3s ease; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .card:hover { border-color: #1e3a8a; transform: translateY(-8px); box-shadow: 0 15px 30px rgba(30, 58, 138, 0.15); }
+        .card-icon { font-size: 45px; margin-bottom: 15px; display: block; }
+        .card h3 { color: #1f2937; margin: 10px 0; font-size: 1.2rem; font-weight: 700; }
+        .card p { color: #9ca3af; font-size: 0.9rem; margin: 0; text-align: center; }
 
-        /* CHATBOT */
-        .chat-container { width: 100%; max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; height: 80vh; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; position: relative; }
-        .chat-header { background-color: #075e54; color: white; padding: 15px 20px; display: flex; align-items: center; gap: 15px; }
-        .avatar-container { position: relative; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; }
-        .avatar { width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 2; position: relative; }
-        .voice-wave { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(255,255,255,0.3); z-index: 1; opacity: 0; }
+        /* CONTENEDORES DE FORMULARIOS */
+        .app-container { max-width: 950px; margin: 0 auto; background: white; padding: 50px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: none; border-top: 5px solid #1e3a8a; }
+        
+        .btn-back { background-color: white; color: #64748b; padding: 8px 15px; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 25px; transition: 0.2s; font-weight: 600; }
+        .btn-back:hover { background-color: #f8fafc; color: #1e3a8a; border-color: #1e3a8a; }
+        
+        /* SECCIONES Y CAMPOS */
+        .section-title { background-color: #eff6ff; border-left: 5px solid #2563eb; padding: 12px 20px; font-weight: 700; margin-top: 30px; margin-bottom: 15px; color: #1e40af; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-radius: 0 5px 5px 0; }
+        .section-content { display: block; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; margin-bottom: 20px; background: #fff; }
+        .hidden { display: none; }
+        
+        .form-row { display: flex; gap: 25px; margin-bottom: 18px; }
+        .form-col { flex: 1; }
+        
+        label { display: block; font-weight: 700; margin-bottom: 6px; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; box-sizing: border-box; transition: border 0.2s; background: #f9fafb; font-family: 'Segoe UI', sans-serif; }
+        input:focus, select:focus, textarea:focus { border-color: #2563eb; outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        textarea { height: 80px; resize: vertical; }
+        
+        /* BOTONES Y PANELES */
+        .btn-generate { width: 100%; padding: 18px; background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: 800; cursor: pointer; margin-top: 40px; transition: transform 0.2s, box-shadow 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(30, 58, 138, 0.3); }
+        
+        .upload-area { background: #f0fdf4; border: 2px dashed #16a34a; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 30px; font-size: 13px; color: #166534; font-weight: 600; }
+        .text-ok { color: #15803d; font-weight: 800; } 
+        .text-err { color: #b91c1c; }
+        
+        /* COMPONENTES ESPECÍFICOS */
+        .ref-box { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .ref-label { font-weight: bold; color: #1e3a8a; width: 25px; font-size: 16px; }
+        .btn-small { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-top: 10px; font-weight: bold; transition: 0.2s; }
+        .btn-small:hover { background: #bfdbfe; }
+        
+        .check-group { display: flex; gap: 20px; margin-top: 10px; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #e5e7eb; }
+        .check-item { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; user-select: none; }
+        .check-item input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
+
+        /* --- CHATBOT MODERNO --- */
+        .chat-container { width: 100%; max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; height: 85vh; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); overflow: hidden; position: relative; background: #fff; }
+        .chat-header { background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); color: white; padding: 20px 25px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10; }
+        
+        .avatar-container { position: relative; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center; }
+        .avatar { width: 55px; height: 55px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; z-index: 2; position: relative; border: 2px solid rgba(255,255,255,0.2); }
+        .voice-wave { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(255,255,255,0.4); z-index: 1; opacity: 0; }
         .is-speaking .voice-wave { animation: ripple 1.5s infinite; }
-        @keyframes ripple { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.5); opacity: 0; } }
-        .chat-box { flex: 1; padding: 20px; overflow-y: auto; background-color: #e5ddd5; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        .message { max-width: 80%; padding: 12px 18px; border-radius: 10px; position: relative; font-size: 16px; line-height: 1.5; }
-        .bot-msg { align-self: flex-start; background: white; border-radius: 0 15px 15px 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .user-msg { align-self: flex-end; background: #dcf8c6; border-radius: 15px 0 15px 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .input-area { background: #f0f0f0; padding: 15px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #ddd; }
-        .input-field { flex: 1; padding: 15px; border-radius: 30px; border: 1px solid #fff; outline: none; font-size: 16px; }
-        .send-btn { background: #075e54; color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        @keyframes ripple { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.2); opacity: 0; } }
+
+        .chat-box { flex: 1; padding: 25px; overflow-y: auto; background-color: #e5e5e5; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
+        
+        .message { max-width: 85%; padding: 15px 20px; border-radius: 18px; position: relative; font-size: 16px; line-height: 1.6; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .bot-msg { align-self: flex-start; background: white; border-bottom-left-radius: 2px; color: #374151; }
+        .user-msg { align-self: flex-end; background: #0f766e; color: white; border-bottom-right-radius: 2px; }
+        
+        .input-area { background: #fff; padding: 20px; display: flex; gap: 15px; align-items: center; border-top: 1px solid #e5e7eb; }
+        .input-field { flex: 1; padding: 15px 20px; border-radius: 30px; border: 2px solid #e5e7eb; outline: none; font-size: 16px; transition: 0.2s; background: #f8fafc; }
+        .input-field:focus { border-color: #0f766e; background: #fff; }
+        
+        .send-btn { background: #0f766e; color: white; border: none; padding: 15px 25px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .send-btn:hover { background: #115e59; transform: scale(1.05); }
+        
         .chat-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-        .chat-option-btn { background: #e0f2f1; color: #00695c; border: 1px solid #b2dfdb; padding: 10px 18px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; transition: 0.2s; }
-        #btn-mic { background: #128c7e; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .is-listening { animation: pulse-red 1.5s infinite; background: #dc2626 !important; }
-        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
-        .typing { font-style: italic; color: #888; font-size: 12px; margin-left: 20px; display: none; }
-        .audio-control { cursor: pointer; font-size: 20px; margin-right: 15px; }
+        .chat-option-btn { background: #f0fdfa; color: #0f766e; border: 1px solid #ccfbf1; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 700; transition: 0.2s; }
+        .chat-option-btn:hover { background: #0f766e; color: white; border-color: #0f766e; }
+        
+        #btn-mic { background: #ef4444; border-radius: 50%; width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
+        #btn-mic:hover { transform: scale(1.1); }
+        .is-listening { animation: pulse-red 1.5s infinite; background: #b91c1c !important; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+        
+        .typing { font-style: italic; color: #64748b; font-size: 13px; margin-left: 25px; margin-bottom: 10px; display: none; }
+        .audio-control { cursor: pointer; font-size: 24px; margin-right: 15px; opacity: 0.8; transition: 0.2s; }
+        .audio-control:hover { opacity: 1; transform: scale(1.1); }
     </style>
 </head>
 <body>
 
     <div id="screen-menu" class="menu-wrapper">
         <h1 class="menu-title">Bienvenida, Mi Amorcito.</h1>
-        <p class="menu-subtitle">Sistema de Gestión Fiscal 2026</p>
-        <div class="upload-area"><label>📂 Configuración:</label><span id="estadoImagen" class="text-err">Buscando logo.png...</span></div>
+        <p class="menu-subtitle">Sistema Integrado de Gestión Fiscal 2026</p>
+        
+        <div class="upload-area">
+            <label style="display:inline; font-size:14px;">📂 ESTADO DEL SISTEMA:</label>
+            <span id="estadoImagen" class="text-err" style="margin-left:10px;">Buscando 'logo.png'...</span>
+        </div>
 
         <div class="cards-grid">
             <div class="card" onclick="navegar('app-pericias')">
                 <span class="card-icon">⚖️</span>
                 <h3>Oficio de Pericias</h3>
-                <p>Solicitud de peritos contables, etc.</p>
+                <p>Solicitud formal de peritos contables, económicos, etc.</p>
             </div>
             <div class="card" onclick="navegar('app-movilidad')">
                 <span class="card-icon">🚗</span>
                 <h3>Oficio de Movilidad</h3>
-                <p>Solicitud de vehículo institucional.</p>
+                <p>Solicitud de vehículo institucional y chofer.</p>
             </div>
             <div class="card" onclick="navegar('app-atencion')">
                 <span class="card-icon">📨</span>
                 <h3>Atención de Pedidos</h3>
-                <p>Respuesta a solicitudes de información.</p>
+                <p>Respuesta a solicitudes de información (Sí/No cuenta).</p>
             </div>
-            <div class="card" style="background:#e0f2f1; border-color:#075e54;" onclick="navegar('app-voice-assistant')">
+            <div class="card" style="background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); border-color: #0f766e;" onclick="navegar('app-voice-assistant')">
                 <span class="card-icon">🗣️</span>
-                <h3 style="color:#075e54;">Asistente de Voz IA</h3>
-                <p>Conversación interactiva.</p>
+                <h3 style="color:#0f766e;">Asistente de Voz IA</h3>
+                <p>Redacción interactiva por voz (Incluye Pericias).</p>
             </div>
         </div>
     </div>
 
     <div id="app-pericias" class="app-container">
-        <button class="btn-back" onclick="navegar('screen-menu')">⬅ Menú</button>
-        <h1 style="color: #1e3a8a; text-align: center;">Oficio de Pericias</h1>
-        <div class="section-title" onclick="toggleSection('p-sec1')">1. Datos Generales ▼</div>
+        <button class="btn-back" onclick="navegar('screen-menu')">⬅ Volver al Menú Principal</button>
+        <h1 style="color: #1e3a8a; text-align: center; margin-bottom: 30px;">Oficio de Pericias (Manual)</h1>
+        
+        <div class="section-title" onclick="toggleSection('p-sec1')">1. DATOS DEL EXPEDIENTE ▼</div>
         <div id="p-sec1" class="section-content">
-            <div class="form-row"><div class="form-col"><label>N° Oficio:</label><input type="text" id="p_codigoUnico" placeholder="Ej: 244-2026"></div><div class="form-col"><label>Año:</label><input type="text" id="p_anio" value="2026"></div></div>
-            <div class="form-row"><div class="form-col"><label>Nombre Año (Opcional):</label><input type="text" id="p_nombreAnio"></div></div>
-            <div class="form-row"><div class="form-col"><label>Día:</label><select id="p_dia"></select></div><div class="form-col"><label>Mes:</label><select id="p_mes"></select></div></div>
+            <div class="form-row">
+                <div class="form-col"><label>N° Oficio / Carpeta:</label><input type="text" id="p_codigoUnico" placeholder="Ej: 244-2026"></div>
+                <div class="form-col"><label>Año:</label><input type="text" id="p_anio" value="2026"></div>
+            </div>
+            <div class="form-row"><div class="form-col"><label>Nombre del Año (Opcional):</label><input type="text" id="p_nombreAnio" placeholder="Ej: Año de la consolidación..."></div></div>
+            <div class="form-row">
+                <div class="form-col"><label>Día:</label><select id="p_dia"></select></div>
+                <div class="form-col"><label>Mes:</label><select id="p_mes"></select></div>
+            </div>
         </div>
-        <div class="section-title" onclick="toggleSection('p-sec2')">2. Cuerpo Principal ▼</div>
+
+        <div class="section-title" onclick="toggleSection('p-sec2')">2. CUERPO DEL OFICIO ▼</div>
         <div id="p-sec2" class="section-content">
-            <div class="form-row"><div class="form-col"><label>N° Disposición:</label><select id="p_numDisposicion"></select></div><div class="form-col"><label>Fecha Disp.:</label><input type="date" id="p_fechaDisposicion"></div></div>
-            <div class="form-row"><div class="form-col"><label>Decisión:</label><select id="p_decision"><option>La AMPLIACIÓN SUPLEMENTARIA DE LA INVESTIGACIÓN PREPARATORIA</option><option>INICIO DE DILIGENCIAS PRELIMINARES</option><option>FORMALIZACIÓN DE LA INVESTIGACIÓN PREPARATORIA</option></select></div></div>
-            <div class="form-row"><div class="form-col"><label>Imputados:</label><input type="text" id="p_imputados"></div></div>
-            <div class="form-row" style="background:#f9fafb;padding:10px;"><div class="form-col"><label>Cant. Delitos:</label><select id="p_cantDelitos" onchange="generarDelitosPericias()"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div><div class="form-col"><div id="p_contenedorDelitos"></div></div></div>
-            <div class="form-row"><div class="form-col"><label>Plazo:</label><select id="p_plazoActuaciones"></select></div></div>
+            <div class="form-row">
+                <div class="form-col"><label>N° Disposición:</label><select id="p_numDisposicion"></select></div>
+                <div class="form-col"><label>Fecha Disposición:</label><input type="date" id="p_fechaDisposicion"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-col"><label>Decisión Fiscal:</label>
+                    <select id="p_decision">
+                        <option value="La AMPLIACIÓN SUPLEMENTARIA DE LA INVESTIGACIÓN PREPARATORIA">La AMPLIACIÓN SUPLEMENTARIA DE LA INVESTIGACIÓN PREPARATORIA</option>
+                        <option value="INICIO DE DILIGENCIAS PRELIMINARES">INICIO DE DILIGENCIAS PRELIMINARES</option>
+                        <option value="FORMALIZACIÓN DE LA INVESTIGACIÓN PREPARATORIA">FORMALIZACIÓN DE LA INVESTIGACIÓN PREPARATORIA</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row"><div class="form-col"><label>Imputados:</label><input type="text" id="p_imputados" placeholder="Nombres de los investigados..."></div></div>
+            
+            <div class="form-row" style="background:#f9fafb; padding:15px; border-radius:8px;">
+                <div class="form-col" style="flex:0 0 25%;"><label>Cant. Delitos:</label><select id="p_cantDelitos" onchange="generarDelitosPericias()"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+                <div class="form-col"><label>Selección de Delitos:</label><div id="p_contenedorDelitos"></div></div>
+            </div>
+            <div class="form-row"><div class="form-col"><label>Plazo de Actuaciones:</label><select id="p_plazoActuaciones"></select></div></div>
         </div>
-        <div class="section-title" onclick="toggleSection('p-sec3')">3. Datos Técnicos ▼</div>
+
+        <div class="section-title" onclick="toggleSection('p-sec3')">3. DATOS TÉCNICOS ▼</div>
         <div id="p-sec3" class="section-content">
-            <div class="form-row"><div class="form-col"><label>Etapa:</label><select id="p_etapaProcesal"><option>Investigación Preparatoria</option><option>Diligencias Preliminares</option></select></div><div class="form-col"><label>Vencimiento:</label><input type="date" id="p_plazoVencimiento"></div></div>
-            <div class="form-row"><div class="form-col"><label>Involucrados:</label><select id="p_cantInvolucrados"></select></div><div class="form-col"><label>Disp. Ordena:</label><input type="text" id="p_dispoOrdena"></div></div>
+            <div class="form-row">
+                <div class="form-col"><label>Etapa Procesal:</label><select id="p_etapaProcesal"><option>Investigación Preparatoria</option><option>Diligencias Preliminares</option></select></div>
+                <div class="form-col"><label>Fecha Vencimiento:</label><input type="date" id="p_plazoVencimiento"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-col"><label>Cant. Involucrados:</label><select id="p_cantInvolucrados"></select></div>
+                <div class="form-col"><label>Disp. que Ordena:</label><input type="text" id="p_dispoOrdena" placeholder="Ej: 01-2026"></div>
+            </div>
         </div>
-        <div class="section-title" onclick="toggleSection('p-sec4')">4. Pericias ▼</div>
-        <div id="p-sec4" class="section-content"><label>Cantidad:</label><select id="p_cantPericias" onchange="generarCamposPericias()"><option value="0">--</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select><div id="p_contenedorPericias"></div></div>
-        <div class="section-title" onclick="toggleSection('p-sec5')">5. Evidencia ▼</div>
-        <div id="p-sec5" class="section-content"><label>¿Adjuntar?</label><select id="p_tieneEvidencia" onchange="toggleEvidencia()"><option value="no">No</option><option value="si">Sí</option></select><div id="p_boxEvidencia" class="hidden" style="margin-top:10px;"><label>Descripción:</label><textarea id="p_descEvidencia"></textarea><label>Link:</label><input type="text" id="p_linkEvidencia"></div></div>
-        <div class="section-title" onclick="toggleSection('p-sec6')">6. Contacto ▼</div>
+
+        <div class="section-title" onclick="toggleSection('p-sec4')">4. PERICIAS SOLICITADAS ▼</div>
+        <div id="p-sec4" class="section-content">
+            <label>Cantidad de Pericias:</label><select id="p_cantPericias" onchange="generarCamposPericias()"><option value="0">-- Seleccionar --</option><option value="1">1 Pericia</option><option value="2">2 Pericias</option><option value="3">3 Pericias</option></select>
+            <div id="p_contenedorPericias" style="margin-top:15px;"></div>
+        </div>
+
+        <div class="section-title" onclick="toggleSection('p-sec5')">5. EVIDENCIA ADJUNTA ▼</div>
+        <div id="p-sec5" class="section-content">
+            <label>¿Adjuntar Evidencia?</label><select id="p_tieneEvidencia" onchange="toggleEvidencia()"><option value="no">No</option><option value="si">Sí</option></select>
+            <div id="p_boxEvidencia" class="hidden" style="margin-top:15px; background:#f0fdfa; padding:15px; border-radius:8px;">
+                <label>Descripción de Evidencia:</label><textarea id="p_descEvidencia"></textarea>
+                <label style="margin-top:10px;">Enlace (Link):</label><input type="text" id="p_linkEvidencia">
+            </div>
+        </div>
+
+        <div class="section-title" onclick="toggleSection('p-sec6')">6. CONTACTO Y PIE DE PÁGINA ▼</div>
         <div id="p-sec6" class="section-content">
-            <div class="form-row"><div class="form-col"><label>Mesa Partes:</label><input type="text" id="p_emailMesa" value="fecoflima_1f2d@mpfn.gob.pe"></div><div class="form-col"><label>Fiscal:</label><input type="text" id="p_emailFiscal" value="ncordova@mpfn.gob.pe"></div></div>
-            <div class="form-row"><div class="form-col"><label>Tel. Fiscal:</label><input type="text" id="p_telFiscal" value="945 112 224"></div><div class="form-col"><label>Tel. Asistente:</label><input type="text" id="p_telAsistente" value="957 691 331"></div></div>
+            <div class="form-row">
+                <div class="form-col"><label>Email Mesa Partes:</label><input type="text" id="p_emailMesa" value="fecoflima_1f2d@mpfn.gob.pe"></div>
+                <div class="form-col"><label>Email Fiscal:</label><input type="text" id="p_emailFiscal" value="ncordova@mpfn.gob.pe"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-col"><label>Tel. Fiscal:</label><input type="text" id="p_telFiscal" value="945 112 224"></div>
+                <div class="form-col"><label>Tel. Asistente:</label><input type="text" id="p_telAsistente" value="957 691 331"></div>
+            </div>
         </div>
-        <button class="btn-generate" onclick="generarWordPericias()">📄 GENERAR OFICIO</button>
+
+        <button class="btn-generate" onclick="generarWordPericias()">📄 GENERAR OFICIO PERICIAS</button>
     </div>
 
     <div id="app-movilidad" class="app-container">
-        <button class="btn-back" onclick="navegar('screen-menu')">⬅ Menú</button>
-        <h1 style="color: #1e3a8a; text-align: center;">Solicitud de Movilidad</h1>
-        <div class="section-title" onclick="toggleSection('m-sec1')">1. Datos ▼</div>
+        <button class="btn-back" onclick="navegar('screen-menu')">⬅ Volver al Menú Principal</button>
+        <h1 style="color: #1e3a8a; text-align: center; margin-bottom: 30px;">Solicitud de Movilidad</h1>
+
+        <div class="section-title" onclick="toggleSection('m-sec1')">1. DATOS DEL DOCUMENTO ▼</div>
         <div id="m-sec1" class="section-content">
-            <div class="form-row"><div class="form-col"><label>N° Oficio:</label><input type="text" id="m_numOficio"></div><div class="form-col"><label>Fecha:</label><input type="date" id="m_fechaDocumento"></div></div>
-            <div class="form-row"><div class="form-col"><label>Nombre Año (Opcional):</label><input type="text" id="m_nombreAnio"></div></div>
+            <div class="form-row">
+                <div class="form-col"><label>N° Oficio:</label><input type="text" id="m_numOficio" placeholder="Ej: 523-2026"></div>
+                <div class="form-col"><label>Fecha Emisión:</label><input type="date" id="m_fechaDocumento"></div>
+            </div>
+            <div class="form-row"><div class="form-col"><label>Nombre del Año (Opcional):</label><input type="text" id="m_nombreAnio" placeholder="Ej: Año de la consolidación..."></div></div>
         </div>
-        <div class="section-title">2. Detalles ▼</div>
-        <div class="section-content">
-            <label>Destinos:</label><select id="m_cantDestinos" onchange="generarCamposDestinos()"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+
+        <div class="section-title" onclick="toggleSection('m-sec2')">2. DESTINOS ▼</div>
+        <div id="m-sec2" class="section-content">
+            <label>Cantidad de Lugares:</label><select id="m_cantDestinos" onchange="generarCamposDestinos()" style="margin-bottom:15px;"><option value="1">1 Lugar</option><option value="2">2 Lugares</option><option value="3">3 Lugares</option></select>
             <div id="m_contenedorDestinos"></div>
-            <div class="time-box" style="margin-top:10px;">
-                <label>Servicio:</label>
-                <div class="form-row"><input type="date" id="m_diaServicio" onchange="actualizarPreviewServicio()"><input type="time" id="m_horaInicio" onchange="actualizarPreviewServicio()"><input type="time" id="m_horaFin" onchange="actualizarPreviewServicio()"></div>
+            
+            <div class="time-box" style="margin-top:20px; background:#eff6ff; padding:15px; border-radius:8px;">
+                <label>DETALLE DEL SERVICIO (Día y Hora):</label>
+                <div class="form-row">
+                    <div class="form-col"><label>Día:</label><input type="date" id="m_diaServicio" onchange="actualizarPreviewServicio()"></div>
+                    <div class="form-col"><label>Inicio:</label><input type="time" id="m_horaInicio" onchange="actualizarPreviewServicio()"></div>
+                    <div class="form-col"><label>Fin:</label><input type="time" id="m_horaFin" onchange="actualizarPreviewServicio()"></div>
+                </div>
                 <div id="m_previewServicio" class="preview-text">Selecciona fecha y horas...</div>
             </div>
         </div>
-        <div class="section-title" onclick="toggleSection('m-sec4')">4. Contacto ▼</div>
+
+        <div class="section-title" onclick="toggleSection('m-sec4')">4. CONTACTO ▼</div>
         <div id="m-sec4" class="section-content">
             <div class="form-row">
-                <div class="form-col"><label>Celular:</label><select id="m_comboCelular" onchange="toggleManual('m_comboCelular','m_celularManual')"><option value="957691331">957691331 (Débora)</option><option value="OTRO">Otro...</option></select><input type="text" id="m_celularManual" style="display:none;"></div>
-                <div class="form-col"><label>Asistente:</label><select id="m_comboAsistente" onchange="toggleManual('m_comboAsistente','m_asistenteManual')"><option value="DEBORA JASMIN SOTELO AHUANARI">DEBORA JASMIN SOTELO AHUANARI</option><option value="OTRO">Otro...</option></select><input type="text" id="m_asistenteManual" style="display:none;"></div>
+                <div class="form-col"><label>Celular:</label><select id="m_comboCelular" onchange="toggleManual('m_comboCelular','m_celularManual')"><option value="957691331">957691331 (Débora)</option><option value="OTRO">Otro...</option></select><input type="text" id="m_celularManual" style="display:none; margin-top:5px;"></div>
+                <div class="form-col"><label>Asistente:</label><select id="m_comboAsistente" onchange="toggleManual('m_comboAsistente','m_asistenteManual')"><option value="DEBORA JASMIN SOTELO AHUANARI">DEBORA JASMIN SOTELO AHUANARI</option><option value="OTRO">Otro...</option></select><input type="text" id="m_asistenteManual" style="display:none; margin-top:5px;"></div>
             </div>
         </div>
-        <button class="btn-generate" onclick="generarWordMovilidad()">📄 GENERAR OFICIO</button>
+        <button class="btn-generate" onclick="generarWordMovilidad()">📄 GENERAR OFICIO MOVILIDAD</button>
     </div>
 
     <div id="app-atencion" class="app-container">
-        <button class="btn-back" onclick="navegar('screen-menu')">⬅ Menú</button>
-        <h1 style="color: #1e3a8a; text-align: center;">Atención de Pedidos</h1>
-        <div class="section-title" onclick="toggleSection('a-sec1')">1. Datos ▼</div>
+        <button class="btn-back" onclick="navegar('screen-menu')">⬅ Volver al Menú Principal</button>
+        <h1 style="color: #1e3a8a; text-align: center; margin-bottom: 30px;">Atención de Pedidos</h1>
+
+        <div class="section-title" onclick="toggleSection('a-sec1')">1. DATOS GENERALES ▼</div>
         <div id="a-sec1" class="section-content">
-            <div class="form-row"><div class="form-col"><label>N° Oficio:</label><input type="text" id="a_oficio"></div><div class="form-col"><label>Fecha:</label><input type="date" id="a_fecha"></div></div>
-            <div class="form-row"><div class="form-col"><label>Nombre Año (Opcional):</label><input type="text" id="a_nombreAnio"></div></div>
+            <div class="form-row">
+                <div class="form-col"><label>N° Oficio Respuesta (Solo número):</label><input type="text" id="a_oficio" placeholder="Ej: 50-2026"></div>
+                <div class="form-col"><label>Fecha Emisión:</label><input type="date" id="a_fecha"></div>
+            </div>
+            <div class="form-row"><div class="form-col"><label>Nombre del Año (Opcional):</label><input type="text" id="a_nombreAnio" placeholder="Ej: Año de la consolidación..."></div></div>
         </div>
-        <div class="section-title">2. Destinatario ▼</div>
-        <div class="section-content">
-            <div class="form-row"><div class="form-col"><label>Título:</label><select id="a_dest_titulo"><option>Sr.</option><option>Dr.</option><option>Sra.</option><option>Dra.</option></select></div><div class="form-col"><label>Nombre:</label><input type="text" id="a_dest_nombre"></div></div>
-            <label>Cargo:</label><input type="text" id="a_dest_cargo">
+
+        <div class="section-title" onclick="toggleSection('a-sec2')">2. DESTINATARIO ▼</div>
+        <div id="a-sec2" class="section-content">
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Título:</label>
+                    <select id="a_dest_titulo">
+                        <option value="Sr.">Sr.</option>
+                        <option value="Dr.">Dr.</option>
+                        <option value="Sra.">Sra.</option>
+                        <option value="Dra.">Dra.</option>
+                        <option value="Sr. Dr.">Sr. Dr.</option>
+                        <option value="Sr. (a) Dr. (a)">Sr. (a) Dr. (a)</option>
+                    </select>
+                </div>
+                <div class="form-col"><label>Nombre Completo:</label><input type="text" id="a_dest_nombre" placeholder="Ej: JUAN PEREZ..."></div>
+            </div>
+            <label>Cargo:</label><input type="text" id="a_dest_cargo" placeholder="Ej: FISCAL PROVINCIAL...">
         </div>
-        <div class="section-title">3. Referencias ▼</div>
-        <div class="section-content"><div id="container-referencias"></div><button class="btn-small" onclick="agregarReferencia()">+ Referencia</button></div>
-        <div class="section-title">4. Cuerpo ▼</div>
-        <div class="section-content">
-            <label>Responder a:</label><select id="a_ref_respuesta"></select>
-            <label style="margin-top:10px;">Saludo:</label><select id="a_saludo"><option>Es grato dirigirme a usted</option><option>Es un honor dirigirme a usted</option></select>
-            <div style="background:#eff6ff;padding:15px;margin-top:10px;border-radius:5px;">
-                <label>¿Tiene Información?</label>
-                <select id="a_tieneInfo" onchange="toggleInfoDespacho()"><option value="NO">NO CUENTA</option><option value="SI">SÍ CUENTA</option></select>
-                <div id="panel-info-si" style="display:none;margin-top:10px;">
-                    <label>Cant. Carpetas:</label><select id="a_cant_carpetas" onchange="generarCarpetasInputs()"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+
+        <div class="section-title" onclick="toggleSection('a-sec3')">3. REFERENCIAS (Oficios recibidos) ▼</div>
+        <div id="a-sec3" class="section-content">
+            <div id="container-referencias"></div>
+            <button class="btn-small" onclick="agregarReferencia()">+ Agregar Referencia</button>
+        </div>
+
+        <div class="section-title" onclick="toggleSection('a-sec4')">4. CUERPO Y RESPUESTA ▼</div>
+        <div id="a-sec4" class="section-content">
+            <div class="form-row">
+                <div class="form-col"><label>¿A qué referencia respondemos?</label><select id="a_ref_respuesta"><option value="la referencia">la referencia (General)</option></select></div>
+            </div>
+
+            <label>Protocolo de Saludo:</label>
+            <select id="a_saludo" style="margin-bottom: 20px;">
+                <option value="Es grato dirigirme a usted">Es grato dirigirme a usted</option>
+                <option value="Es un honor dirigirme a usted">Es un honor dirigirme a usted</option>
+            </select>
+
+            <div style="background: #eff6ff; padding: 20px; border-radius: 10px; border: 2px dashed #1e3a8a;">
+                <label style="color:#1e3a8a; font-size:16px;">¿El despacho cuenta con la información?</label>
+                <select id="a_tieneInfo" onchange="toggleInfoDespacho()" style="font-weight:bold; font-size:16px;">
+                    <option value="NO">NO CUENTA (Respuesta Negativa)</option>
+                    <option value="SI">SÍ CUENTA (Respuesta Positiva)</option>
+                </select>
+
+                <div id="panel-info-si" style="display:none; margin-top:20px; border-top:1px solid #ccc; padding-top:15px;">
+                    <label>Cantidad de Carpetas Encontradas:</label>
+                    <select id="a_cant_carpetas" onchange="generarCarpetasInputs()" style="margin-bottom:10px;">
+                        <option value="1">1 Carpeta</option><option value="2">2 Carpetas</option><option value="3">3 Carpetas</option>
+                    </select>
                     <div id="container-carpetas"></div>
-                    <label style="margin-top:10px;">Adjunta:</label><div style="display:flex;gap:10px;"><label><input type="checkbox" id="chk_dispo"> Disposiciones</label><label><input type="checkbox" id="chk_declara"> Declaraciones</label></div>
+                    
+                    <label style="margin-top:15px;">Se adjunta:</label>
+                    <div class="check-group">
+                        <div class="check-item"><input type="checkbox" id="chk_dispo"> Disposiciones Fiscales</div>
+                        <div class="check-item"><input type="checkbox" id="chk_declara"> Declaraciones</div>
+                    </div>
                 </div>
             </div>
         </div>
-        <button class="btn-generate" onclick="generarWordAtencion()">📄 GENERAR OFICIO</button>
+        <button class="btn-generate" onclick="generarWordAtencion()">📄 GENERAR OFICIO ATENCIÓN</button>
     </div>
 
-    <div id="app-voice-assistant" class="app-container" style="padding:0;">
+    <div id="app-voice-assistant" class="app-container" style="padding: 0;">
         <div class="chat-container">
             <div class="chat-header">
-                <button class="btn-back" onclick="navegar('screen-menu')" style="margin:0;color:white;border-color:white;">⬅</button>
+                <button class="btn-back" onclick="navegar('screen-menu')" style="margin:0; background:transparent; border-color:white; color:white;">⬅ Salir</button>
                 <div class="avatar-container" id="avatar-anim"><div class="voice-wave"></div><div class="avatar">👩‍⚖️</div></div>
-                <div class="header-info" style="margin-left:10px;color:white;"><h2 style="margin:0;font-size:18px;">Asistente</h2><p style="margin:0;font-size:12px;">En línea</p></div>
-                <div style="margin-left:auto;"><span id="btn-audio-toggle" class="audio-control" onclick="toggleAudio()">🔊</span></div>
+                <div class="header-info" style="margin-left:15px; color:white;">
+                    <h2 style="margin:0; font-size:18px;">Asistente Fiscal</h2>
+                    <p id="status-text" style="margin:0; font-size:12px; opacity:0.9;">En línea</p>
+                </div>
+                <div style="margin-left: auto;">
+                    <span id="btn-audio-toggle" class="audio-control" onclick="toggleAudio()">🔊</span>
+                </div>
             </div>
+
             <div id="chat-box" class="chat-box"></div>
             <div id="typing-indicator" class="typing">Escribiendo...</div>
+
             <div class="input-area" id="input-area">
-                <div id="btn-mic" onclick="clickMicManual()"><svg width="24" height="24" fill="white" viewBox="0 0 16 16"><path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/><path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3.5 8V7a.5.5 0 0 1 .5-.5z"/></svg></div>
-                <input type="text" id="user-input" class="input-field" placeholder="Escribe..." onkeypress="handleKeyPress(event)">
+                <div id="btn-mic" onclick="clickMicManual()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" viewBox="0 0 16 16"><path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/><path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3.5 8V7a.5.5 0 0 1 .5-.5z"/></svg>
+                </div>
+                <input type="text" id="user-input" class="input-field" placeholder="Escribe o habla..." onkeypress="handleKeyPress(event)">
                 <button class="send-btn" onclick="enviarRespuesta()">Enviar</button>
             </div>
         </div>
     </div>
 
 <script>
+    // === CONFIGURACIÓN GLOBAL ===
     const NOMBRE_ARCHIVO_IMAGEN = "logo.png"; 
     let logoArrayBuffer = null;
     let audioEnabled = true;
@@ -221,11 +368,15 @@
     const listaPlazos = ["treinta (30) días naturales", "sesenta (60) días naturales", "noventa (90) días naturales", "ciento veinte (120) días naturales", "ciento cincuenta (150) días naturales", "ciento ochenta (180) días naturales"];
     const listaLugares = ["Corte Superior de Lima, Sede Zavala, ubicado en Jirón Manuel Cuadros 182, Lima", "DIRCOCOR PNP, ubicado en Av. Saenz Peña 116 Barranco, Lima", "Sede Central del Ministerio Público, ubicado en Av. Abancay cuadra 5 S/N"];
 
+    // === INICIO ===
     window.onload = function() {
+        // Cargar logo
         try { const xhr=new XMLHttpRequest(); xhr.open('GET',NOMBRE_ARCHIVO_IMAGEN,true); xhr.responseType='arraybuffer'; xhr.onload=function(){if(xhr.status===200)logoArrayBuffer=xhr.response;}; xhr.send(); }catch(e){}
+        
+        // Inicializar Formularios
         inicializarPericias();
         inicializarMovilidad();
-        agregarReferencia();
+        agregarReferencia(); // Inicializar Atención
         generarCarpetasInputs();
     };
 
@@ -237,7 +388,7 @@
     }
     function toggleSection(id){ document.getElementById(id).classList.toggle('hidden'); }
 
-    // === PERICIAS ===
+    // === LÓGICA MANUAL: PERICIAS ===
     function inicializarPericias() { 
         const selMes=document.getElementById('p_mes'); ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"].forEach(m=>{let o=document.createElement('option');o.text=m;selMes.add(o);});
         const selDia=document.getElementById('p_dia'); for(let i=1;i<=31;i++){let o=document.createElement('option');o.text=i;selDia.add(o);}
@@ -250,14 +401,14 @@
     function generarCamposPericias(){ const c=document.getElementById('p_cantPericias').value; const d=document.getElementById('p_contenedorPericias'); d.innerHTML=""; for(let i=1;i<=c;i++){ d.innerHTML+=`<div class="pericia-box"><label>Objeto ${i}:</label><select id="p_tipoPericia_${i}"><option>Perito Contable</option><option>Perito Económico</option><option>Perito Forense</option><option>Perito Grafotécnico</option></select><textarea id="p_objPericia_${i}" placeholder="Objeto..."></textarea><textarea id="p_detPericia_${i}" placeholder="Detalle..."></textarea></div>`;}}
     function toggleEvidencia(){document.getElementById('p_boxEvidencia').classList.toggle('hidden', document.getElementById('p_tieneEvidencia').value!=='si');}
 
-    // === MOVILIDAD ===
+    // === LÓGICA MANUAL: MOVILIDAD ===
     function inicializarMovilidad() { generarCamposDestinos(); }
     function generarCamposDestinos(){ const c=document.getElementById('m_cantDestinos').value; const d=document.getElementById('m_contenedorDestinos'); d.innerHTML=""; for(let i=1;i<=c;i++){ d.innerHTML+=`<div class="destino-box"><label>Destino ${i}:</label><select id="m_tipoDestino_${i}" onchange="toggleDestinoManual(${i})"><option value="">--Seleccionar--</option>${listaLugares.map(l=>`<option>${l}</option>`).join('')}<option value="OTRO">OTRO</option></select><input type="text" id="m_destinoManual_${i}" style="display:none;"></div>`;}}
     function toggleDestinoManual(i){ const v=document.getElementById(`m_tipoDestino_${i}`).value; document.getElementById(`m_destinoManual_${i}`).style.display=(v==='OTRO')?'block':'none'; }
     function toggleManual(c,i){ const v=document.getElementById(c).value; document.getElementById(i).style.display=(v==='OTRO')?'block':'none'; }
     function actualizarPreviewServicio(){ const f=document.getElementById('m_diaServicio').value; const i=document.getElementById('m_horaInicio').value; const fn=document.getElementById('m_horaFin').value; if(f&&i&&fn){ const d=new Date(f+'T00:00:00'); const ft=d.toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase(); document.getElementById('m_previewServicio').innerText=`${ft}, DE ${i} A ${fn} HORAS`; document.getElementById('m_previewServicio').style.display='block';}}
 
-    // === ATENCIÓN PEDIDOS ===
+    // === LÓGICA MANUAL: ATENCIÓN PEDIDOS ===
     let refCount = 0; 
     const letras = ['a)', 'b)', 'c)', 'd)', 'e)'];
     function agregarReferencia() {
@@ -282,14 +433,33 @@
     }
     function toggleInfoDespacho() { document.getElementById('panel-info-si').style.display=(document.getElementById('a_tieneInfo').value==='SI')?'block':'none'; }
 
-    // === ASISTENTE VOZ ===
+    // === ASISTENTE VOZ (LÓGICA) ===
     const synth=window.speechSynthesis; const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition; const recognition=SpeechRecognition?new SpeechRecognition():null; if(recognition){recognition.lang='es-PE'; recognition.interimResults=false;}
     let datos={}, pasoActual=0, flujoActual="", preguntasActivas=[], isListening=false, silenceTimer=null;
+    
+    // FLUJOS DE PREGUNTAS
     const flujos = {
-        'INICIO': [{id:'ini',texto:"Hola bubu. Soy su asistente. ¿Qué redactamos?",tipo:'opciones',opciones:['Movilidad','Atención de Pedidos']}],
+        'INICIO': [{id:'ini',texto:"Hola bubito. Soy su asistente. ¿Qué documento redactamos? Diga: Movilidad, Atención o Pericias.",tipo:'opciones',opciones:['Movilidad','Atención','Pericias']}],
         'MOVILIDAD': [{id:'m_oficio',texto:"Dígame el Número de Oficio.",tipo:'texto'},{id:'m_fecha',texto:"¿Qué fecha tiene?",tipo:'fecha'},{id:'m_destinos',texto:"¿Cuántos lugares? ¿Uno, dos o tres?",tipo:'opciones',opciones:['1 Lugar','2 Lugares']},{id:'m_servicio',texto:"Detalle fecha y hora del servicio.",tipo:'texto'},{id:'m_celular',texto:"¿Celular?",tipo:'opciones_texto',opciones:['957691331']},{id:'m_asistente',texto:"¿Asistente?",tipo:'opciones_texto',opciones:['DEBORA JASMIN SOTELO AHUANARI']},{id:'fin',texto:"Listo. Generando.",tipo:'final'}],
-        'ATENCION': [{id:'a_oficio',texto:"Número de Oficio de Respuesta.",tipo:'texto'},{id:'a_dest_nombre',texto:"Nombre del Destinatario.",tipo:'texto'},{id:'a_dest_cargo',texto:"Cargo del Destinatario.",tipo:'texto'},{id:'a_tiene',texto:"¿Tenemos la información? Diga SI o NO.",tipo:'opciones',opciones:['SI','NO']},{id:'a_fin',texto:"Entendido. Generando.",tipo:'final'}]
+        'ATENCION': [
+            {id:'a_oficio',texto:"Número de Oficio de Respuesta.",tipo:'texto'},
+            {id:'a_fecha',texto:"¿Fecha de emisión?",tipo:'fecha'},
+            {id:'a_dest_nombre',texto:"Nombre del Destinatario.",tipo:'texto'},
+            {id:'a_dest_cargo',texto:"Cargo del Destinatario.",tipo:'texto'},
+            {id:'a_ref',texto:"Número de Referencia Principal.",tipo:'texto'},
+            {id:'a_tiene',texto:"¿El despacho cuenta con la información? Diga SI o NO.",tipo:'opciones',opciones:['SI','NO']},
+            {id:'a_fin',texto:"Entendido. Generando.",tipo:'final'}
+        ],
+        'PERICIAS': [
+            {id:'p_codigo',texto:"Código de Carpeta.",tipo:'texto'},
+            {id:'p_fecha',texto:"Fecha del oficio.",tipo:'fecha'},
+            {id:'p_numDisp',texto:"Número de Disposición.",tipo:'texto'},
+            {id:'p_decision',texto:"Decisión Fiscal (Ampliación/Inicio).",tipo:'texto'},
+            {id:'p_imputado',texto:"Nombre del imputado.",tipo:'texto'},
+            {id:'p_fin',texto:"Generando Pericia Básica.",tipo:'final'}
+        ]
     };
+
     function iniciarChatbot(){ document.getElementById('chat-box').innerHTML=''; datos={}; pasoActual=0; flujoActual=""; setTimeout(()=>agregarMensajeBot(flujos.INICIO[0]),800); }
     function agregarMensajeBot(p){ const box=document.getElementById('chat-box'); document.getElementById('typing-indicator').style.display='none'; document.getElementById('input-area').style.display='none'; const d=document.createElement('div'); d.className='message bot-msg'; d.innerHTML=p.texto; 
         if(p.tipo==='opciones'||p.tipo==='opciones_texto'){ const o=document.createElement('div'); o.className='chat-options'; p.opciones.forEach(opt=>{const b=document.createElement('button');b.className='chat-option-btn';b.innerText=opt;b.onclick=()=>procesarRespuesta(opt);o.appendChild(b);}); d.appendChild(o); } 
@@ -306,10 +476,10 @@
         if(!flujoActual){ 
             if(t.toLowerCase().includes('movilidad')){flujoActual='MOVILIDAD'; preguntasActivas=[...flujos.MOVILIDAD]; pasoActual=0; agregarMensajeBot(preguntasActivas[0]);}
             else if(t.toLowerCase().includes('atenc')||t.toLowerCase().includes('pedid')){flujoActual='ATENCION'; preguntasActivas=[...flujos.ATENCION]; pasoActual=0; agregarMensajeBot(preguntasActivas[0]);}
-            else{agregarMensajeBot({texto:"Diga 'Movilidad' o 'Atención de Pedidos'."});} 
+            else if(t.toLowerCase().includes('pericia')){flujoActual='PERICIAS'; preguntasActivas=[...flujos.PERICIAS]; pasoActual=0; agregarMensajeBot(preguntasActivas[0]);}
+            else{agregarMensajeBot({texto:"Diga 'Movilidad', 'Atención' o 'Pericias'."});} 
         } else { 
             datos[preguntasActivas[pasoActual].id]=t; 
-            if(flujoActual==='MOVILIDAD' && preguntasActivas[pasoActual].id==='m_destinos'){ /* Lógica simple destinos */ }
             pasoActual++; if(pasoActual<preguntasActivas.length) agregarMensajeBot(preguntasActivas[pasoActual]); 
         } 
     }
@@ -318,32 +488,43 @@
     function toggleAudio(){ audioEnabled=!audioEnabled; if(!audioEnabled)detenerTodoAudio(); }
     function detenerTodoAudio(){ synth.cancel(); detenerEscucha(); }
     function handleKeyPress(e){if(e.key==='Enter')enviarRespuesta();}
-    function generarDocChat() { if(flujoActual==='MOVILIDAD') generarWordMovilidadChat(); else generarWordAtencionChat(); }
+    function generarDocChat() { 
+        if(flujoActual==='MOVILIDAD') generarWordMovilidadChat(); 
+        else if(flujoActual==='ATENCION') generarWordAtencionChat();
+        else if(flujoActual==='PERICIAS') generarWordPericiasChat();
+    }
 
-    // === GENERADORES ===
-    // HEADER V47: Logo 0.5cm (284 twips), Texto 7pt, Times New Roman
+    // === GENERADORES DE WORD (MANUALES Y CHAT) ===
+    
+    // ENCABEZADO V50: Logo 0.5cm (284 twips), Texto 7pt, Times New Roman
     function construirEncabezado(logo, fecha, nombreAnio) {
         const {Paragraph,TextRun,Table,TableRow,TableCell,ImageRun,AlignmentType,WidthType,BorderStyle}=docx;
         let logoRun=logo?new ImageRun({data:logo,transformation:{width:120,height:113}}):new TextRun("");
         let txtAnio=nombreAnio?`“${nombreAnio.replace(/“|”|"/g,'')}”`:"";
         return [ 
-            new Table({ width:{size:100,type:WidthType.PERCENTAGE}, borders:{top:{style:BorderStyle.NONE},bottom:{style:BorderStyle.NONE},left:{style:BorderStyle.NONE},right:{style:BorderStyle.NONE},insideVertical:{style:BorderStyle.NONE},insideHorizontal:{style:BorderStyle.NONE}}, rows:[ new TableRow({ children:[ 
-                new TableCell({width:{size:40,type:WidthType.PERCENTAGE},margins:{left:-1000},children:[
-                    new Paragraph({children:[logoRun],alignment:AlignmentType.CENTER}),
-                    new Paragraph({children:[new TextRun({text:"MINISTERIO PÚBLICO",bold:false,size:14,font:"Times New Roman"})],alignment:AlignmentType.CENTER}),
-                    new Paragraph({children:[new TextRun({text:"PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-",bold:false,size:14,font:"Times New Roman"})],alignment:AlignmentType.CENTER})
-                ]}), 
-                new TableCell({width:{size:60,type:WidthType.PERCENTAGE},children:[
-                    new Paragraph({children:[new TextRun({text:txtAnio,italics:true,size:18,font:"Times New Roman"})],alignment:AlignmentType.LEFT,spacing:{before:800}}),
-                    new Paragraph({text:""}),
-                    new Paragraph({children:[new TextRun({text:fecha,bold:true,size:24,font:"Times New Roman"})],alignment:AlignmentType.RIGHT})
-                ]}) 
-            ] }) ] }), 
-            new Paragraph({text:""}), new Paragraph({text:""}), new Paragraph({text:""})
+            new Table({ 
+                width:{size:100,type:WidthType.PERCENTAGE}, 
+                borders:{top:{style:BorderStyle.NONE},bottom:{style:BorderStyle.NONE},left:{style:BorderStyle.NONE},right:{style:BorderStyle.NONE},insideVertical:{style:BorderStyle.NONE},insideHorizontal:{style:BorderStyle.NONE}}, 
+                rows:[ new TableRow({ children:[ 
+                    new TableCell({width:{size:40,type:WidthType.PERCENTAGE},margins:{left:-1000},children:[
+                        new Paragraph({children:[logoRun],alignment:AlignmentType.CENTER}),
+                        new Paragraph({children:[new TextRun({text:"MINISTERIO PÚBLICO",bold:false,size:14,font:"Times New Roman"})],alignment:AlignmentType.CENTER}),
+                        new Paragraph({children:[new TextRun({text:"PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-",bold:false,size:14,font:"Times New Roman"})],alignment:AlignmentType.CENTER})
+                    ]}), 
+                    new TableCell({width:{size:60,type:WidthType.PERCENTAGE},children:[
+                        new Paragraph({children:[new TextRun({text:txtAnio,italics:true,size:18,font:"Times New Roman"})],alignment:AlignmentType.LEFT,spacing:{before:800}}),
+                        new Paragraph({text:""}),
+                        new Paragraph({children:[new TextRun({text:fecha,bold:true,size:24,font:"Times New Roman"})],alignment:AlignmentType.RIGHT})
+                    ]}) 
+                ] }) ] 
+            }), 
+            new Paragraph({text:""}),
+            new Paragraph({text:""}), 
+            new Paragraph({text:""})  
         ];
     }
 
-    // 1. PERICIAS COMPLETO
+    // 1. GENERAR PERICIAS (MANUAL) - CÓDIGO COMPLETO
     function generarWordPericias() {
         const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType}=docx;
         const codigo=document.getElementById('p_codigoUnico').value; const anio=document.getElementById('p_anio').value; const dia=document.getElementById('p_dia').value; const mes=document.getElementById('p_mes').value; const nombreAnio=document.getElementById('p_nombreAnio').value;
@@ -352,6 +533,10 @@
         
         let delitosArr=[]; for(let i=0;i<document.getElementById('p_cantDelitos').value;i++) delitosArr.push(document.getElementById(`p_delito_${i}`).value);
         let delitoTexto=delitosArr.join(", ");
+        const etapa=document.getElementById('p_etapaProcesal').value;
+        const vencimiento=formatearFechaLarga(document.getElementById('p_plazoVencimiento').value);
+        const involucrados=document.getElementById('p_cantInvolucrados').value;
+        const dispoOrdena=document.getElementById('p_dispoOrdena').value;
 
         const children=[]; children.push(...construirEncabezado(logoArrayBuffer, fechaTexto, nombreAnio));
         children.push(new Paragraph({children:[new TextRun({text:`OFICIO N° (${codigo}) ${anio}-MP-FN-2D-1FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
@@ -371,22 +556,46 @@
             {text:", fijando el término en ",bold:false}, {text:plazo,bold:true}, {text:".",bold:false}
         ]));
 
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+        children.push(new Paragraph({ children: [new TextRun({ text: `Respecto de las pericias solicitadas en la Carpeta Fiscal ${codigo}`, underline: { type: UnderlineType.SINGLE }, size: 24, font: "Times New Roman" })], indent: { left: 720 }, alignment: AlignmentType.CENTER, spacing: { line: 276 } }));
+        children.push(crearViñeta("Etapa procesal: ", etapa));
+        children.push(crearViñeta("Plazo de vencimiento: ", vencimiento));
+        children.push(crearViñeta("Cantidad de involucrados: ", involucrados));
+        children.push(crearViñeta("Disposición que ordena las pericias: ", "Disposición N.° " + dispoOrdena));
+
         const cantP=document.getElementById('p_cantPericias').value;
         for(let i=1; i<=cantP; i++){
             let tipo=document.getElementById(`p_tipoPericia_${i}`).value;
             let obj=document.getElementById(`p_objPericia_${i}`).value;
+            let det=document.getElementById(`p_detPericia_${i}`).value;
             children.push(new Paragraph({children:[new TextRun({text:`${i}. RESPECTO DE LA PERICIA ${tipo}`,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
             children.push(crearParrafoJustificado([{text:obj,bold:false}]));
+            if(det) children.push(crearParrafoJustificado([{text:det,bold:false}]));
         }
 
-        children.push(new Paragraph({children:[new TextRun({text:"Sin otro particular...",size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        if(document.getElementById('p_tieneEvidencia').value==='si'){
+            children.push(new Paragraph({children:[new TextRun({text:"INDICACIÓN DE LA EVIDENCIA QUE SE ADJUNTA",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
+            children.push(crearParrafoJustificado([{text:document.getElementById('p_descEvidencia').value,bold:false}]));
+            children.push(new Paragraph({children:[new TextRun({text:document.getElementById('p_linkEvidencia').value,color:"0000FF",underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],alignment:AlignmentType.CENTER,spacing:{line:276}}));
+        }
+
+        children.push(new Paragraph({children:[new TextRun({text:"De manera que, tras la designación del perito... este se deberá poner en contacto...",size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        children.push(new Paragraph({text:"\n\n"}));
+        
+        children.push(crearTablaContacto(
+            document.getElementById('p_emailMesa').value,
+            document.getElementById('p_emailFiscal').value,
+            document.getElementById('p_telFiscal').value,
+            document.getElementById('p_telAsistente').value
+        ));
+
         children.push(new Paragraph({text:"\n\n"}));
         children.push(new Paragraph({children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})],alignment:AlignmentType.CENTER}));
 
         crearYDescargarDoc(children, `Oficio_Pericia_${codigo}.docx`);
     }
 
-    // 2. MOVILIDAD COMPLETO
+    // 2. GENERAR MOVILIDAD (MANUAL) - CÓDIGO COMPLETO
     function generarWordMovilidad() {
         const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType}=docx;
         const oficio=document.getElementById('m_numOficio').value; const nombreAnio=document.getElementById('m_nombreAnio').value; const fecha=formatearFechaLarga(document.getElementById('m_fechaDocumento').value);
@@ -400,31 +609,29 @@
         children.push(new Paragraph({indent:{left:2835},children:[new TextRun({text:"ASUNTO: SOLICITUD DE ATENCIÓN DE MOVILIDAD",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({text:"",spacing:{line:276}}));
         
-        // Destinos
         const cant=document.getElementById('m_cantDestinos').value; let dests=[]; for(let i=1;i<=cant;i++){let v=document.getElementById(`m_tipoDestino_${i}`).value; if(v==='OTRO')v=document.getElementById(`m_destinoManual_${i}`).value; if(v)dests.push(v);}
         let destTxt=dests.join("; ");
         let serv=document.getElementById('m_previewServicio').innerText; if(serv.includes('Selecciona')) serv="FECHA POR DEFINIR";
 
         children.push(crearParrafoJustificado([
-            {text:"Tengo el honor de dirigirme a usted... SOLICITAR, la asignación de una movilidad (Vehículo institucional) para trasladarnos a: ",bold:false},
+            {text:"Tengo el honor de dirigirme a usted, a fin de saludarlo cordialmente, y a su vez, SOLICITAR, la asignación de una movilidad (Vehículo institucional) para nuestro despacho Fiscal, con el fin de poder trasladarnos a: ",bold:false},
             {text:destTxt,bold:true},
-            {text:"; y así dar cumplimiento con las diligencias pendientes... apoyo con carácter de ",bold:false},
+            {text:"; y así dar cumplimiento con las diligencias pendientes, por lo que se solicita apoyo con carácter de ",bold:false},
             {text:"MUY URGENTE",bold:true}, {text:", el vehículo institucional.",bold:false}
         ]));
         children.push(new Paragraph({text:""}));
         children.push(crearParrafoJustificado([
-            {text:"En ese sentido... cumple con ",bold:false}, {text:"SOLICITAR",bold:true},
+            {text:"En ese sentido, el 2° Despacho de la 1° Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, cumple con ",bold:false}, {text:"SOLICITAR",bold:true},
             {text:" que nos ASIGNEN un vehículo para el día ",bold:false}, {text:serv,bold:true}, {text:".",bold:false}
         ]));
         children.push(new Paragraph({text:""}));
         
-        // Contacto
         let cel=document.getElementById('m_comboCelular').value; if(cel==='OTRO')cel=document.getElementById('m_celularManual').value;
         let asis=document.getElementById('m_comboAsistente').value; if(asis==='OTRO')asis=document.getElementById('m_asistenteManual').value;
         children.push(crearParrafoJustificado([
-            {text:"Para efectos de la confirmación... correo: ",bold:false}, {text:"fecoflima_1f2d@mpfn.gob.pe",bold:true},
-            {text:"; teléfono celular N° ",bold:false}, {text:cel,bold:true},
-            {text:" perteneciente a la Asistente ",bold:false}, {text:asis,bold:true}, {text:".",bold:false}
+            {text:"Para efectos de la confirmación de la solicitud, y de toda coordinación, se pone de conocimiento el correo de Mesa de Partes del Despacho: ",bold:false}, {text:"fecoflima_1f2d@mpfn.gob.pe",bold:true},
+            {text:"; así como el teléfono celular N° ",bold:false}, {text:cel,bold:true},
+            {text:" perteneciente a la Asistente en Función Fiscal ",bold:false}, {text:asis,bold:true}, {text:".",bold:false}
         ]));
 
         children.push(new Paragraph({text:""}));
@@ -434,67 +641,113 @@
         crearYDescargarDoc(children, `Oficio_Movilidad_${oficio}.docx`);
     }
 
-    // 3. ATENCIÓN PEDIDOS
+    // 3. GENERAR ATENCIÓN (MANUAL) - CÓDIGO COMPLETO
     function generarWordAtencion() {
         const { Document, Packer, Paragraph, TextRun, AlignmentType, UnderlineType } = docx;
-        const nombreAnio=document.getElementById('a_nombreAnio').value; const fecha=formatearFechaLarga(document.getElementById('a_fecha').value); const oficioNum=document.getElementById('a_oficio').value;
-        const oficioFull=`${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.`;
-        const tituloDest=document.getElementById('a_dest_titulo').value; const destinatario=document.getElementById('a_dest_nombre').value; const cargo=document.getElementById('a_dest_cargo').value;
-        const saludo=document.getElementById('a_saludo').value; const tieneInfo=document.getElementById('a_tieneInfo').value; const refSel=document.getElementById('a_ref_respuesta').value;
+        const nombreAnio = document.getElementById('a_nombreAnio').value;
+        const fechaRaw = document.getElementById('a_fecha').value;
+        const fechaTexto = fechaRaw ? formatearFechaLarga(fechaRaw) : "_______";
+        const oficioNum = document.getElementById('a_oficio').value;
+        const oficioFull = `${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.`;
+        
+        const tituloDest = document.getElementById('a_dest_titulo').value;
+        const destinatario = document.getElementById('a_dest_nombre').value;
+        const cargo = document.getElementById('a_dest_cargo').value;
+        const saludo = document.getElementById('a_saludo').value;
+        const tieneInfo = document.getElementById('a_tieneInfo').value;
+        const refSeleccionadaTexto = document.getElementById('a_ref_respuesta').value;
 
-        let refsArr=[]; for(let i=0; i<refCount; i++) { const val=document.getElementById(`ref_input_${i}`)?.value; if(val) refsArr.push({letra:letras[i], texto:val}); }
-        let refString=refsArr.map(r=>`${r.letra} ${r.texto}-MP-FN-FSNCEDCF`).join("  ");
+        let refsArr = []; for(let i=0; i<refCount; i++) { const val=document.getElementById(`ref_input_${i}`)?.value; if(val) refsArr.push({letra:letras[i], texto:`Oficio N.° ${val}`}); }
+        let refString = refsArr.map(r => `${r.letra} ${r.texto}-MP-FN-FSNCEDCF`).join("  ");
 
-        const children=[]; children.push(...construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, nombreAnio));
-        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${oficioFull}`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276,after:400}}));
-        children.push(new Paragraph({children:[new TextRun({text:`${tituloDest} (a)`,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:destinatario,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:cargo,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:"PRESENTE.-",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276,before:400}}));
-        children.push(new Paragraph({text:"",spacing:{line:276}}));
-        children.push(new Paragraph({indent:{left:2835},children:[new TextRun({text:"ASUNTO: ",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"}),new TextRun({text:"ATIENDE PEDIDO DE INFORMACIÓN",bold:false,size:24,font:"Times New Roman"})],spacing:{line:276}}));
-        if(refString) children.push(new Paragraph({indent:{left:2835},children:[new TextRun({text:"Referencia: ",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"}),new TextRun({text:refString,size:24,font:"Times New Roman"})],spacing:{line:276}}));
-        children.push(new Paragraph({text:"",spacing:{line:276}}));
+        const children = [];
+        children.push(...construirEncabezado(logoArrayBuffer, `Lima, ${fechaTexto}`, nombreAnio));
 
-        let cuerpo=[{text:`${saludo} a usted, en mi condición de Fiscal... y en atención a lo solicitado en el documento de `,bold:false}, {text:refSel,bold:false}, {text:", ",bold:false}, {text:"CUMPLO CON INFORMAR",bold:true}];
-        if(tieneInfo==="NO"){ cuerpo.push({text:" que este despacho ",bold:false}); cuerpo.push({text:"NO CUENTA",bold:true}); cuerpo.push({text:" con investigaciones relacionadas...",bold:false}); }
-        else{ 
-            let carpetasArr=[]; const cant=document.getElementById('a_cant_carpetas').value;
-            for(let i=0;i<cant;i++){ let v=document.getElementById(`a_carpeta_${i}`).value; if(v)carpetasArr.push(`N.° ${v}`); }
-            cuerpo.push({text:" que este despacho ",bold:false}); cuerpo.push({text:"SÍ CUENTA",bold:true}); cuerpo.push({text:" con investigaciones... comprendidos en las Carpetas Fiscales ",bold:false}); cuerpo.push({text:carpetasArr.join(" y "),bold:true}); cuerpo.push({text:".",bold:false});
+        children.push(new Paragraph({
+            children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})],
+            spacing:{line:276, after: 400}
+        }));
+
+        children.push(new Paragraph({children:[new TextRun({text:`${tituloDest}`, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:destinatario, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
+        children.push(new Paragraph({children:[new TextRun({text:cargo, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
+        
+        children.push(new Paragraph({
+            children:[new TextRun({text:"PRESENTE.-", bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], 
+            spacing:{line:276, before: 400} 
+        }));
+
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+        children.push(new Paragraph({ indent: { left: 2835 }, children: [new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size: 24, font: "Times New Roman" }), new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size: 24, font: "Times New Roman" })], spacing: { line: 276 } }));
+        if(refString) { children.push(new Paragraph({ indent: { left: 2835 }, children: [new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size: 24, font: "Times New Roman" }), new TextRun({ text: refString, size: 24, font: "Times New Roman" })], spacing: { line: 276 } })); }
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+
+        let cuerpo = [{text: `${saludo} a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `, bold: false}, {text: refSeleccionadaTexto, bold: false}, {text: ", ", bold: false}, {text: "CUMPLO CON INFORMAR", bold: true}];
+        if(tieneInfo === "NO") { cuerpo.push({text: " que este despacho ", bold: false}); cuerpo.push({text: "NO CUENTA", bold: true}); cuerpo.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento.", bold: false}); }
+        else {
+            const cantCarp = document.getElementById('a_cant_carpetas').value;
+            let carpetasArr = []; for(let i=0; i<cantCarp; i++) { let v = document.getElementById(`a_carpeta_${i}`).value; if(v) carpetasArr.push(`N.° ${v}`); }
+            let carpetasTexto = carpetasArr.join(" y ");
+            cuerpo.push({text: " que este despacho ", bold: false}); cuerpo.push({text: "SÍ CUENTA", bold: true}); cuerpo.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento, encontrándose los mismos comprendidos en las Carpetas Fiscales ", bold: false}); cuerpo.push({text: carpetasTexto, bold: true}); cuerpo.push({text: ".", bold: false});
         }
         children.push(crearParrafoJustificado(cuerpo));
 
-        if(tieneInfo==="SI"){
-            const d=document.getElementById('chk_dispo').checked; const dc=document.getElementById('chk_declara').checked;
-            let adj=""; if(d&&dc)adj="las disposiciones fiscales y declaraciones pertinentes"; else if(d)adj="las disposiciones fiscales pertinentes"; else if(dc)adj="las declaraciones pertinentes";
-            if(adj) { children.push(new Paragraph({text:""})); children.push(crearParrafoJustificado([{text:"En tal sentido, se adjuntan ",bold:false}, {text:adj,bold:false}, {text:" para conocimiento y fines correspondientes.",bold:false}])); }
+        if(tieneInfo === "SI") {
+            const d = document.getElementById('chk_dispo').checked; const dc = document.getElementById('chk_declara').checked;
+            let adj = ""; if(d && dc) adj = "las disposiciones fiscales y declaraciones pertinentes"; else if(d) adj = "las disposiciones fiscales pertinentes"; else if(dc) adj = "las declaraciones pertinentes";
+            if(adj) { children.push(new Paragraph({ text: "" })); children.push(crearParrafoJustificado([{text: "En tal sentido, se adjuntan ", bold: false}, {text: adj, bold: false}, {text: " para conocimiento y fines correspondientes.", bold: false}])); }
         }
 
-        children.push(new Paragraph({text:""}));
-        children.push(crearParrafoJustificado([{text:"Sin otro particular, renuevo a usted las expresiones de mi especial consideración y estima personal.",bold:false}]));
-        children.push(new Paragraph({text:"\n\n"}));
-        children.push(new Paragraph({children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})],alignment:AlignmentType.CENTER}));
+        children.push(new Paragraph({ text: "" }));
+        children.push(crearParrafoJustificado([{text: "Sin otro particular, renuevo a usted las expresiones de mi especial consideración y estima personal.", bold: false}]));
+        children.push(new Paragraph({ text: "\n\n" }));
+        children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
         crearYDescargarDoc(children, `Oficio_Atencion_${oficioNum}.docx`);
     }
 
-    // CHAT (Movilidad)
+    // 4. GENERADORES PARA CHAT
     function generarWordMovilidadChat() {
         datos['m_oficio']=datos['m_oficio']||""; datos['m_fecha']=datos['m_fecha']||""; datos['m_servicio']=datos['m_servicio']||""; 
         const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType}=docx; const fecha=formatearFechaLarga(datos['m_fecha']);
         const children=[]; children.push(...construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, ""));
         children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${datos['m_oficio']}-MP-FN-2D-1°FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276,after:400}}));
-        // ... (Cuerpo Movilidad Chat básico)
-        children.push(new Paragraph({children:[new TextRun({text:"ASUNTO: SOLICITUD MOVILIDAD (Voz)",bold:true,size:24,font:"Times New Roman"})],indent:{left:2835}}));
+        // Nota: Para el chat se usa un formato simplificado pero funcional para no duplicar todo el bloque de arriba
+        children.push(new Paragraph({children:[new TextRun({text:"ASUNTO: SOLICITUD MOVILIDAD (Generado por Voz)",bold:true,size:24,font:"Times New Roman"})],indent:{left:2835}}));
         children.push(new Paragraph({children:[new TextRun({text:`Servicio: ${datos['m_servicio']}`,size:24,font:"Times New Roman"})]}));
         crearYDescargarDoc(children, `Movilidad_Voz_${datos['m_oficio']}.docx`);
     }
-    function generarWordAtencionChat(){ /* Pendiente implementación full voz */ alert("Generado Atención (Demo)"); }
+    
+    function generarWordAtencionChat(){
+        const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType}=docx; const fecha=formatearFechaLarga(datos['a_fecha']);
+        const children=[]; children.push(...construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, ""));
+        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${datos['a_oficio']}-MP-FN-2D-1°FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276,after:400}}));
+        children.push(new Paragraph({children:[new TextRun({text:`${datos['a_dest_nombre']}`,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        children.push(new Paragraph({indent:{left:2835},children:[new TextRun({text:"ASUNTO: ATENCIÓN PEDIDO (Voz)",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        let resp = (datos['a_tiene']==='SI') ? "SÍ CUENTA con la información." : "NO CUENTA con la información.";
+        children.push(crearParrafoJustificado([{text:`CUMPLO CON INFORMAR que este despacho ${resp}`,bold:false}]));
+        crearYDescargarDoc(children, `Atencion_Voz_${datos['a_oficio']}.docx`);
+    }
+    
+    function generarWordPericiasChat() {
+        // Implementación básica para pericias voz
+        const {Document,Packer,Paragraph,TextRun}=docx; const fecha=formatearFechaLarga(datos['p_fecha']);
+        const children=[]; children.push(...construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, ""));
+        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${datos['p_codigo']}-MP-FN-2D...`,bold:true,size:24,font:"Times New Roman"})]}));
+        children.push(new Paragraph({children:[new TextRun({text:`Imputado: ${datos['p_imputado']}`,size:24,font:"Times New Roman"})]}));
+        crearYDescargarDoc(children, `Pericia_Voz_${datos['p_codigo']}.docx`);
+    }
 
     // UTILS
     function formatearFechaLarga(f){if(!f)return"_______"; const p=f.split("-"); const m=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]; return `${parseInt(p[2])} de ${m[parseInt(p[1])-1]} de ${p[0]}`;}
-    function crearParrafoJustificado(partes){ const {Paragraph,TextRun,AlignmentType}=docx; let ch=partes.map(p=>new TextRun({text:p.text,bold:p.bold,size:24,font:"Times New Roman"})); return new Paragraph({children:ch,alignment:AlignmentType.JUSTIFIED,spacing:{line:276},indent:{firstLine:720}}); }
-    function crearYDescargarDoc(children, nombre) { const {Document,Packer,Footer,Paragraph,TextRun}=docx; const doc=new Document({sections:[{properties:{pageMargins:{top:284,right:1701,bottom:1418,left:1701}},children:children,footers:{default:new Footer({children:[new Paragraph({children:[new TextRun({text:"Teléfono: (01) 625-5555", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Anexos: 11706 / 11705", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"E-mail: fecoflima_1f2d@mpfn.gob.pe", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Dirección: Jr. Lampa N.° 597 – Cercado de Lima.", size:22, font:"Times New Roman", color:"333333"})]})]})}}]}); Packer.toBlob(doc).then(b=>saveAs(b, nombre)); }
+    function crearParrafo(t, b, u=false) { const {Paragraph,TextRun,UnderlineType}=docx; return new Paragraph({children:[new TextRun({text:t, bold:b, underline:u?{type:UnderlineType.SINGLE}:undefined, size:24, font:"Times New Roman"})], spacing:{line:276}}); }
+    function crearParrafoConSangria(t, b, u=false) { const {Paragraph,TextRun,UnderlineType}=docx; return new Paragraph({indent:{left:4000}, children:[new TextRun({text:t, bold:b, underline:u?{type:UnderlineType.SINGLE}:undefined, size:24, font:"Times New Roman"})], spacing:{line:276}}); }
+    function crearParrafoJustificado(partes) { const {Paragraph,TextRun,AlignmentType}=docx; let ch=partes.map(p=>new TextRun({text:p.text, bold:p.bold, size:24, font:"Times New Roman"})); return new Paragraph({children:ch, alignment:AlignmentType.JUSTIFIED, spacing:{line:276}, indent:{firstLine:720}}); }
+    function crearFilaContacto(label, val) {const { TableRow, TableCell, Paragraph, TextRun, HeightRule } = docx; return new TableRow({ height: { value: 500, rule: HeightRule.AT_LEAST }, cantSplit: true, children: [ new TableCell({ children: [new Paragraph({children:[new TextRun({text: label, bold: true, size: 20, font: "Times New Roman"})]})] }), new TableCell({ children: [new Paragraph({children:[new TextRun({text: val, size: 20, font: "Times New Roman"})]})] }) ] });}
+    function crearTablaContacto(m, f, tf, ta) {const { Table, TableRow, TableCell, Paragraph, TextRun, WidthType, HeightRule } = docx;return new Table({width: { size: 90, type: WidthType.PERCENTAGE }, indent: { size: 720, type: WidthType.DXA },rows: [crearFilaContacto("CORREO ELECTRÓNICO MESA DE PARTES", m),crearFilaContacto("CORREO ELECTRÓNICO FISCAL ENCARGADO", f),crearFilaContacto("TELÉFONO FISCAL", tf),crearFilaContacto("TELÉFONO ASISTENTE", ta)]});}
+    function crearViñeta(t,v){const {Paragraph,TextRun}=docx; return new Paragraph({bullet:{level:0},indent:{left:1440},children:[new TextRun({text:t,bold:true,size:24,font:"Times New Roman"}),new TextRun({text:v,size:24,font:"Times New Roman"})],spacing:{line:276}});}
+    
+    // DOC GENERATOR (MÁRGENES LATERALES 4CM = 2268 twips, SUPERIOR 0.5CM = 284 twips)
+    function crearYDescargarDoc(children, nombre) { const {Document,Packer,Footer,Paragraph,TextRun}=docx; const doc=new Document({sections:[{properties:{pageMargins:{top:284,right:2268,bottom:1418,left:2268}},children:children,footers:{default:new Footer({children:[new Paragraph({children:[new TextRun({text:"Teléfono: (01) 625-5555", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Anexos: 11706 / 11705", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"E-mail: fecoflima_1f2d@mpfn.gob.pe", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Dirección: Jr. Lampa N.° 597 – Cercado de Lima.", size:22, font:"Times New Roman", color:"333333"})]})]})}}]}); Packer.toBlob(doc).then(b=>saveAs(b, nombre)); }
 </script>
 </body>
 </html>
