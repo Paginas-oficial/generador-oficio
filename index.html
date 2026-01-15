@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Fiscal 2026 - V54 Blindada</title>
+    <title>Sistema Fiscal 2026</title>
     
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -68,7 +68,7 @@
 <body>
 
     <div id="screen-menu" class="menu-wrapper">
-        <h1 class="menu-title">Bienvenida, Mi Tesorito.</h1>
+        <h1 class="menu-title">Bienvenida, Mi Amorcito.</h1>
         <p class="menu-subtitle">Sistema de Gestión Fiscal 2026</p>
         <div class="upload-area"><label>📂 Configuración:</label><span id="estadoImagen" class="text-err">Buscando logo.png...</span></div>
 
@@ -283,7 +283,7 @@
     const synth=window.speechSynthesis; const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition; const recognition=SpeechRecognition?new SpeechRecognition():null; if(recognition){recognition.lang='es-PE'; recognition.interimResults=false;}
     let datos={}, pasoActual=0, flujoActual="", preguntasActivas=[], isListening=false, silenceTimer=null;
     const flujos = {
-        'INICIO': [{id:'ini',texto:"Hola debora. Soy su asistente. ¿Qué redactamos?",tipo:'opciones',opciones:['Movilidad','Atención de Pedidos','Pericias']}],
+        'INICIO': [{id:'ini',texto:"Hola Debora. Soy su asistente. ¿Qué redactamos?",tipo:'opciones',opciones:['Movilidad','Atención de Pedidos','Pericias']}],
         'MOVILIDAD': [{id:'m_oficio',texto:"Dígame el Número de Oficio.",tipo:'texto'},{id:'m_fecha',texto:"¿Qué fecha tiene?",tipo:'fecha'},{id:'m_destinos',texto:"¿Cuántos lugares? ¿Uno, dos o tres?",tipo:'opciones',opciones:['1 Lugar','2 Lugares']},{id:'m_servicio',texto:"Detalle fecha y hora del servicio.",tipo:'texto'},{id:'m_celular',texto:"¿Celular?",tipo:'opciones_texto',opciones:['957691331']},{id:'m_asistente',texto:"¿Asistente?",tipo:'opciones_texto',opciones:['DEBORA JASMIN SOTELO AHUANARI']},{id:'fin',texto:"Listo. Generando.",tipo:'final'}],
         'ATENCION': [{id:'a_oficio',texto:"Número de Oficio de Respuesta.",tipo:'texto'},{id:'a_fecha',texto:"¿Fecha de emisión?",tipo:'fecha'},{id:'a_dest_nombre',texto:"Nombre del Destinatario.",tipo:'texto'},{id:'a_dest_cargo',texto:"Cargo del Destinatario.",tipo:'texto'},{id:'a_tiene',texto:"¿El despacho cuenta con la información? Diga SI o NO.",tipo:'opciones',opciones:['SI','NO']},{id:'a_fin',texto:"Entendido. Generando.",tipo:'final'}],
         'PERICIAS': [{id:'p_codigo',texto:"Número de Carpeta.",tipo:'texto'},{id:'p_fecha',texto:"Fecha del oficio.",tipo:'fecha'},{id:'p_numDisp',texto:"Número de Disposición.",tipo:'texto'},{id:'p_imputado',texto:"Nombre del imputado.",tipo:'texto'},{id:'p_fin',texto:"Generando Pericia Básica.",tipo:'final'}]
@@ -322,12 +322,12 @@
         else if(flujoActual==='PERICIAS') generarWordPericiasChat();
     }
 
-    // === GENERADORES DE WORD ===
+    // === GENERADORES ===
     
-    // ENCABEZADO V54: Logo 0.5cm
+    // ENCABEZADO REAL (Header) - LOGO GRANDE
     function construirEncabezado(logo, fecha, nombreAnio) {
         const {Paragraph,TextRun,Table,TableRow,TableCell,ImageRun,AlignmentType,WidthType,BorderStyle}=docx;
-        let logoRun=logo?new ImageRun({data:logo,transformation:{width:140,height:133}}):new TextRun("");
+        let logoRun=logo?new ImageRun({data:logo,transformation:{width:190,height:170}}):new TextRun("");
         let txtAnio=nombreAnio?`“${nombreAnio.replace(/“|”|"/g,'')}”`:"";
         return new Table({ 
             width:{size:100,type:WidthType.PERCENTAGE}, 
@@ -353,7 +353,6 @@
         const codigo=document.getElementById('p_codigoUnico').value; const anio=document.getElementById('p_anio').value; const dia=document.getElementById('p_dia').value; const mes=document.getElementById('p_mes').value; const nombreAnio=document.getElementById('p_nombreAnio').value;
         const fechaTexto=`${dia} de ${mes} del ${anio}`;
         const numDispo=document.getElementById('p_numDisposicion').value; const fechaDispo=formatearFechaLarga(document.getElementById('p_fechaDisposicion').value); const decision=document.getElementById('p_decision').value; const imputados=document.getElementById('p_imputados').value; const plazo=document.getElementById('p_plazoActuaciones').value;
-        
         let delitosArr=[]; for(let i=0;i<document.getElementById('p_cantDelitos').value;i++) delitosArr.push(document.getElementById(`p_delito_${i}`).value);
         let delitoTexto=delitosArr.join(", ");
         const etapa=document.getElementById('p_etapaProcesal').value; const vencimiento=formatearFechaLarga(document.getElementById('p_plazoVencimiento').value); const involucrados=document.getElementById('p_cantInvolucrados').value; const dispoOrdena=document.getElementById('p_dispoOrdena').value;
@@ -385,9 +384,7 @@
 
         const cantP=document.getElementById('p_cantPericias').value;
         for(let i=1; i<=cantP; i++){
-            let tipo=document.getElementById(`p_tipoPericia_${i}`).value;
-            let obj=document.getElementById(`p_objPericia_${i}`).value;
-            let det=document.getElementById(`p_detPericia_${i}`).value;
+            let tipo=document.getElementById(`p_tipoPericia_${i}`).value; let obj=document.getElementById(`p_objPericia_${i}`).value; let det=document.getElementById(`p_detPericia_${i}`).value;
             children.push(new Paragraph({children:[new TextRun({text:`${i}. RESPECTO DE LA PERICIA ${tipo}`,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
             children.push(crearParrafoJustificado([{text:obj,bold:false}]));
             if(det) children.push(crearParrafoJustificado([{text:det,bold:false}]));
@@ -458,6 +455,7 @@
         children.push(crearParrafoJustificado([{text:"Sin otro particular, aprovecho la ocasión para expresarle las muestras de mi especial consideración y estima personal.",bold:false}]));
         children.push(new Paragraph({text:"\n\n"}));
         children.push(new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})]}));
+        
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, nombreAnio), `Oficio_Movilidad_${oficio}.docx`);
     }
 
@@ -497,8 +495,8 @@
         }));
 
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
-        children.push(new Paragraph({ indent: { left: 2835 }, children: [new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size: 24, font: "Times New Roman" })], spacing: { line: 276 } }));
-        if(refString) { children.push(new Paragraph({ indent: { left: 2835 }, children: [new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size: 24, font: "Times New Roman" }), new TextRun({ text: refString, size: 24, font: "Times New Roman" })], spacing: { line: 276 } })); }
+        children.push(new Paragraph({ indent: { left: 2835 }, children: [new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size:24, font: "Times New Roman" })], spacing: { line: 276 } }));
+        if(refString) { children.push(new Paragraph({ indent: { left: 2835 }, children: [new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: refString, size: 24, font: "Times New Roman" })], spacing: { line: 276 } })); }
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
 
         let cuerpo = [{text: `${saludo} a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `, bold: false}, {text: refSeleccionadaTexto, bold: false}, {text: ", ", bold: false}, {text: "CUMPLO CON INFORMAR", bold: true}];
@@ -563,18 +561,21 @@
     function crearTablaContacto(m, f, tf, ta) {const { Table, TableRow, TableCell, Paragraph, TextRun, WidthType, HeightRule } = docx;return new Table({width: { size: 90, type: WidthType.PERCENTAGE }, indent: { size: 720, type: WidthType.DXA },rows: [crearFilaContacto("CORREO ELECTRÓNICO MESA DE PARTES", m),crearFilaContacto("CORREO ELECTRÓNICO FISCAL ENCARGADO", f),crearFilaContacto("TELÉFONO FISCAL", tf),crearFilaContacto("TELÉFONO ASISTENTE", ta)]});}
     function crearViñeta(t,v){const {Paragraph,TextRun}=docx; return new Paragraph({bullet:{level:0},indent:{left:1440},children:[new TextRun({text:t,bold:true,size:24,font:"Times New Roman"}),new TextRun({text:v,size:24,font:"Times New Roman"})],spacing:{line:276}});}
     
-    // DOC GENERATOR (HEADER SEPARADO: Margen Header 0.5cm, Cuerpo 4.5cm, Laterales 4cm)
+    // DOC GENERATOR (HEADER SEPARADO: Margen Header 0.5cm = 284 twips, Cuerpo 4.5cm = 2551 twips, Laterales 4cm = 2268 twips)
     function crearYDescargarDoc(children, headerContent, nombre) { 
         const {Document,Packer,Footer,Paragraph,TextRun,Header}=docx; 
         const doc=new Document({
             sections:[{
                 properties:{
-                    pageMargins:{
-                        top: 2551, // 4.5 cm PARA EL TEXTO
-                        right: 2268, // 4 cm
-                        bottom: 1417, // 2.5 cm
-                        left: 2268, // 4 cm
-                        header: 284 // 0.5 cm PARA EL LOGO
+                    page: {
+                        margin: {
+                            top: 2551, // 4.5 cm (Cuerpo baja)
+                            right: 2268, // 4 cm
+                            bottom: 1417, // 2.5 cm
+                            left: 2268, // 4 cm
+                            header: 284, // 0.5 cm (Header sube)
+                            footer: 720 // 1.27 cm
+                        }
                     }
                 },
                 headers: { default: new Header({ children: [headerContent] }) },
