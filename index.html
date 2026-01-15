@@ -67,7 +67,7 @@
 <body>
 
     <div id="screen-menu" class="menu-wrapper">
-        <h1 class="menu-title">Bienvenida, Mi Amorcito.</h1>
+        <h1 class="menu-title">Bienvenida, Mi Tesorito .</h1>
         <p class="menu-subtitle">Sistema de Gestión Fiscal 2026</p>
         <div class="upload-area"><label>📂 Configuración:</label><span id="estadoImagen" class="text-err">Buscando logo.png...</span></div>
 
@@ -281,7 +281,7 @@
     const synth=window.speechSynthesis; const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition; const recognition=SpeechRecognition?new SpeechRecognition():null; if(recognition){recognition.lang='es-PE'; recognition.interimResults=false;}
     let datos={}, pasoActual=0, flujoActual="", preguntasActivas=[], isListening=false, silenceTimer=null;
     const flujos = {
-        'INICIO': [{id:'ini',texto:"Hola bubito. ¿Qué redactamos?",tipo:'opciones',opciones:['Movilidad','Atención','Pericias']}],
+        'INICIO': [{id:'ini',texto:"Hola debora. ¿Qué redactamos?",tipo:'opciones',opciones:['Movilidad','Atención','Pericias']}],
         'MOVILIDAD': [{id:'m_oficio',texto:"Dígame el N° de Oficio.",tipo:'texto'},{id:'m_fecha',texto:"¿Qué fecha tiene?",tipo:'fecha'},{id:'m_destinos',texto:"¿Cuántos lugares?",tipo:'opciones',opciones:['1 Lugar','2 Lugares']},{id:'m_servicio',texto:"Detalle servicio.",tipo:'texto'},{id:'m_celular',texto:"¿Celular?",tipo:'opciones_texto',opciones:['957691331']},{id:'m_asistente',texto:"¿Asistente?",tipo:'opciones_texto',opciones:['DEBORA JASMIN SOTELO AHUANARI']},{id:'fin',texto:"Generando...",tipo:'final'}],
         'ATENCION': [{id:'a_oficio',texto:"N° Oficio Respuesta.",tipo:'texto'},{id:'a_fecha',texto:"Fecha emisión.",tipo:'fecha'},{id:'a_dest_nombre',texto:"Nombre Destinatario.",tipo:'texto'},{id:'a_dest_cargo',texto:"Cargo Destinatario.",tipo:'texto'},{id:'a_tiene',texto:"¿Tiene info?",tipo:'opciones',opciones:['SI','NO']},{id:'a_fin',texto:"Generando...",tipo:'final'}],
         'PERICIAS': [{id:'p_codigo',texto:"N° Carpeta.",tipo:'texto'},{id:'p_fecha',texto:"Fecha.",tipo:'fecha'},{id:'p_numDisp',texto:"N° Disposición.",tipo:'texto'},{id:'p_imputado',texto:"Imputado.",tipo:'texto'},{id:'p_fin',texto:"Generando...",tipo:'final'}]
