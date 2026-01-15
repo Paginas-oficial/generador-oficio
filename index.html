@@ -327,7 +327,7 @@
     // ENCABEZADO REAL (Header) - LOGO GRANDE
     function construirEncabezado(logo, fecha, nombreAnio) {
         const {Paragraph,TextRun,Table,TableRow,TableCell,ImageRun,AlignmentType,WidthType,BorderStyle}=docx;
-        let logoRun=logo?new ImageRun({data:logo,transformation:{width:190,height:170}}):new TextRun("");
+        let logoRun=logo?new ImageRun({data:logo,transformation:{width:120,height:113}}):new TextRun("");
         let txtAnio=nombreAnio?`“${nombreAnio.replace(/“|”|"/g,'')}”`:"";
         return new Table({ 
             width:{size:100,type:WidthType.PERCENTAGE}, 
@@ -570,9 +570,9 @@
                     page: {
                         margin: {
                             top: 2551, // 4.5 cm (Cuerpo baja)
-                            right: 2268, // 4 cm
+                            right: 2068, // 4 cm
                             bottom: 1417, // 2.5 cm
-                            left: 2268, // 4 cm
+                            left: 2068, // 4 cm
                             header: 284, // 0.5 cm (Header sube)
                             footer: 720 // 1.27 cm
                         }
