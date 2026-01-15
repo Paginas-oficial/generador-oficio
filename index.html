@@ -358,7 +358,7 @@
         const etapa=document.getElementById('p_etapaProcesal').value; const vencimiento=formatearFechaLarga(document.getElementById('p_plazoVencimiento').value); const involucrados=document.getElementById('p_cantInvolucrados').value; const dispoOrdena=document.getElementById('p_dispoOrdena').value;
 
         const children=[];
-        for (let i = 0; i < 8; i++) { children.push(new Paragraph({text: ""})); }
+        for (let i = 0; i < 4; i++) { children.push(new Paragraph({text: ""})); }
         children.push(new Paragraph({children:[new TextRun({text:`OFICIO N° (${codigo}) ${anio}-MP-FN-2D-1FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({children:[new TextRun({text:"SEÑORES:",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({children:[new TextRun({text:"UNIDAD DE PERITOS FECOF",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
@@ -418,7 +418,7 @@
         const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType,Header}=docx;
         const oficio=document.getElementById('m_numOficio').value; const nombreAnio=document.getElementById('m_nombreAnio').value; const fecha=formatearFechaLarga(document.getElementById('m_fechaDocumento').value);
         const children=[];
-        for (let i = 0; i < 8; i++) { children.push(new Paragraph({text: ""})); }
+        for (let i = 0; i < 4; i++) { children.push(new Paragraph({text: ""})); }
         children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276,after:400}}));
         children.push(new Paragraph({children:[new TextRun({text:"Sr. Dr.",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({children:[new TextRun({text:"MIRKO DINO CANO GAMERO",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
@@ -482,7 +482,7 @@
         let refString = refsArr.map(r => `${r.letra} ${r.texto}-MP-FN-FSNCEDCF`).join("  ");
 
         const children = [];
-        for (let i = 0; i < 8; i++) { children.push(new Paragraph({text: ""})); }
+        for (let i = 0; i < 4; i++) { children.push(new Paragraph({text: ""})); }
         children.push(new Paragraph({
             children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})],
             spacing:{line:276, after: 400}
