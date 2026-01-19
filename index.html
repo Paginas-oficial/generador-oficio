@@ -410,7 +410,7 @@
         children.push(new Paragraph({text:"\n\n"}));
         children.push(new Paragraph({children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})],alignment:AlignmentType.CENTER}));
 
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, fechaTexto, nombreAnio), `Oficio_Pericia_${codigo}.docx`);
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, fechaTexto, nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
 
     // 2. GENERAR MOVILIDAD (COMPLETO)
@@ -458,7 +458,7 @@
         children.push(new Paragraph({text:"\n\n"}));
         children.push(new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})]}));
         
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, nombreAnio), `Oficio_Movilidad_${oficio}.docx`);
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
 
     // 3. GENERAR ATENCIÓN (COMPLETO)
@@ -522,7 +522,7 @@
         children.push(crearParrafoJustificado([{text: "Sin otro particular, renuevo a usted las expresiones de mi especial consideración y estima personal.", bold: false}]));
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fechaTexto}`, nombreAnio), `Oficio_Atencion_${oficioNum}.docx`);
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fechaTexto}`, nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
 
     // 4. CHAT GENERATORS
