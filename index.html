@@ -195,7 +195,7 @@
         </div>
         <button class="btn-generate" onclick="generarWordAtencion()">📄 GENERAR OFICIO</button>
     </div>
-    <div id="app-juzgado" class="app-container">
+   <div id="app-juzgado" class="app-container">
         <button class="btn-back" onclick="navegar('screen-menu')">⬅ Menú</button>
         <h1 style="color: #1e3a8a; text-align: center;">Oficio para Juzgado</h1>
 
@@ -211,45 +211,44 @@
         <div class="section-title" onclick="toggleSection('j-sec2')">2. DESTINATARIO Y REFERENCIA ▼</div>
         <div id="j-sec2" class="section-content">
             <div class="form-row">
-                <div class="form-col" style="flex: 0 0 150px;">
+                <div class="form-col" style="flex: 0 0 180px;">
                     <label>Título:</label>
                     <select id="j_titulo_dest">
                         <option value="Sr. Dr.">Sr. Dr.</option>
                         <option value="Sra. Dra.">Sra. Dra.</option>
+                        <option value="Sr. (a) Dr. (a)">Sr. (a) Dr. (a)</option>
                         <option value="Sr.">Sr.</option>
                         <option value="Sra.">Sra.</option>
-                        <option value="Dr.">Dr.</option>
-                        <option value="Dra.">Dra.</option>
                     </select>
                 </div>
-                <div class="form-col"><label>Juez / Destinatario:</label><input type="text" id="j_juez_nombre" placeholder="Ej: WALTHER HUAYLLANI..."></div>
+                <div class="form-col"><label>Nombre Juez:</label><input type="text" id="j_juez_nombre" placeholder="Ej: WALTHER HUAYLLANI..."></div>
             </div>
 
-            <label style="margin-top:10px">Juzgado:</label>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <span style="font-weight:bold;">JUEZ DEL</span>
-                <select id="j_numero_juzgado" style="width:200px;">
+            <label style="margin-top:10px">Cargo (Seleccione el Juzgado):</label>
+            <div style="display:flex; gap:10px; align-items:center; background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                <span style="font-weight:bold; font-size:13px;">JUEZ DEL</span>
+                <select id="j_numero_juzgado" style="width:220px; font-weight:bold;" onchange="actualizarExpediente()">
                     <option value="01">PRIMER</option>
                     <option value="02">SEGUNDO</option>
                     <option value="29">VIGÉCIMONOVENO</option>
                     <option value="30">TRIGÉCIMO</option>
                 </select>
-                <span>JUZGADO DE INVESTIGACIÓN PREPARATORIA...</span>
+                <span style="font-size:12px;">JUZGADO DE INV. PREPARATORIA...</span>
             </div>
             
             <div class="form-row" style="margin-top:15px">
                 <div class="form-col">
-                    <label>Expediente N°:</label>
+                    <label>Expediente N° (Automático):</label>
                     <div style="display:flex; align-items:center; gap:5px;">
-                        <span>02316-2025-0-1826-JR-PE-</span>
-                        <input type="text" id="j_exp_final" placeholder="Auto" readonly style="width:50px; background:#e5e7eb; font-weight:bold;">
+                        <span style="font-size:14px;">02316-2025-0-1826-JR-PE-</span>
+                        <input type="text" id="j_exp_final" value="01" readonly style="width:60px; background:#e5e7eb; font-weight:bold; text-align:center;">
                     </div>
                 </div>
                 <div class="form-col"><label>Carpeta Fiscal N°:</label><input type="text" id="j_carpeta"></div>
             </div>
             <div class="form-row">
-                <div class="form-col"><label>Casilla SINOE (Juzgado):</label><input type="text" id="j_casilla_juzgado" value="60369"></div>
-                <div class="form-col"><label>Resolución que se responde:</label><input type="text" id="j_resolucion" placeholder="Ej: 01"></div>
+                <div class="form-col"><label>Casilla SINOE:</label><input type="text" id="j_casilla_juzgado" value="60369"></div>
+                <div class="form-col"><label>Resolución N°:</label><input type="text" id="j_resolucion" placeholder="Ej: 01"></div>
             </div>
         </div>
 
@@ -596,71 +595,122 @@
         children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fechaTexto}`, nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
-    // === LÓGICA NUEVA: OFICIO JUZGADO ===
-    
-    let contadorInvestigados = 0;
+// === LÓGICA JUZGADO Y INVESTIGADOS ===
+    let contadorInvestigados = 0; // Se declara UNA sola vez aquí
 
-    // Función para añadir cajitas de investigados dinámicamente
-// Función mejorada para añadir investigados
+    // Actualiza el numerito del expediente (01, 02, 29, 30)
+    function actualizarExpediente() {
+        const sel = document.getElementById('j_numero_juzgado');
+        const inputExp = document.getElementById('j_exp_final');
+        if(sel && inputExp) {
+            inputExp.value = sel.value;
+        }
+    }
+
+    // Función principal para agregar las cajitas
     function agregarInvestigado() {
         const c = document.getElementById('container-investigados');
         const id = contadorInvestigados;
+        
         const html = `
-            <div id="inv-${id}" style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; margin-bottom:15px; border-radius:8px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <label style="color:#1e3a8a; font-weight:bold;">Investigado ${id + 1}</label>
-                    <button onclick="document.getElementById('inv-${id}').remove()" style="color:red; border:none; cursor:pointer;">✖ Eliminar</button>
-                </div>
-                
-                <input type="text" id="j_inv_nombre_${id}" placeholder="NOMBRE COMPLETO" style="font-weight:bold; margin-bottom:10px; background:#fff;">
+            <div id="inv-${id}" style="background:#f8fafc; border:1px solid #cbd5e1; padding:15px; margin-bottom:15px; border-radius:8px; position:relative;">
+                <button onclick="document.getElementById('inv-${id}').remove()" style="position:absolute; right:10px; top:10px; color:red; border:none; background:none; cursor:pointer; font-weight:bold;">✖</button>
+                <label style="color:#1e3a8a; font-weight:bold; display:block; margin-bottom:5px;">Investigado ${id + 1}:</label>
+                <input type="text" id="j_inv_nombre_${id}" placeholder="NOMBRE COMPLETO" style="font-weight:bold; margin-bottom:10px; border:2px solid #e2e8f0; width:100%;">
 
-                ${crearCampoDinamico(id, 'cel', 'Celular')}
-                ${crearCampoDinamico(id, 'abogado', 'Abogado')}
-                ${crearCampoDinamico(id, 'correo', 'Correo')}
-                ${crearCampoDinamico(id, 'domicilio', 'Domicilio Real')}
-                ${crearCampoDinamico(id, 'casilla', 'Casilla Electrónica')}
+                ${crearCampoTags(id, 'cel', 'Celular')}
+                
+                <div style="display:flex; gap:5px; margin-bottom:8px; align-items:center; flex-wrap:wrap;">
+                    <label style="width:80px; font-size:12px; margin:0;">Abogado:</label>
+                    <input type="text" id="j_inv_val_abogado_${id}" style="flex:2; padding:6px; min-width:150px;" placeholder="Nombre del Abogado">
+                    <span id="span_cal_${id}" style="font-size:11px; white-space:nowrap; font-weight:bold; color:#444;">con Reg. CAL N.°</span>
+                    <input type="text" id="j_inv_cal_${id}" style="width:70px; padding:6px;" placeholder="N°">
+                    <select id="j_inv_tag_abogado_${id}" style="width:25px; padding:0; font-size:14px;" onchange="verificarAbogado(${id})" title="Marcar como Desconocido">
+                        <option value="dato">✔️</option>
+                        <option value="NO_INFO">❌</option>
+                    </select>
+                </div>
+
+                ${crearCampoTags(id, 'correo', 'Correo')}
+
+                ${crearCampoSimple(id, 'domicilio', 'Domicilio Real')}
+                ${crearCampoSimple(id, 'casilla', 'Casilla Elect.')}
             </div>
         `;
         c.insertAdjacentHTML('beforeend', html);
         contadorInvestigados++;
     }
 
-    function crearCampoDinamico(id, tipo, label) {
+    // --- FUNCIONES AUXILIARES ---
+
+    function crearCampoTags(id, tipo, label) {
         return `
-            <div style="margin-bottom:8px; border-bottom:1px dashed #ccc; padding-bottom:5px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label style="font-size:12px;">${label}:</label>
-                    <select id="j_inv_tipo_${tipo}_${id}" style="width:auto; padding:2px; font-size:11px;" onchange="ajustarInput('${tipo}', ${id})">
-                        <option value="dato">Dato Conocido</option>
-                        <option value="desconocido">No se cuenta con información...</option>
-                    </select>
-                </div>
-                <input type="text" id="j_inv_val_${tipo}_${id}" placeholder="Escriba el dato..." style="margin-top:2px;">
+            <div style="display:flex; gap:10px; margin-bottom:8px; align-items:center;">
+                <label style="width:80px; font-size:12px; margin:0;">${label}:</label>
+                <input type="text" id="j_inv_val_${tipo}_${id}" style="flex:1; padding:6px;" placeholder="Ingrese dato...">
+                <select id="j_inv_tag_${tipo}_${id}" style="width:110px; padding:6px; font-size:11px;" onchange="verificarDesconocido('${tipo}', ${id})">
+                    <option value="">(Sin etiqueta)</option>
+                    <option value="(abogado)">(abogado)</option>
+                    <option value="(otros)">(otros)</option>
+                    <option value="NO_INFO">DESCONOCIDO</option>
+                </select>
             </div>
         `;
     }
 
-    function ajustarInput(tipo, id) {
-        const sel = document.getElementById(`j_inv_tipo_${tipo}_${id}`).value;
+    function crearCampoSimple(id, tipo, label) {
+        return `
+            <div style="display:flex; gap:10px; margin-bottom:8px; align-items:center;">
+                <label style="width:80px; font-size:12px; margin:0;">${label}:</label>
+                <input type="text" id="j_inv_val_${tipo}_${id}" style="flex:1; padding:6px;" placeholder="Ingrese dato...">
+                <select id="j_inv_tag_${tipo}_${id}" style="width:25px; padding:0; font-size:14px;" onchange="verificarDesconocido('${tipo}', ${id})" title="Marcar como Desconocido">
+                    <option value="dato">✔️</option>
+                    <option value="NO_INFO">❌</option>
+                </select>
+            </div>
+        `;
+    }
+
+    function verificarDesconocido(tipo, id) {
+        const sel = document.getElementById(`j_inv_tag_${tipo}_${id}`).value;
         const inp = document.getElementById(`j_inv_val_${tipo}_${id}`);
-        if(sel === 'desconocido') {
+        if (sel === "NO_INFO") {
             inp.value = "A la fecha no se cuenta con dicha información dado que el investigado aún no se ha apersonado al proceso.";
             inp.readOnly = true;
-            inp.style.backgroundColor = "#eee";
+            inp.style.backgroundColor = "#f3f4f6";
+            inp.style.color = "#666";
+            inp.style.fontSize = "11px";
         } else {
-            inp.value = "";
+            if(inp.readOnly) inp.value = "";
             inp.readOnly = false;
             inp.style.backgroundColor = "#fff";
+            inp.style.color = "#000";
+            inp.style.fontSize = "";
         }
     }
-    
-    // Auto-actualizar número de expediente según juzgado
-    document.addEventListener('change', function(e) {
-        if(e.target && e.target.id == 'j_numero_juzgado'){
-            document.getElementById('j_exp_final').value = e.target.value;
-        }
-    });
 
+    function verificarAbogado(id) {
+        const sel = document.getElementById(`j_inv_tag_abogado_${id}`).value;
+        const inpNombre = document.getElementById(`j_inv_val_abogado_${id}`);
+        const inpCal = document.getElementById(`j_inv_cal_${id}`);
+        const spanCal = document.getElementById(`span_cal_${id}`);
+        
+        if (sel === "NO_INFO") {
+            inpNombre.value = "A la fecha no se cuenta con dicha información dado que el investigado aún no se ha apersonado al proceso.";
+            inpNombre.readOnly = true;
+            inpNombre.style.backgroundColor = "#f3f4f6";
+            inpNombre.style.fontSize = "11px";
+            inpCal.style.display = "none";
+            spanCal.style.display = "none";
+        } else {
+            if(inpNombre.readOnly) inpNombre.value = "";
+            inpNombre.readOnly = false;
+            inpNombre.style.backgroundColor = "#fff";
+            inpNombre.style.fontSize = "";
+            inpCal.style.display = "inline-block";
+            spanCal.style.display = "inline";
+        }
+    }
     // Función para armar el Word del Juzgado
 function generarWordJuzgado() {
         const { Paragraph, TextRun, AlignmentType, UnderlineType } = docx;
@@ -754,25 +804,56 @@ function generarWordJuzgado() {
                 }));
                 
                 // Campos
-                const campos = ['cel', 'abogado', 'correo', 'domicilio', 'casilla'];
-                const etiquetas = ['Celular', 'Abogado', 'Correo', 'Domicilio Real/Procesal', 'Casilla Electrónica'];
-                
-                campos.forEach((campo, idx) => {
-                    const val = document.getElementById(`j_inv_val_${campo}_${id}`).value || "---";
-                    children.push(crearLineaDetalle(`${etiquetas[idx]}: `, val));
-                });
-                
-                contadorEnum++;
-            }
-        });
+             // Campos a procesar
+                const campos = [
+                    {key: 'cel', label: 'Celular'},
+                    {key: 'abogado', label: 'Abogado'},
+                    {key: 'correo', label: 'Correo'},
+                    {key: 'domicilio', label: 'Domicilio Real'},
+                    {key: 'casilla', label: 'Casilla Electrónica'}
+                ];
 
+                campos.forEach(c => {
+                    let val = document.getElementById(`j_inv_val_${c.key}_${id}`).value || "---";
+                    
+                    // 1. CASO ABOGADO (Con CAL)
+                    if (c.key === 'abogado') {
+                        const tagAbogado = document.getElementById(`j_inv_tag_abogado_${id}`).value;
+                        const calInput = document.getElementById(`j_inv_cal_${id}`);
+                        
+                        if (tagAbogado !== "NO_INFO" && calInput && calInput.value) {
+                            val += ` con Reg. CAL N.° ${calInput.value}`;
+                        }
+                    } 
+                    // 2. CASO CELULAR Y CORREO (Con etiquetas opcionales)
+                    else if (c.key === 'cel' || c.key === 'correo') {
+                        const tagSelect = document.getElementById(`j_inv_tag_${c.key}_${id}`);
+                        if (tagSelect) {
+                            const tag = tagSelect.value;
+                            if(tag && tag !== "NO_INFO" && tag !== "dato") { 
+                                val += ` ${tag}`;
+                            }
+                        }
+                    }
+                    // 3. CASO DOMICILIO Y CASILLA (Sin etiquetas extra, solo el valor o el texto de desconocido)
+                    
+                    // Generar línea en Word
+                    children.push(new Paragraph({
+                        indent: { left: 720 },
+                        children: [
+                            new TextRun({ text: `${c.label}: `, bold: true, size: 24, font: "Times New Roman" }),
+                            new TextRun({ text: val, size: 24, font: "Times New Roman" })
+                        ],
+                        spacing: { line: 276 }
+                    }));
+                });
         // 7. Cierre
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
         children.push(crearParrafoJustificado([{ text: "Sin otro particular, hago propicia la oportunidad para expresarle los sentimientos de mi especial consideración y estima personal.", bold: false }]));
         
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })] }));
-        children.push(new Paragraph({ children: [new TextRun({ text: "NICA/ djsa.", size: 18, font: "Times New Roman" })] })); 
+         
 
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, anioNombre), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
