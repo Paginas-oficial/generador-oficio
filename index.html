@@ -481,7 +481,9 @@
         children.push(new Paragraph({text:"\n\n"}));
         children.push(new Paragraph({children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})],alignment:AlignmentType.CENTER}));
 
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, fechaTexto, nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
+        // CAMBIO: Usamos ${codigo} en lugar de ${oficioNum}
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, fechaTexto, nombreAnio), `OFICIO N.°-${codigo}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
+    
     }
 
     // 2. GENERAR MOVILIDAD (COMPLETO)
@@ -529,7 +531,9 @@
         children.push(new Paragraph({text:"\n\n"}));
         children.push(new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})]}));
         
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
+        // CAMBIO: Usamos ${oficio} en lugar de ${oficioNum}
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, nombreAnio), `OFICIO N.°-${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
+    
     }
 
     // 3. GENERAR ATENCIÓN (COMPLETO)
