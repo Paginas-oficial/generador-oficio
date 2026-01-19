@@ -210,11 +210,41 @@
 
         <div class="section-title" onclick="toggleSection('j-sec2')">2. DESTINATARIO Y REFERENCIA ▼</div>
         <div id="j-sec2" class="section-content">
-            <label>Juez / Destinatario:</label><input type="text" id="j_juez_nombre" placeholder="Ej: WALTHER HUAYLLANI CHOQUEPUMA">
-            <label style="margin-top:10px">Cargo / Juzgado:</label><input type="text" id="j_juez_cargo" placeholder="Ej: JUEZ DEL PRIMER JUZGADO...">
+            <div class="form-row">
+                <div class="form-col" style="flex: 0 0 150px;">
+                    <label>Título:</label>
+                    <select id="j_titulo_dest">
+                        <option value="Sr. Dr.">Sr. Dr.</option>
+                        <option value="Sra. Dra.">Sra. Dra.</option>
+                        <option value="Sr.">Sr.</option>
+                        <option value="Sra.">Sra.</option>
+                        <option value="Dr.">Dr.</option>
+                        <option value="Dra.">Dra.</option>
+                    </select>
+                </div>
+                <div class="form-col"><label>Juez / Destinatario:</label><input type="text" id="j_juez_nombre" placeholder="Ej: WALTHER HUAYLLANI..."></div>
+            </div>
+
+            <label style="margin-top:10px">Juzgado:</label>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span style="font-weight:bold;">JUEZ DEL</span>
+                <select id="j_numero_juzgado" style="width:200px;">
+                    <option value="01">PRIMER</option>
+                    <option value="02">SEGUNDO</option>
+                    <option value="29">VIGÉCIMONOVENO</option>
+                    <option value="30">TRIGÉCIMO</option>
+                </select>
+                <span>JUZGADO DE INVESTIGACIÓN PREPARATORIA...</span>
+            </div>
             
             <div class="form-row" style="margin-top:15px">
-                <div class="form-col"><label>Expediente N°:</label><input type="text" id="j_expediente"></div>
+                <div class="form-col">
+                    <label>Expediente N°:</label>
+                    <div style="display:flex; align-items:center; gap:5px;">
+                        <span>02316-2025-0-1826-JR-PE-</span>
+                        <input type="text" id="j_exp_final" placeholder="Auto" readonly style="width:50px; background:#e5e7eb; font-weight:bold;">
+                    </div>
+                </div>
                 <div class="form-col"><label>Carpeta Fiscal N°:</label><input type="text" id="j_carpeta"></div>
             </div>
             <div class="form-row">
@@ -571,52 +601,95 @@
     let contadorInvestigados = 0;
 
     // Función para añadir cajitas de investigados dinámicamente
+// Función mejorada para añadir investigados
     function agregarInvestigado() {
         const c = document.getElementById('container-investigados');
         const id = contadorInvestigados;
         const html = `
             <div id="inv-${id}" style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; margin-bottom:15px; border-radius:8px;">
-                <div style="display:flex; justify-content:space-between;">
-                    <label style="color:#1e3a8a;">Investigado ${id + 1}</label>
-                    <button onclick="document.getElementById('inv-${id}').remove()" style="color:red; border:none; background:none; cursor:pointer;">✖ Eliminar</button>
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <label style="color:#1e3a8a; font-weight:bold;">Investigado ${id + 1}</label>
+                    <button onclick="document.getElementById('inv-${id}').remove()" style="color:red; border:none; cursor:pointer;">✖ Eliminar</button>
                 </div>
-                <input type="text" id="j_inv_nombre_${id}" placeholder="NOMBRE COMPLETO (Mayúsculas)" style="font-weight:bold; margin-bottom:5px;">
-                <div class="form-row" style="gap:10px;">
-                    <input type="text" id="j_inv_cel_${id}" placeholder="Celular">
-                    <input type="text" id="j_inv_abogado_${id}" placeholder="Abogado y Reg. CAL">
-                </div>
-                <div class="form-row" style="gap:10px;">
-                    <input type="text" id="j_inv_correo_${id}" placeholder="Correo(s)">
-                    <input type="text" id="j_inv_casilla_${id}" placeholder="Casilla Electrónica">
-                </div>
-                <input type="text" id="j_inv_domicilio_${id}" placeholder="Domicilio Real / Procesal">
+                
+                <input type="text" id="j_inv_nombre_${id}" placeholder="NOMBRE COMPLETO" style="font-weight:bold; margin-bottom:10px; background:#fff;">
+
+                ${crearCampoDinamico(id, 'cel', 'Celular')}
+                ${crearCampoDinamico(id, 'abogado', 'Abogado')}
+                ${crearCampoDinamico(id, 'correo', 'Correo')}
+                ${crearCampoDinamico(id, 'domicilio', 'Domicilio Real')}
+                ${crearCampoDinamico(id, 'casilla', 'Casilla Electrónica')}
             </div>
         `;
         c.insertAdjacentHTML('beforeend', html);
         contadorInvestigados++;
     }
 
+    function crearCampoDinamico(id, tipo, label) {
+        return `
+            <div style="margin-bottom:8px; border-bottom:1px dashed #ccc; padding-bottom:5px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label style="font-size:12px;">${label}:</label>
+                    <select id="j_inv_tipo_${tipo}_${id}" style="width:auto; padding:2px; font-size:11px;" onchange="ajustarInput('${tipo}', ${id})">
+                        <option value="dato">Dato Conocido</option>
+                        <option value="desconocido">No se cuenta con información...</option>
+                    </select>
+                </div>
+                <input type="text" id="j_inv_val_${tipo}_${id}" placeholder="Escriba el dato..." style="margin-top:2px;">
+            </div>
+        `;
+    }
+
+    function ajustarInput(tipo, id) {
+        const sel = document.getElementById(`j_inv_tipo_${tipo}_${id}`).value;
+        const inp = document.getElementById(`j_inv_val_${tipo}_${id}`);
+        if(sel === 'desconocido') {
+            inp.value = "A la fecha no se cuenta con dicha información dado que el investigado aún no se ha apersonado al proceso.";
+            inp.readOnly = true;
+            inp.style.backgroundColor = "#eee";
+        } else {
+            inp.value = "";
+            inp.readOnly = false;
+            inp.style.backgroundColor = "#fff";
+        }
+    }
+    
+    // Auto-actualizar número de expediente según juzgado
+    document.addEventListener('change', function(e) {
+        if(e.target && e.target.id == 'j_numero_juzgado'){
+            document.getElementById('j_exp_final').value = e.target.value;
+        }
+    });
+
     // Función para armar el Word del Juzgado
-    function generarWordJuzgado() {
+function generarWordJuzgado() {
         const { Paragraph, TextRun, AlignmentType, UnderlineType } = docx;
         
-        // 1. Recoger datos simples
+        // Datos
         const oficio = document.getElementById('j_oficio').value;
         const fecha = formatearFechaLarga(document.getElementById('j_fecha').value);
         const anioNombre = document.getElementById('j_anio_nombre').value;
+        
+        const tituloDest = document.getElementById('j_titulo_dest').value;
         const juezNombre = document.getElementById('j_juez_nombre').value;
-        const juezCargo = document.getElementById('j_juez_cargo').value;
-        const expediente = document.getElementById('j_expediente').value;
+        
+        // Armar cargo del juez
+        const selJuzgado = document.getElementById('j_numero_juzgado');
+        const txtJuzgado = selJuzgado.options[selJuzgado.selectedIndex].text; // PRIMER, SEGUNDO...
+        const juezCargo = `JUEZ DEL ${txtJuzgado} JUZGADO DE INVESTIGACIÓN PREPARATORIA DE CORRUPCIÓN DE FUNCIONARIOS Y CRIMEN ORGANIZADO DE LA CORTE SUPERIOR DE JUSTICIA DE LIMA.`;
+        
+        const expNum = document.getElementById('j_exp_final').value || selJuzgado.value;
+        const expediente = `02316-2025-0-1826-JR-PE-${expNum}`;
         const carpeta = document.getElementById('j_carpeta').value;
         const casillaJuzgado = document.getElementById('j_casilla_juzgado').value;
         const resolucion = document.getElementById('j_resolucion').value;
 
         const children = [];
 
-        // 2. Espaciado inicial (para separar del logo)
-        for (let i = 0; i < 8; i++) children.push(new Paragraph({text: ""}));
+        // 1. Espaciado MENOR (para subir el oficio)
+        for (let i = 0; i < 3; i++) children.push(new Paragraph({text: ""})); // Solo 3 enters
 
-        // 3. Cabecera del Oficio (Fecha y Número)
+        // 2. Cabecera
         children.push(new Paragraph({
             alignment: AlignmentType.RIGHT,
             children: [new TextRun({ text: `Lima, ${fecha}`, bold: true, size: 24, font: "Times New Roman" })]
@@ -626,29 +699,37 @@
             children: [new TextRun({ text: `OFICIO N. º ${oficio}-MP-FN-2ºDF-1º FPCEDCF-LIMA`, bold: true, underline: { type: UnderlineType.SINGLE }, size: 24, font: "Times New Roman" })]
         }));
 
-        // 4. Destinatario
-        children.push(new Paragraph({ children: [new TextRun({ text: "Sr. Dr.", bold: true, size: 24, font: "Times New Roman" })] }));
+        // 3. Destinatario
+        children.push(new Paragraph({ children: [new TextRun({ text: tituloDest, bold: true, size: 24, font: "Times New Roman" })] }));
         children.push(new Paragraph({ children: [new TextRun({ text: juezNombre, bold: true, size: 24, font: "Times New Roman" })] }));
         children.push(new Paragraph({ children: [new TextRun({ text: juezCargo, bold: true, size: 24, font: "Times New Roman" })] }));
         children.push(new Paragraph({ text: "Presente. –", spacing: { before: 200, after: 200 }, children: [new TextRun({ text: "Presente. –", size: 24, font: "Times New Roman" })] }));
 
-        // 5. Referencias
+        // 4. Referencias (MOVIDO A LA DERECHA/CENTRO)
+        // Usamos indent left ~7.5cm (4252 twips) para que empiece en el centro
         children.push(new Paragraph({
-            indent: { left: 1440 }, // Sangría francesa visual
+            indent: { left: 4252 }, 
             children: [
                 new TextRun({ text: "Referencia: ", bold: true, size: 24, font: "Times New Roman" }),
-                new TextRun({ text: `a) Expediente N.º ${expediente}, b) Carpeta Fiscal N. º ${carpeta}`, size: 24, font: "Times New Roman" })
+                new TextRun({ text: `a) Expediente N.º ${expediente}`, size: 24, font: "Times New Roman" })
             ]
         }));
         children.push(new Paragraph({
-            indent: { left: 1440 },
+            indent: { left: 4252 }, // Alineado con la de arriba
+            children: [
+                new TextRun({ text: "", size: 24, font: "Times New Roman" }), // Espacio vacío para alinear b)
+                new TextRun({ text: `b) Carpeta Fiscal N. º ${carpeta}`, size: 24, font: "Times New Roman" })
+            ]
+        }));
+        children.push(new Paragraph({
+            indent: { left: 4252 },
             children: [
                 new TextRun({ text: "Casilla Electrónica: ", bold: true, size: 24, font: "Times New Roman" }),
                 new TextRun({ text: `SINOE N. º ${casillaJuzgado}`, size: 24, font: "Times New Roman" })
             ]
         }));
 
-        // 6. Cuerpo del texto (Párrafo Introductorio)
+        // 5. Cuerpo
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
         children.push(crearParrafoJustificado([
             { text: "Tengo el agrado de dirigirme a usted, a fin de saludarle cordialmente y a su vez, ", bold: false },
@@ -657,47 +738,44 @@
         ]));
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
 
-        // 7. Bucle para los Investigados (Aquí está la parte de aprendizaje)
-        // Recorremos todos los elementos que agregaste con el botón
-        const inputsNombre = document.querySelectorAll('[id^="j_inv_nombre_"]'); // Busca todos los inputs de nombre
-        
-        inputsNombre.forEach((input, index) => {
-            // Sacamos el ID numérico del input actual (ej: j_inv_nombre_0 -> id=0)
-            const id = input.id.split('_')[3]; 
-            
-            // Recuperamos los valores de los otros campos usando ese ID
-            const nombre = input.value;
-            const cel = document.getElementById(`j_inv_cel_${id}`).value || "---";
-            const abo = document.getElementById(`j_inv_abogado_${id}`).value || "---";
-            const mail = document.getElementById(`j_inv_correo_${id}`).value || "---";
-            const casilla = document.getElementById(`j_inv_casilla_${id}`).value || "---";
-            const dom = document.getElementById(`j_inv_domicilio_${id}`).value || "---";
+        // 6. Lista Investigados (Enumerada)
+        const inputsNombre = document.querySelectorAll('[id^="j_inv_nombre_"]');
+        let contadorEnum = 1;
 
+        inputsNombre.forEach((input) => {
+            const id = input.id.split('_')[3]; 
+            const nombre = input.value;
+            
             if(nombre) {
-                // Nombre en negrita y mayúsculas
-                children.push(new Paragraph({ children: [new TextRun({ text: nombre.toUpperCase(), bold: true, size: 24, font: "Times New Roman" })], spacing:{before: 200} }));
+                // Nombre enumerado
+                children.push(new Paragraph({ 
+                    children: [new TextRun({ text: `${contadorEnum}. ${nombre.toUpperCase()}:`, bold: true, size: 24, font: "Times New Roman" })], 
+                    spacing:{before: 200} 
+                }));
                 
-                // Detalles (Usamos la función auxiliar 'crearLineaDetalle' para no repetir código)
-                children.push(crearLineaDetalle("Celular: ", cel));
-                children.push(crearLineaDetalle("Abogado: ", abo));
-                children.push(crearLineaDetalle("Correo: ", mail));
-                children.push(crearLineaDetalle("Domicilio: ", dom));
-                children.push(crearLineaDetalle("Casilla Electrónica: ", `N.º ${casilla}`));
+                // Campos
+                const campos = ['cel', 'abogado', 'correo', 'domicilio', 'casilla'];
+                const etiquetas = ['Celular', 'Abogado', 'Correo', 'Domicilio Real/Procesal', 'Casilla Electrónica'];
+                
+                campos.forEach((campo, idx) => {
+                    const val = document.getElementById(`j_inv_val_${campo}_${id}`).value || "---";
+                    children.push(crearLineaDetalle(`${etiquetas[idx]}: `, val));
+                });
+                
+                contadorEnum++;
             }
         });
 
-        // 8. Despedida
+        // 7. Cierre
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
         children.push(crearParrafoJustificado([{ text: "Sin otro particular, hago propicia la oportunidad para expresarle los sentimientos de mi especial consideración y estima personal.", bold: false }]));
         
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })] }));
-        children.push(new Paragraph({ children: [new TextRun({ text: "NICA/ djsa.", size: 18, font: "Times New Roman" })] })); // Firma pequeña
+        children.push(new Paragraph({ children: [new TextRun({ text: "NICA/ djsa.", size: 18, font: "Times New Roman" })] })); 
 
-        // 9. Generar archivo
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, anioNombre), `Oficio_Juzgado_${oficio}.docx`);
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, anioNombre), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
-
     // Pequeña ayuda para crear las líneas "Negrita: Texto normal"
     function crearLineaDetalle(label, valor) {
         const { Paragraph, TextRun } = docx;
