@@ -596,9 +596,13 @@
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fechaTexto}`, nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
 // === LÓGICA JUZGADO Y INVESTIGADOS ===
-    let contadorInvestigados = 0; // Se declara UNA sola vez aquí
+// =======================================================
+    // ===       LÓGICA OFICIO JUZGADO (BLOQUE ÚNICO)      ===
+    // =======================================================
 
-    // Actualiza el numerito del expediente (01, 02, 29, 30)
+    let contadorInvestigados = 0;
+
+    // Actualiza el número de expediente automáticamente
     function actualizarExpediente() {
         const sel = document.getElementById('j_numero_juzgado');
         const inputExp = document.getElementById('j_exp_final');
@@ -607,7 +611,7 @@
         }
     }
 
-    // Función principal para agregar las cajitas
+    // Agrega una nueva tarjeta de investigado al formulario
     function agregarInvestigado() {
         const c = document.getElementById('container-investigados');
         const id = contadorInvestigados;
@@ -641,7 +645,7 @@
         contadorInvestigados++;
     }
 
-    // --- FUNCIONES AUXILIARES ---
+    // --- FUNCIONES AUXILIARES PARA EL HTML ---
 
     function crearCampoTags(id, tipo, label) {
         return `
@@ -711,11 +715,13 @@
             spanCal.style.display = "inline";
         }
     }
-    // Función para armar el Word del Juzgado
-function generarWordJuzgado() {
+
+    // --- GENERADOR DE WORD JUZGADO ---
+
+    function generarWordJuzgado() {
         const { Paragraph, TextRun, AlignmentType, UnderlineType } = docx;
         
-        // Datos
+        // 1. Recogemos datos
         const oficio = document.getElementById('j_oficio').value;
         const fecha = formatearFechaLarga(document.getElementById('j_fecha').value);
         const anioNombre = document.getElementById('j_anio_nombre').value;
@@ -723,12 +729,12 @@ function generarWordJuzgado() {
         const tituloDest = document.getElementById('j_titulo_dest').value;
         const juezNombre = document.getElementById('j_juez_nombre').value;
         
-        // Armar cargo del juez
+        // Armamos el cargo del juez
         const selJuzgado = document.getElementById('j_numero_juzgado');
-        const txtJuzgado = selJuzgado.options[selJuzgado.selectedIndex].text; // PRIMER, SEGUNDO...
+        const txtJuzgado = selJuzgado.options[selJuzgado.selectedIndex].text;
         const juezCargo = `JUEZ DEL ${txtJuzgado} JUZGADO DE INVESTIGACIÓN PREPARATORIA DE CORRUPCIÓN DE FUNCIONARIOS Y CRIMEN ORGANIZADO DE LA CORTE SUPERIOR DE JUSTICIA DE LIMA.`;
         
-        const expNum = document.getElementById('j_exp_final').value || selJuzgado.value;
+        const expNum = document.getElementById('j_exp_final').value;
         const expediente = `02316-2025-0-1826-JR-PE-${expNum}`;
         const carpeta = document.getElementById('j_carpeta').value;
         const casillaJuzgado = document.getElementById('j_casilla_juzgado').value;
@@ -736,51 +742,55 @@ function generarWordJuzgado() {
 
         const children = [];
 
-        // 1. Espaciado MENOR (para subir el oficio)
-        for (let i = 0; i < 3; i++) children.push(new Paragraph({text: ""})); // Solo 3 enters
+        // 2. ESPACIADO
+        for(let i=0; i<6; i++) children.push(new Paragraph({text:""})); 
 
-        // 2. Cabecera
+        // 3. Fecha y Oficio
         children.push(new Paragraph({
             alignment: AlignmentType.RIGHT,
             children: [new TextRun({ text: `Lima, ${fecha}`, bold: true, size: 24, font: "Times New Roman" })]
         }));
         children.push(new Paragraph({
-            spacing: { before: 200, after: 200 },
-            children: [new TextRun({ text: `OFICIO N. º ${oficio}-MP-FN-2ºDF-1º FPCEDCF-LIMA`, bold: true, underline: { type: UnderlineType.SINGLE }, size: 24, font: "Times New Roman" })]
+            children: [new TextRun({ text: `OFICIO N. º ${oficio}-MP-FN-2ºDF-1º FPCEDCF-LIMA`, bold: true, underline: { type: UnderlineType.SINGLE }, size: 24, font: "Times New Roman" })],
+            spacing: { before: 300, after: 300 }
         }));
 
-        // 3. Destinatario
+        // 4. Destinatario
         children.push(new Paragraph({ children: [new TextRun({ text: tituloDest, bold: true, size: 24, font: "Times New Roman" })] }));
         children.push(new Paragraph({ children: [new TextRun({ text: juezNombre, bold: true, size: 24, font: "Times New Roman" })] }));
         children.push(new Paragraph({ children: [new TextRun({ text: juezCargo, bold: true, size: 24, font: "Times New Roman" })] }));
-        children.push(new Paragraph({ text: "Presente. –", spacing: { before: 200, after: 200 }, children: [new TextRun({ text: "Presente. –", size: 24, font: "Times New Roman" })] }));
+        children.push(new Paragraph({ 
+            children: [new TextRun({ text: "Presente. –", size: 24, font: "Times New Roman" })],
+            spacing: { before: 200, after: 200 }
+        }));
 
-        // 4. Referencias (MOVIDO A LA DERECHA/CENTRO)
-        // Usamos indent left ~7.5cm (4252 twips) para que empiece en el centro
+        // 5. Referencia y Casilla
+        const indentRef = 4500; 
+        
         children.push(new Paragraph({
-            indent: { left: 4252 }, 
+            indent: { left: indentRef },
             children: [
                 new TextRun({ text: "Referencia: ", bold: true, size: 24, font: "Times New Roman" }),
                 new TextRun({ text: `a) Expediente N.º ${expediente}`, size: 24, font: "Times New Roman" })
             ]
         }));
         children.push(new Paragraph({
-            indent: { left: 4252 }, // Alineado con la de arriba
+            indent: { left: indentRef },
             children: [
-                new TextRun({ text: "", size: 24, font: "Times New Roman" }), // Espacio vacío para alinear b)
+                new TextRun({ text: "", size: 24, font: "Times New Roman" }), 
                 new TextRun({ text: `b) Carpeta Fiscal N. º ${carpeta}`, size: 24, font: "Times New Roman" })
             ]
         }));
         children.push(new Paragraph({
-            indent: { left: 4252 },
+            indent: { left: indentRef },
             children: [
                 new TextRun({ text: "Casilla Electrónica: ", bold: true, size: 24, font: "Times New Roman" }),
                 new TextRun({ text: `SINOE N. º ${casillaJuzgado}`, size: 24, font: "Times New Roman" })
-            ]
+            ],
+            spacing: { after: 300 }
         }));
 
-        // 5. Cuerpo
-        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+        // 6. Cuerpo
         children.push(crearParrafoJustificado([
             { text: "Tengo el agrado de dirigirme a usted, a fin de saludarle cordialmente y a su vez, ", bold: false },
             { text: "RESPONDER", bold: true },
@@ -788,23 +798,22 @@ function generarWordJuzgado() {
         ]));
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
 
-        // 6. Lista Investigados (Enumerada)
+        // 7. Lista de Investigados
         const inputsNombre = document.querySelectorAll('[id^="j_inv_nombre_"]');
-        let contadorEnum = 1;
+        let indexEnum = 1;
 
         inputsNombre.forEach((input) => {
             const id = input.id.split('_')[3]; 
             const nombre = input.value;
             
             if(nombre) {
-                // Nombre enumerado
-                children.push(new Paragraph({ 
-                    children: [new TextRun({ text: `${contadorEnum}. ${nombre.toUpperCase()}:`, bold: true, size: 24, font: "Times New Roman" })], 
-                    spacing:{before: 200} 
+                // Nombre Investigado
+                children.push(new Paragraph({
+                    children: [new TextRun({ text: `${indexEnum}. ${nombre.toUpperCase()}:`, bold: true, size: 24, font: "Times New Roman" })],
+                    spacing: { before: 200 }
                 }));
-                
+
                 // Campos
-             // Campos a procesar
                 const campos = [
                     {key: 'cel', label: 'Celular'},
                     {key: 'abogado', label: 'Abogado'},
@@ -816,16 +825,15 @@ function generarWordJuzgado() {
                 campos.forEach(c => {
                     let val = document.getElementById(`j_inv_val_${c.key}_${id}`).value || "---";
                     
-                    // 1. CASO ABOGADO (Con CAL)
+                    // Lógica Abogado + CAL
                     if (c.key === 'abogado') {
                         const tagAbogado = document.getElementById(`j_inv_tag_abogado_${id}`).value;
                         const calInput = document.getElementById(`j_inv_cal_${id}`);
-                        
                         if (tagAbogado !== "NO_INFO" && calInput && calInput.value) {
                             val += ` con Reg. CAL N.° ${calInput.value}`;
                         }
                     } 
-                    // 2. CASO CELULAR Y CORREO (Con etiquetas opcionales)
+                    // Lógica Celular y Correo (etiquetas opcionales)
                     else if (c.key === 'cel' || c.key === 'correo') {
                         const tagSelect = document.getElementById(`j_inv_tag_${c.key}_${id}`);
                         if (tagSelect) {
@@ -835,9 +843,8 @@ function generarWordJuzgado() {
                             }
                         }
                     }
-                    // 3. CASO DOMICILIO Y CASILLA (Sin etiquetas extra, solo el valor o el texto de desconocido)
-                    
-                    // Generar línea en Word
+
+                    // Generar línea
                     children.push(new Paragraph({
                         indent: { left: 720 },
                         children: [
@@ -847,15 +854,18 @@ function generarWordJuzgado() {
                         spacing: { line: 276 }
                     }));
                 });
-        // 7. Cierre
+                indexEnum++;
+            }
+        });
+
+        // 8. Cierre (SIN FIRMA NICA)
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
         children.push(crearParrafoJustificado([{ text: "Sin otro particular, hago propicia la oportunidad para expresarle los sentimientos de mi especial consideración y estima personal.", bold: false }]));
-        
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })] }));
-         
-
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, anioNombre), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
+        
+        // Generar archivo
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, anioNombre), `OFICIO N.°-${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
     // Pequeña ayuda para crear las líneas "Negrita: Texto normal"
     function crearLineaDetalle(label, valor) {
