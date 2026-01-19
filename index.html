@@ -88,11 +88,17 @@
                 <h3>Atención de Pedidos</h3>
                 <p>Respuesta a solicitudes de información.</p>
             </div>
+            <div class="card" onclick="navegar('app-juzgado')">
+                <span class="card-icon">🏛️</span>
+                <h3>Oficio a Juzgado</h3>
+                <p>Respuesta con datos de investigados.</p>
+            </div>
             <div class="card" style="background:#e0f2f1; border-color:#075e54;" onclick="navegar('app-voice-assistant')">
                 <span class="card-icon">🗣️</span>
                 <h3 style="color:#075e54;">Asistente de Voz IA</h3>
                 <p>Conversación interactiva (Incluye Pericias).</p>
             </div>
+            
         </div>
     </div>
 
@@ -188,6 +194,42 @@
             </div>
         </div>
         <button class="btn-generate" onclick="generarWordAtencion()">📄 GENERAR OFICIO</button>
+    </div>
+    <div id="app-juzgado" class="app-container">
+        <button class="btn-back" onclick="navegar('screen-menu')">⬅ Menú</button>
+        <h1 style="color: #1e3a8a; text-align: center;">Oficio para Juzgado</h1>
+
+        <div class="section-title" onclick="toggleSection('j-sec1')">1. DATOS DE CABECERA ▼</div>
+        <div id="j-sec1" class="section-content">
+            <div class="form-row">
+                <div class="form-col"><label>N° Oficio:</label><input type="text" id="j_oficio" placeholder="Ej: 229-2024"></div>
+                <div class="form-col"><label>Fecha:</label><input type="date" id="j_fecha"></div>
+            </div>
+            <div class="form-row"><div class="form-col"><label>Nombre Año:</label><input type="text" id="j_anio_nombre"></div></div>
+        </div>
+
+        <div class="section-title" onclick="toggleSection('j-sec2')">2. DESTINATARIO Y REFERENCIA ▼</div>
+        <div id="j-sec2" class="section-content">
+            <label>Juez / Destinatario:</label><input type="text" id="j_juez_nombre" placeholder="Ej: WALTHER HUAYLLANI CHOQUEPUMA">
+            <label style="margin-top:10px">Cargo / Juzgado:</label><input type="text" id="j_juez_cargo" placeholder="Ej: JUEZ DEL PRIMER JUZGADO...">
+            
+            <div class="form-row" style="margin-top:15px">
+                <div class="form-col"><label>Expediente N°:</label><input type="text" id="j_expediente"></div>
+                <div class="form-col"><label>Carpeta Fiscal N°:</label><input type="text" id="j_carpeta"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-col"><label>Casilla SINOE (Juzgado):</label><input type="text" id="j_casilla_juzgado" value="60369"></div>
+                <div class="form-col"><label>Resolución que se responde:</label><input type="text" id="j_resolucion" placeholder="Ej: 01"></div>
+            </div>
+        </div>
+
+        <div class="section-title" onclick="toggleSection('j-sec3')">3. DATOS DE INVESTIGADOS ▼</div>
+        <div id="j-sec3" class="section-content">
+            <div id="container-investigados"></div>
+            <button class="btn-small" onclick="agregarInvestigado()">+ Agregar Investigado</button>
+        </div>
+
+        <button class="btn-generate" onclick="generarWordJuzgado()">📄 GENERAR OFICIO JUZGADO</button>
     </div>
 
     <div id="app-voice-assistant" class="app-container" style="padding:0;">
@@ -523,6 +565,150 @@
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fechaTexto}`, nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
+    }
+    // === LÓGICA NUEVA: OFICIO JUZGADO ===
+    
+    let contadorInvestigados = 0;
+
+    // Función para añadir cajitas de investigados dinámicamente
+    function agregarInvestigado() {
+        const c = document.getElementById('container-investigados');
+        const id = contadorInvestigados;
+        const html = `
+            <div id="inv-${id}" style="background:#f8fafc; border:1px solid #e2e8f0; padding:15px; margin-bottom:15px; border-radius:8px;">
+                <div style="display:flex; justify-content:space-between;">
+                    <label style="color:#1e3a8a;">Investigado ${id + 1}</label>
+                    <button onclick="document.getElementById('inv-${id}').remove()" style="color:red; border:none; background:none; cursor:pointer;">✖ Eliminar</button>
+                </div>
+                <input type="text" id="j_inv_nombre_${id}" placeholder="NOMBRE COMPLETO (Mayúsculas)" style="font-weight:bold; margin-bottom:5px;">
+                <div class="form-row" style="gap:10px;">
+                    <input type="text" id="j_inv_cel_${id}" placeholder="Celular">
+                    <input type="text" id="j_inv_abogado_${id}" placeholder="Abogado y Reg. CAL">
+                </div>
+                <div class="form-row" style="gap:10px;">
+                    <input type="text" id="j_inv_correo_${id}" placeholder="Correo(s)">
+                    <input type="text" id="j_inv_casilla_${id}" placeholder="Casilla Electrónica">
+                </div>
+                <input type="text" id="j_inv_domicilio_${id}" placeholder="Domicilio Real / Procesal">
+            </div>
+        `;
+        c.insertAdjacentHTML('beforeend', html);
+        contadorInvestigados++;
+    }
+
+    // Función para armar el Word del Juzgado
+    function generarWordJuzgado() {
+        const { Paragraph, TextRun, AlignmentType, UnderlineType } = docx;
+        
+        // 1. Recoger datos simples
+        const oficio = document.getElementById('j_oficio').value;
+        const fecha = formatearFechaLarga(document.getElementById('j_fecha').value);
+        const anioNombre = document.getElementById('j_anio_nombre').value;
+        const juezNombre = document.getElementById('j_juez_nombre').value;
+        const juezCargo = document.getElementById('j_juez_cargo').value;
+        const expediente = document.getElementById('j_expediente').value;
+        const carpeta = document.getElementById('j_carpeta').value;
+        const casillaJuzgado = document.getElementById('j_casilla_juzgado').value;
+        const resolucion = document.getElementById('j_resolucion').value;
+
+        const children = [];
+
+        // 2. Espaciado inicial (para separar del logo)
+        for (let i = 0; i < 8; i++) children.push(new Paragraph({text: ""}));
+
+        // 3. Cabecera del Oficio (Fecha y Número)
+        children.push(new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [new TextRun({ text: `Lima, ${fecha}`, bold: true, size: 24, font: "Times New Roman" })]
+        }));
+        children.push(new Paragraph({
+            spacing: { before: 200, after: 200 },
+            children: [new TextRun({ text: `OFICIO N. º ${oficio}-MP-FN-2ºDF-1º FPCEDCF-LIMA`, bold: true, underline: { type: UnderlineType.SINGLE }, size: 24, font: "Times New Roman" })]
+        }));
+
+        // 4. Destinatario
+        children.push(new Paragraph({ children: [new TextRun({ text: "Sr. Dr.", bold: true, size: 24, font: "Times New Roman" })] }));
+        children.push(new Paragraph({ children: [new TextRun({ text: juezNombre, bold: true, size: 24, font: "Times New Roman" })] }));
+        children.push(new Paragraph({ children: [new TextRun({ text: juezCargo, bold: true, size: 24, font: "Times New Roman" })] }));
+        children.push(new Paragraph({ text: "Presente. –", spacing: { before: 200, after: 200 }, children: [new TextRun({ text: "Presente. –", size: 24, font: "Times New Roman" })] }));
+
+        // 5. Referencias
+        children.push(new Paragraph({
+            indent: { left: 1440 }, // Sangría francesa visual
+            children: [
+                new TextRun({ text: "Referencia: ", bold: true, size: 24, font: "Times New Roman" }),
+                new TextRun({ text: `a) Expediente N.º ${expediente}, b) Carpeta Fiscal N. º ${carpeta}`, size: 24, font: "Times New Roman" })
+            ]
+        }));
+        children.push(new Paragraph({
+            indent: { left: 1440 },
+            children: [
+                new TextRun({ text: "Casilla Electrónica: ", bold: true, size: 24, font: "Times New Roman" }),
+                new TextRun({ text: `SINOE N. º ${casillaJuzgado}`, size: 24, font: "Times New Roman" })
+            ]
+        }));
+
+        // 6. Cuerpo del texto (Párrafo Introductorio)
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+        children.push(crearParrafoJustificado([
+            { text: "Tengo el agrado de dirigirme a usted, a fin de saludarle cordialmente y a su vez, ", bold: false },
+            { text: "RESPONDER", bold: true },
+            { text: `, a lo solicitado por su judicatura a través de la Resolución N.º ${resolucion}, respecto al expediente de la referencia. En ese sentido este Despacho Fiscal informa los siguientes datos actualizados de los investigados:`, bold: false }
+        ]));
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+
+        // 7. Bucle para los Investigados (Aquí está la parte de aprendizaje)
+        // Recorremos todos los elementos que agregaste con el botón
+        const inputsNombre = document.querySelectorAll('[id^="j_inv_nombre_"]'); // Busca todos los inputs de nombre
+        
+        inputsNombre.forEach((input, index) => {
+            // Sacamos el ID numérico del input actual (ej: j_inv_nombre_0 -> id=0)
+            const id = input.id.split('_')[3]; 
+            
+            // Recuperamos los valores de los otros campos usando ese ID
+            const nombre = input.value;
+            const cel = document.getElementById(`j_inv_cel_${id}`).value || "---";
+            const abo = document.getElementById(`j_inv_abogado_${id}`).value || "---";
+            const mail = document.getElementById(`j_inv_correo_${id}`).value || "---";
+            const casilla = document.getElementById(`j_inv_casilla_${id}`).value || "---";
+            const dom = document.getElementById(`j_inv_domicilio_${id}`).value || "---";
+
+            if(nombre) {
+                // Nombre en negrita y mayúsculas
+                children.push(new Paragraph({ children: [new TextRun({ text: nombre.toUpperCase(), bold: true, size: 24, font: "Times New Roman" })], spacing:{before: 200} }));
+                
+                // Detalles (Usamos la función auxiliar 'crearLineaDetalle' para no repetir código)
+                children.push(crearLineaDetalle("Celular: ", cel));
+                children.push(crearLineaDetalle("Abogado: ", abo));
+                children.push(crearLineaDetalle("Correo: ", mail));
+                children.push(crearLineaDetalle("Domicilio: ", dom));
+                children.push(crearLineaDetalle("Casilla Electrónica: ", `N.º ${casilla}`));
+            }
+        });
+
+        // 8. Despedida
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+        children.push(crearParrafoJustificado([{ text: "Sin otro particular, hago propicia la oportunidad para expresarle los sentimientos de mi especial consideración y estima personal.", bold: false }]));
+        
+        children.push(new Paragraph({ text: "\n\n" }));
+        children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })] }));
+        children.push(new Paragraph({ children: [new TextRun({ text: "NICA/ djsa.", size: 18, font: "Times New Roman" })] })); // Firma pequeña
+
+        // 9. Generar archivo
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, anioNombre), `Oficio_Juzgado_${oficio}.docx`);
+    }
+
+    // Pequeña ayuda para crear las líneas "Negrita: Texto normal"
+    function crearLineaDetalle(label, valor) {
+        const { Paragraph, TextRun } = docx;
+        return new Paragraph({
+            indent: { left: 720 }, // Un poco de sangría
+            children: [
+                new TextRun({ text: label, bold: true, size: 24, font: "Times New Roman" }),
+                new TextRun({ text: valor, size: 24, font: "Times New Roman" })
+            ],
+            spacing: { line: 276 }
+        });
     }
 
     // 4. CHAT GENERATORS
