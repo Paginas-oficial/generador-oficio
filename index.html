@@ -93,6 +93,11 @@
                 <h3>Oficio a Juzgado</h3>
                 <p>Respuesta con datos de investigados.</p>
             </div>
+            <div class="card" onclick="navegar('app-carpeta')">
+                <span class="card-icon">📂</span>
+                <h3>Carpeta</h3>
+                <p>Oficio entrega de carpeta a juzgado</p>
+            </div>
             <div class="card" style="background:#e0f2f1; border-color:#075e54;" onclick="navegar('app-voice-assistant')">
                 <span class="card-icon">🗣️</span>
                 <h3 style="color:#075e54;">Asistente de Voz IA</h3>
@@ -259,6 +264,93 @@
         </div>
 
         <button class="btn-generate" onclick="generarWordJuzgado()">📄 GENERAR OFICIO JUZGADO</button>
+    </div>
+    <div id="app-carpeta" class="app-container">
+        <button class="btn-back" onclick="navegar('screen-menu')">⬅ Menú</button>
+        <h1 style="color: #1e3a8a; text-align: center;">Entrega de Carpeta</h1>
+
+        <div class="section-title" onclick="toggleSection('c-sec1')">1. DATOS GENERALES ▼</div>
+        <div id="c-sec1" class="section-content">
+            <div class="form-row">
+                <div class="form-col"><label>N° Oficio:</label><input type="text" id="c_oficio" placeholder="Ej: 277-2023"></div>
+                <div class="form-col"><label>Fecha:</label><input type="date" id="c_fecha"></div>
+            </div>
+            <div class="form-row"><div class="form-col"><label>Nombre Año:</label><input type="text" id="c_anio_nombre"></div></div>
+        </div>
+
+        <div class="section-title" onclick="toggleSection('c-sec2')">2. DESTINATARIO ▼</div>
+        <div id="c-sec2" class="section-content">
+            <label style="background:#eff6ff; padding:8px; display:block; border-radius:5px; cursor:pointer;">
+                <input type="checkbox" id="c_check_nombre" onchange="toggleNombreJuez()"> 
+                ¿Dirigido a un Juez específico? (Opcional)
+            </label>
+            
+            <div id="box-nombre-juez" class="hidden" style="margin-top:10px; margin-left:20px; border-left:3px solid #1e3a8a; padding-left:10px;">
+                <div class="form-row">
+                    <div class="form-col" style="flex:0 0 100px;">
+                        <label>Título:</label>
+                        <select id="c_titulo_juez"><option>Sr. Dr.</option><option>Sra. Dra.</option></select>
+                    </div>
+                    <div class="form-col">
+                        <label>Nombre Completo:</label>
+                        <input type="text" id="c_nombre_juez" placeholder="Ej: JUAN PEREZ">
+                    </div>
+                </div>
+            </div>
+
+            <label style="margin-top:15px;">Juzgado de Destino:</label>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span style="font-weight:bold;">JUEZ DEL</span>
+                <select id="c_juzgado_num" style="width:200px;" onchange="actualizarExpCarpeta()">
+                    <option value="01">PRIMER</option>
+                    <option value="02">SEGUNDO</option>
+                    <option value="29">VIGÉCIMONOVENO</option>
+                    <option value="30">TRIGÉCIMO</option>
+                </select>
+                <span style="font-size:12px;">JUZGADO DE INV. PREPARATORIA...</span>
+            </div>
+        </div>
+
+        <div class="section-title" onclick="toggleSection('c-sec3')">3. DETALLES DEL CASO ▼</div>
+        <div id="c-sec3" class="section-content">
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Expediente (Sufijo Auto):</label>
+                    <div style="display:flex; align-items:center; gap:5px;">
+                        <span style="font-size:12px;">...1826-JR-PE-</span>
+                        <input type="text" id="c_exp_sufijo" value="01" style="width:50px; background:#eee;" readonly>
+                    </div>
+                </div>
+                <div class="form-col"><label>Carpeta Fiscal N°:</label><input type="text" id="c_carpeta_num"></div>
+            </div>
+            
+            <label style="margin-top:10px;">Remite:</label>
+            <select id="c_tipo_remite">
+                <option value="el Requerimiento de Sobreseimiento">Requerimiento de Sobreseimiento</option>
+                <option value="el Requerimiento Acusatorio">Requerimiento Acusatorio</option>
+                <option value="el Requerimiento Mixto">Requerimiento Mixto</option>
+            </select>
+
+            <label style="margin-top:10px;">Resumen (Imputados y Delitos):</label>
+            <textarea id="c_resumen" style="height:100px;" placeholder="Ej: seguida contra JOSE VARGAS (autor) por concusión; y DANIEL JIMENEZ por cohecho..."></textarea>
+        </div>
+
+        <div class="section-title" onclick="toggleSection('c-sec4')">4. TABLA DE TOMOS ▼</div>
+        <div id="c-sec4" class="section-content">
+            <div id="container-tomos"></div>
+            <button class="btn-small" onclick="agregarTomo()">+ Agregar Tomo</button>
+        </div>
+
+        <div class="section-title" onclick="toggleSection('c-sec5')">5. CIERRE ▼</div>
+        <div id="c-sec5" class="section-content">
+            <label>Enlace Drive:</label>
+            <input type="text" id="c_link" placeholder="https://drive.google.com/...">
+            <div class="form-row" style="margin-top:10px;">
+                <div class="form-col"><label>SINOE:</label><input type="text" id="c_sinoe" value="60369"></div>
+            </div>
+        </div>
+
+        <button class="btn-generate" onclick="generarWordCarpeta()">📄 GENERAR OFICIO CARPETA</button>
     </div>
 
     <div id="app-voice-assistant" class="app-container" style="padding:0;">
@@ -883,7 +975,187 @@
             spacing: { line: 276 }
         });
     }
+//CARPETAAAAAAA
+    // =======================================================
+    // ===           LÓGICA TARJETA CARPETA                ===
+    // =======================================================
 
+    let contadorTomos = 1;
+
+    function toggleNombreJuez() {
+        const check = document.getElementById('c_check_nombre').checked;
+        document.getElementById('box-nombre-juez').style.display = check ? 'block' : 'none';
+    }
+
+    function actualizarExpCarpeta() {
+        const sel = document.getElementById('c_juzgado_num');
+        document.getElementById('c_exp_sufijo').value = sel.value;
+    }
+
+    function agregarTomo() {
+        const c = document.getElementById('container-tomos');
+        const id = contadorTomos;
+        const html = `
+            <div id="tomo-${id}" style="display:flex; gap:10px; margin-bottom:5px; align-items:center;">
+                <span style="font-weight:bold; width:60px;">Tomo ${id}</span>
+                <input type="text" id="c_folios_${id}" placeholder="Folios (Ej: 01-200)" style="flex:1;">
+                <input type="text" id="c_obs_${id}" placeholder="Obs (Ej: CD a fojas 33)" style="flex:1;">
+                <button onclick="borrarTomo('tomo-${id}')" style="color:red; border:none; background:none; cursor:pointer;">✖</button>
+            </div>
+        `;
+        c.insertAdjacentHTML('beforeend', html);
+        contadorTomos++;
+    }
+
+    function borrarTomo(idElemento) {
+        document.getElementById(idElemento).remove();
+        // Nota: No bajamos el contador para no complicar la lógica de IDs, 
+        // pero visualmente se elimina.
+    }
+
+    function generarWordCarpeta() {
+        const { Paragraph, TextRun, AlignmentType, UnderlineType, Table, TableRow, TableCell, WidthType, BorderStyle } = docx;
+
+        // 1. Datos
+        const oficio = document.getElementById('c_oficio').value;
+        const fecha = formatearFechaLarga(document.getElementById('c_fecha').value);
+        const anioNombre = document.getElementById('c_anio_nombre').value;
+        
+        // Destinatario
+        const incluirNombre = document.getElementById('c_check_nombre').checked;
+        const tituloJuez = document.getElementById('c_titulo_juez').value;
+        const nombreJuez = document.getElementById('c_nombre_juez').value.toUpperCase();
+        
+        const selJuzgado = document.getElementById('c_juzgado_num');
+        const txtJuzgado = selJuzgado.options[selJuzgado.selectedIndex].text;
+        const cargoJuzgado = `JUEZ DEL ${txtJuzgado} JUZGADO DE INVESTIGACIÓN PREPARATORIA ESPECIALIZADO EN DELITOS DE CORRUPCIÓN DE FUNCIONARIOS Y CRIMEN ORGANIZADO DE LIMA – SEDE ZAVALA`;
+
+        const expSufijo = document.getElementById('c_exp_sufijo').value;
+        const expediente = `00079-2025-0-1826-JR-PE-${expSufijo}`;
+        const carpeta = document.getElementById('c_carpeta_num').value;
+        const tipoRemite = document.getElementById('c_tipo_remite').value;
+        const resumen = document.getElementById('c_resumen').value;
+        const link = document.getElementById('c_link').value;
+        const sinoe = document.getElementById('c_sinoe').value;
+
+        const children = [];
+
+        // 2. Espaciado inicial
+        for(let i=0; i<3; i++) children.push(new Paragraph({text:""}));
+
+        // 3. Cabecera
+        children.push(new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [new TextRun({ text: `Lima, ${fecha}`, bold: true, size: 24, font: "Times New Roman" })]
+        }));
+        children.push(new Paragraph({
+            children: [new TextRun({ text: `OFICIO N° (${oficio}) -MP-FN-2D-1FPCEDCF-LIMA.`, bold: true, underline: { type: UnderlineType.SINGLE }, size: 24, font: "Times New Roman" })],
+            spacing: { before: 300, after: 300 }
+        }));
+
+        // 4. Destinatario (Con lógica opcional)
+        children.push(new Paragraph({ children: [new TextRun({ text: "Sr.", bold: true, size: 24, font: "Times New Roman" })] })); // Siempre "Sr." o "Sr. Juez"
+        
+        if (incluirNombre && nombreJuez) {
+            children.push(new Paragraph({ children: [new TextRun({ text: `${tituloJuez} ${nombreJuez}`, bold: true, size: 24, font: "Times New Roman" })] }));
+        }
+        
+        children.push(new Paragraph({ children: [new TextRun({ text: cargoJuzgado, bold: true, size: 24, font: "Times New Roman" })] }));
+        children.push(new Paragraph({ children: [new TextRun({ text: "PRESENTE.-", size: 24, font: "Times New Roman" })], spacing: { before: 200, after: 200 } }));
+
+        // 5. Referencias
+        children.push(new Paragraph({ children: [new TextRun({ text: `Expediente N.° ${expediente}`, size: 24, font: "Times New Roman" })] }));
+        children.push(new Paragraph({ children: [new TextRun({ text: `Referencia: Carpeta Fiscal N.º ${carpeta}`, bold: true, size: 24, font: "Times New Roman" })], spacing: { after: 300 } }));
+
+        // 6. Cuerpo
+        children.push(crearParrafoJustificado([
+            { text: "Tengo el agrado de dirigirme a usted a fin de saludarlo cordialmente, y a su vez ", bold: false },
+            { text: "REMITIRLE, ", bold: true },
+            { text: `${tipoRemite}; ${resumen}.`, bold: false }
+        ]));
+        
+        // Contar tomos reales
+        const filasTomos = document.querySelectorAll('[id^="tomo-"]');
+        children.push(crearParrafoJustificado([
+            { text: `Asimismo, se remite el íntegro de la Carpeta Fiscal N.° ${carpeta} (${filasTomos.length} Tomos principales). La misma que se encuentra detallada de la siguiente manera:`, bold: false }
+        ]));
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+
+        // 7. TABLA
+        if(filasTomos.length > 0) {
+            const tableRows = [];
+            
+            // Cabecera Tabla
+            tableRows.push(new TableRow({
+                children: [
+                    crearCeldaTabla("TOMO", true),
+                    crearCeldaTabla("FOLIOS", true),
+                    crearCeldaTabla("OBSERVACIONES", true)
+                ]
+            }));
+
+            // Filas Tabla
+            let idx = 1;
+            filasTomos.forEach(row => {
+                // Obtener ID del HTML (tomo-1 -> 1)
+                const id = row.id.split('-')[1];
+                const folios = document.getElementById(`c_folios_${id}`).value || "-";
+                const obs = document.getElementById(`c_obs_${id}`).value || "-";
+
+                tableRows.push(new TableRow({
+                    children: [
+                        crearCeldaTabla(idx.toString().padStart(2, '0'), false),
+                        crearCeldaTabla(folios, false),
+                        crearCeldaTabla(obs, false)
+                    ]
+                }));
+                idx++;
+            });
+
+            const table = new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: tableRows,
+                borders: {
+                    top: { style: BorderStyle.SINGLE, size: 1 },
+                    bottom: { style: BorderStyle.SINGLE, size: 1 },
+                    left: { style: BorderStyle.SINGLE, size: 1 },
+                    right: { style: BorderStyle.SINGLE, size: 1 },
+                    insideHorizontal: { style: BorderStyle.SINGLE, size: 1 },
+                    insideVertical: { style: BorderStyle.SINGLE, size: 1 }
+                }
+            });
+            children.push(table);
+            children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+        }
+
+        // 8. Enlace y SINOE
+        if(link) {
+            children.push(crearParrafoJustificado([{ text: "Asimismo, se remite el enlace con los elementos de convicción para ser visualizados y descargados:", bold: false }]));
+            children.push(new Paragraph({ children: [new TextRun({ text: link, color: "0000FF", underline: { type: UnderlineType.SINGLE }, size: 24, font: "Times New Roman" })] }));
+        }
+        
+        children.push(crearParrafoJustificado([{ text: `Para efectos de notificación se consigna la casilla electrónica SINOE N.° ${sinoe}.`, bold: false }]));
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+
+        // 9. Cierre
+        children.push(crearParrafoJustificado([{ text: "Sin otro particular, hago propicia la oportunidad para expresarle los sentimientos de mi especial consideración y estima personal.", bold: false }]));
+        children.push(new Paragraph({ text: "\n\n" }));
+        children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })] }));
+
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, anioNombre), `Carpeta_${oficio}.docx`);
+    }
+
+    // Auxiliar para celdas de tabla
+    function crearCeldaTabla(texto, esNegrita) {
+        const { TableCell, Paragraph, TextRun, AlignmentType, WidthType } = docx;
+        return new TableCell({
+            width: { size: 33, type: WidthType.PERCENTAGE },
+            children: [new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [new TextRun({ text: texto, bold: esNegrita, size: 24, font: "Times New Roman" })]
+            })]
+        });
+    }
     // 4. CHAT GENERATORS
     function generarWordMovilidadChat() {
         datos['m_oficio']=datos['m_oficio']||""; datos['m_fecha']=datos['m_fecha']||""; datos['m_servicio']=datos['m_servicio']||""; 
