@@ -311,7 +311,7 @@
             </div>
         </div>
 
-        <div class="section-title" onclick="toggleSection('c-sec3')">3. DETALLES DEL CASO ▼</div>
+        <div class="section-title" onclick="toggleSection('c-sec3')">3. CONSTRUCCIÓN DE IMPUTACIÓN ▼</div>
         <div id="c-sec3" class="section-content">
             <div class="form-row">
                 <div class="form-col">
@@ -324,21 +324,38 @@
                 <div class="form-col"><label>Carpeta Fiscal N°:</label><input type="text" id="c_carpeta_num"></div>
             </div>
             
-            <label style="margin-top:10px;">Remite:</label>
+            <label style="margin-top:10px;">Se remite:</label>
             <select id="c_tipo_remite">
                 <option value="el Requerimiento de Sobreseimiento">Requerimiento de Sobreseimiento</option>
                 <option value="el Requerimiento Acusatorio">Requerimiento Acusatorio</option>
                 <option value="el Requerimiento Mixto">Requerimiento Mixto</option>
             </select>
 
-            <label style="margin-top:10px;">Resumen (Imputados y Delitos):</label>
-            <textarea id="c_resumen" style="height:100px;" placeholder="Ej: seguida contra JOSE VARGAS (autor) por concusión; y DANIEL JIMENEZ por cohecho..."></textarea>
+            <hr style="margin: 20px 0; border: 0; border-top: 2px dashed #ccc;">
+            
+            <label style="font-weight:bold; color:#1e3a8a;">IMPUTADOS Y DELITOS:</label>
+            <div id="container-grupos-delito"></div>
+            <button class="btn-small" onclick="agregarGrupoDelito()">+ Agregar Grupo de Delito</button>
         </div>
 
         <div class="section-title" onclick="toggleSection('c-sec4')">4. TABLA DE TOMOS ▼</div>
         <div id="c-sec4" class="section-content">
-            <div id="container-tomos"></div>
-            <button class="btn-small" onclick="agregarTomo()">+ Agregar Tomo</button>
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Cantidad de Tomos:</label>
+                    <select id="c_cant_tomos" onchange="generarTablaTomos()">
+                        <option value="0">-- Seleccione --</option>
+                        </select>
+                </div>
+                <div class="form-col">
+                    <label>Modo de Folios:</label>
+                    <select id="c_tipo_folio" onchange="generarTablaTomos()">
+                        <option value="fijo">Automático (1-200, 201-400...)</option>
+                        <option value="manual">Manual (Escribir)</option>
+                    </select>
+                </div>
+            </div>
+            <div id="container-tabla-tomos" style="margin-top:15px;"></div>
         </div>
 
         <div class="section-title" onclick="toggleSection('c-sec5')">5. CIERRE ▼</div>
@@ -980,7 +997,46 @@
     // ===           LÓGICA TARJETA CARPETA                ===
     // =======================================================
 
-    let contadorTomos = 1;
+    // =======================================================
+    // ===       LÓGICA TARJETA CARPETA (VERIFICADA)       ===
+    // =======================================================
+
+    // Lista EXACTA solicitada
+    const listaDelitosCorrupcion = [
+        "Concusión", "Cobro indebido", "Colusión simple y agravada", "Patrocinio ilegal", 
+        "Responsabilidad de peritos, árbitros y contadores particulares", "Peculado doloso y culposo", 
+        "Peculado de uso", "Malversación", "Retardo injustificado de pago", 
+        "Rehusamiento a entrega de bienes depositados o puestos en custodia", "Extensión del tipo", 
+        "Soborno internacional pasivo", "Cohecho pasivo impropio", "Cohecho pasivo específico", 
+        "Cohecho pasivo propio en el ejercicio de la función policial o penitenciaria", 
+        "Cohecho pasivo impropio en el ejercicio de la función policial y penitenciaria", 
+        "Corrupción pasiva de auxiliares jurisdiccionales", "Cohecho activo genérico", 
+        "Cohecho activo transnacional", "Cohecho activo específico", 
+        "Cohecho activo en el ámbito de la función policial", "Inhabilitación", 
+        "Negociación incompatible o aprovechamiento indebido de cargo", "Tráfico de influencias"
+    ];
+
+    const numerosRomanos = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", 
+                            "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", 
+                            "XXI", "XXII", "XXIII", "XXIV", "XXV", "XXVI", "XXVII", "XXVIII", "XXIX", "XXX", 
+                            "XXXI", "XXXII", "XXXIII", "XXXIV", "XXXV", "XXXVI", "XXXVII", "XXXVIII", "XXXIX", "XL", 
+                            "XLI", "XLII", "XLIII", "XLIV", "XLV", "XLVI", "XLVII", "XLVIII", "XLIX", "L"];
+
+    let contadorGruposDelito = 0;
+
+    // --- INICIALIZACIÓN ---
+    setTimeout(() => {
+        const sel = document.getElementById('c_cant_tomos');
+        if(sel && sel.options.length <= 1) { // Evitar duplicados si se recarga
+            for(let i=1; i<=50; i++) {
+                let opt = document.createElement('option');
+                opt.value = i; opt.text = i; sel.add(opt);
+            }
+        }
+        if(document.getElementById('container-grupos-delito') && contadorGruposDelito === 0) {
+            agregarGrupoDelito(); // Agregar el primer grupo por defecto
+        }
+    }, 1000);
 
     function toggleNombreJuez() {
         const check = document.getElementById('c_check_nombre').checked;
@@ -989,34 +1045,105 @@
 
     function actualizarExpCarpeta() {
         const sel = document.getElementById('c_juzgado_num');
-        document.getElementById('c_exp_sufijo').value = sel.value;
+        if(sel) document.getElementById('c_exp_sufijo').value = sel.value;
     }
 
-    function agregarTomo() {
-        const c = document.getElementById('container-tomos');
-        const id = contadorTomos;
+    // --- GRUPOS DE IMPUTACIÓN ---
+    function agregarGrupoDelito() {
+        const c = document.getElementById('container-grupos-delito');
+        const idG = contadorGruposDelito;
+        
+        let optsDelito = listaDelitosCorrupcion.map(d => `<option value="${d}">${d}</option>`).join('');
+
         const html = `
-            <div id="tomo-${id}" style="display:flex; gap:10px; margin-bottom:5px; align-items:center;">
-                <span style="font-weight:bold; width:60px;">Tomo ${id}</span>
-                <input type="text" id="c_folios_${id}" placeholder="Folios (Ej: 01-200)" style="flex:1;">
-                <input type="text" id="c_obs_${id}" placeholder="Obs (Ej: CD a fojas 33)" style="flex:1;">
-                <button onclick="borrarTomo('tomo-${id}')" style="color:red; border:none; background:none; cursor:pointer;">✖</button>
+            <div id="grupo-delito-${idG}" style="background:#f8fafc; border:1px solid #94a3b8; padding:10px; margin-bottom:15px; border-radius:8px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <label style="font-weight:bold; color:#0f172a;">DELITO E IMPUTADOS (Grupo ${idG+1})</label>
+                    ${idG > 0 ? `<button onclick="document.getElementById('grupo-delito-${idG}').remove()" style="color:red;border:none;cursor:pointer;">✖ Quitar</button>` : ''}
+                </div>
+                
+                <label>Modalidad Delictiva:</label>
+                <select id="c_delito_${idG}" style="margin-bottom:10px; font-weight:bold; width:100%;">${optsDelito}</select>
+
+                <div style="background:#fff; padding:10px; border:1px dashed #cbd5e1; border-radius:5px;">
+                    <label>Cantidad de Imputados (Max 10):</label>
+                    <select id="c_cant_inv_${idG}" onchange="renderInvestigados(${idG})">
+                        <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                        <option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
+                    </select>
+                    <div id="container-inv-grupo-${idG}" style="margin-top:10px;"></div>
+                </div>
             </div>
         `;
         c.insertAdjacentHTML('beforeend', html);
-        contadorTomos++;
+        renderInvestigados(idG); 
+        contadorGruposDelito++;
     }
 
-    function borrarTomo(idElemento) {
-        document.getElementById(idElemento).remove();
-        // Nota: No bajamos el contador para no complicar la lógica de IDs, 
-        // pero visualmente se elimina.
+    function renderInvestigados(idG) {
+        const cant = document.getElementById(`c_cant_inv_${idG}`).value;
+        const cont = document.getElementById(`container-inv-grupo-${idG}`);
+        cont.innerHTML = "";
+
+        for(let i=0; i<cant; i++) {
+            cont.innerHTML += `
+                <div style="display:flex; gap:5px; margin-bottom:5px; align-items:center;">
+                    <span style="font-size:12px; font-weight:bold;">${i+1}.</span>
+                    <input type="text" id="c_nom_inv_${idG}_${i}" placeholder="Nombre Completo" style="flex:2;">
+                    <select id="c_rol_inv_${idG}_${i}" style="flex:1;" onchange="verificarRolManual(${idG}, ${i})">
+                        <option value="(autor)">(autor)</option>
+                        <option value="(cómplice)">(cómplice)</option>
+                        <option value="(instigador)">(instigador)</option>
+                        <option value="OTRO">Otro...</option>
+                    </select>
+                    <input type="text" id="c_rol_manual_${idG}_${i}" placeholder="Escribir rol" style="flex:1; display:none;">
+                </div>
+            `;
+        }
     }
 
+    function verificarRolManual(idG, i) {
+        const sel = document.getElementById(`c_rol_inv_${idG}_${i}`).value;
+        const inp = document.getElementById(`c_rol_manual_${idG}_${i}`);
+        inp.style.display = (sel === 'OTRO') ? 'block' : 'none';
+    }
+
+    // --- TABLA DE TOMOS AUTOMÁTICA ---
+    function generarTablaTomos() {
+        const cant = parseInt(document.getElementById('c_cant_tomos').value) || 0;
+        const tipo = document.getElementById('c_tipo_folio').value; // 'fijo' o 'manual'
+        const cont = document.getElementById('container-tabla-tomos');
+        cont.innerHTML = "";
+
+        if(cant === 0) return;
+
+        // Cabecera visual en pantalla
+        cont.innerHTML += `<div style="display:flex; font-weight:bold; background:#e2e8f0; padding:5px;"><div style="flex:0 0 60px; text-align:center;">Tomo</div><div style="flex:1; text-align:center;">Folios</div><div style="flex:1; text-align:center;">Observaciones</div></div>`;
+
+        for(let i=1; i<=cant; i++) {
+            let valFolio = "";
+            // Lógica automática: 1-200, 201-400...
+            if(tipo === 'fijo') {
+                const inicio = ((i-1) * 200) + 1;
+                const fin = i * 200;
+                valFolio = `${inicio}-${fin}`;
+            }
+
+            cont.innerHTML += `
+                <div style="display:flex; gap:5px; margin-top:5px;">
+                    <input type="text" value="${numerosRomanos[i-1] || i}" readonly style="flex:0 0 60px; font-weight:bold; text-align:center; background:#f1f5f9;">
+                    <input type="text" id="c_row_folio_${i}" value="${valFolio}" placeholder="Folios" style="flex:1;">
+                    <input type="text" id="c_row_obs_${i}" placeholder="-" style="flex:1;">
+                </div>
+            `;
+        }
+    }
+
+    // --- GENERADOR WORD ---
     function generarWordCarpeta() {
         const { Paragraph, TextRun, AlignmentType, UnderlineType, Table, TableRow, TableCell, WidthType, BorderStyle } = docx;
 
-        // 1. Datos
+        // 1. Datos Generales
         const oficio = document.getElementById('c_oficio').value;
         const fecha = formatearFechaLarga(document.getElementById('c_fecha').value);
         const anioNombre = document.getElementById('c_anio_nombre').value;
@@ -1034,7 +1161,6 @@
         const expediente = `00079-2025-0-1826-JR-PE-${expSufijo}`;
         const carpeta = document.getElementById('c_carpeta_num').value;
         const tipoRemite = document.getElementById('c_tipo_remite').value;
-        const resumen = document.getElementById('c_resumen').value;
         const link = document.getElementById('c_link').value;
         const sinoe = document.getElementById('c_sinoe').value;
 
@@ -1053,39 +1179,78 @@
             spacing: { before: 300, after: 300 }
         }));
 
-        // 4. Destinatario (Con lógica opcional)
-        children.push(new Paragraph({ children: [new TextRun({ text: "Sr.", bold: true, size: 24, font: "Times New Roman" })] })); // Siempre "Sr." o "Sr. Juez"
-        
+        // 4. Destinatario
+        children.push(new Paragraph({ children: [new TextRun({ text: "Sr.", bold: true, size: 24, font: "Times New Roman" })] }));
         if (incluirNombre && nombreJuez) {
             children.push(new Paragraph({ children: [new TextRun({ text: `${tituloJuez} ${nombreJuez}`, bold: true, size: 24, font: "Times New Roman" })] }));
         }
-        
         children.push(new Paragraph({ children: [new TextRun({ text: cargoJuzgado, bold: true, size: 24, font: "Times New Roman" })] }));
         children.push(new Paragraph({ children: [new TextRun({ text: "PRESENTE.-", size: 24, font: "Times New Roman" })], spacing: { before: 200, after: 200 } }));
 
-        // 5. Referencias
-        children.push(new Paragraph({ children: [new TextRun({ text: `Expediente N.° ${expediente}`, size: 24, font: "Times New Roman" })] }));
-        children.push(new Paragraph({ children: [new TextRun({ text: `Referencia: Carpeta Fiscal N.º ${carpeta}`, bold: true, size: 24, font: "Times New Roman" })], spacing: { after: 300 } }));
+        // 5. Referencias (NEGRILLA Y CASI AL CENTRO)
+        const indentRef = 4252; // Alineación derecha/centro
+        children.push(new Paragraph({ 
+            indent: { left: indentRef },
+            children: [
+                new TextRun({ text: `Expediente N.° ${expediente}`, bold: true, size: 24, font: "Times New Roman" })
+            ] 
+        }));
+        children.push(new Paragraph({ 
+            indent: { left: indentRef },
+            children: [new TextRun({ text: `Referencia: Carpeta Fiscal N.º ${carpeta}`, bold: true, size: 24, font: "Times New Roman" })], 
+            spacing: { after: 300 } 
+        }));
 
-        // 6. Cuerpo
+        // 6. Cuerpo Dinámico (Imputación)
+        let textoImputacion = "";
+        const gruposDivs = document.querySelectorAll('[id^="grupo-delito-"]');
+        
+        gruposDivs.forEach((grupo, index) => {
+            const idG = grupo.id.split('-')[2];
+            const delito = document.getElementById(`c_delito_${idG}`).value;
+            const cantInv = document.getElementById(`c_cant_inv_${idG}`).value;
+            
+            let listaNombres = [];
+            for(let i=0; i<cantInv; i++){
+                const nom = document.getElementById(`c_nom_inv_${idG}_${i}`).value.toUpperCase();
+                let rol = document.getElementById(`c_rol_inv_${idG}_${i}`).value;
+                if(rol === 'OTRO') rol = document.getElementById(`c_rol_manual_${idG}_${i}`).value;
+                if(nom) listaNombres.push(`${nom} ${rol}`);
+            }
+
+            if(listaNombres.length > 0) {
+                // Lógica de conectores solicitada
+                const conector = (index === 0) ? "seguida contra " : "; y en contra de ";
+                const nombresStr = listaNombres.join(", ");
+                
+                // Texto exacto solicitado
+                textoImputacion += `${conector}${nombresStr} por la presunta comisión del delito contra la Administración Pública, en la modalidad de ${delito.toUpperCase()}`;
+            }
+        });
+
+        // Cierre de la frase de imputación
+        if(textoImputacion) {
+            textoImputacion += " en agravio del Estado.";
+        }
+
         children.push(crearParrafoJustificado([
             { text: "Tengo el agrado de dirigirme a usted a fin de saludarlo cordialmente, y a su vez ", bold: false },
             { text: "REMITIRLE, ", bold: true },
-            { text: `${tipoRemite}; ${resumen}.`, bold: false }
+            { text: `${tipoRemite}; ${textoImputacion}`, bold: false }
         ]));
         
-        // Contar tomos reales
-        const filasTomos = document.querySelectorAll('[id^="tomo-"]');
+        // Texto de Tomos
+        const cantTomos = parseInt(document.getElementById('c_cant_tomos').value) || 0;
         children.push(crearParrafoJustificado([
-            { text: `Asimismo, se remite el íntegro de la Carpeta Fiscal N.° ${carpeta} (${filasTomos.length} Tomos principales). La misma que se encuentra detallada de la siguiente manera:`, bold: false }
+            { text: `Asimismo, se remite el íntegro de la Carpeta Fiscal N.° ${carpeta} (${cantTomos} Tomos principales). La misma que se encuentra detallada de la siguiente manera:`, bold: false }
         ]));
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
 
-        // 7. TABLA
-        if(filasTomos.length > 0) {
+        // 7. TABLA DE TOMOS
+        if(cantTomos > 0) {
             const tableRows = [];
             
-            // Cabecera Tabla
+            // Encabezados
             tableRows.push(new TableRow({
                 children: [
                     crearCeldaTabla("TOMO", true),
@@ -1094,23 +1259,20 @@
                 ]
             }));
 
-            // Filas Tabla
-            let idx = 1;
-            filasTomos.forEach(row => {
-                // Obtener ID del HTML (tomo-1 -> 1)
-                const id = row.id.split('-')[1];
-                const folios = document.getElementById(`c_folios_${id}`).value || "-";
-                const obs = document.getElementById(`c_obs_${id}`).value || "-";
+            // Filas
+            for(let i=1; i<=cantTomos; i++) {
+                const romano = numerosRomanos[i-1] || i; // I, II, III...
+                const folios = document.getElementById(`c_row_folio_${i}`).value || "-";
+                const obs = document.getElementById(`c_row_obs_${i}`).value || "-";
 
                 tableRows.push(new TableRow({
                     children: [
-                        crearCeldaTabla(idx.toString().padStart(2, '0'), false),
+                        crearCeldaTabla(romano, false),
                         crearCeldaTabla(folios, false),
                         crearCeldaTabla(obs, false)
                     ]
                 }));
-                idx++;
-            });
+            }
 
             const table = new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
@@ -1145,14 +1307,13 @@
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, anioNombre), `Carpeta_${oficio}.docx`);
     }
 
-    // Auxiliar para celdas de tabla
     function crearCeldaTabla(texto, esNegrita) {
         const { TableCell, Paragraph, TextRun, AlignmentType, WidthType } = docx;
         return new TableCell({
             width: { size: 33, type: WidthType.PERCENTAGE },
             children: [new Paragraph({
                 alignment: AlignmentType.CENTER,
-                children: [new TextRun({ text: texto, bold: esNegrita, size: 24, font: "Times New Roman" })]
+                children: [new TextRun({ text: texto ? texto.toString() : "-", bold: esNegrita, size: 24, font: "Times New Roman" })]
             })]
         });
     }
