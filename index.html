@@ -662,11 +662,20 @@
         const refSeleccionadaTexto = document.getElementById('a_ref_respuesta').value;
 
         // Prefijo "Oficio N.° "
+        
+        
+        
         let refsArr = []; for(let i=0; i<refCount; i++) { const val=document.getElementById(`ref_input_${i}`)?.value; if(val) refsArr.push({letra:letras[i], texto:`Oficio N.° ${val}`}); }
         let refString = refsArr.map(r => `${r.letra} ${r.texto}-MP-FN-FSNCEDCF`).join("  ");
 
         const children = [];
         for (let i = 0; i < 2; i++) { children.push(new Paragraph({text: ""})); }
+        
+         children.push(new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [new TextRun({ text: `Lima, ${fecha}`, bold: true, size: 24, font: "Times New Roman" })]
+        }));
+        
         children.push(new Paragraph({
             children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})],
             spacing:{line:276, after: 400}
@@ -859,6 +868,7 @@
         for(let i=0; i<1; i++) children.push(new Paragraph({text:""})); 
 
         // 3. Fecha y Oficio
+        
         children.push(new Paragraph({
             alignment: AlignmentType.RIGHT,
             children: [new TextRun({ text: `Lima, ${fecha}`, bold: true, size: 24, font: "Times New Roman" })]
