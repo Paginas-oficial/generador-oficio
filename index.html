@@ -666,7 +666,7 @@
         let refString = refsArr.map(r => `${r.letra} ${r.texto}-MP-FN-FSNCEDCF`).join("  ");
 
         const children = [];
-        for (let i = 0; i < 4; i++) { children.push(new Paragraph({text: ""})); }
+        for (let i = 0; i < 2; i++) { children.push(new Paragraph({text: ""})); }
         children.push(new Paragraph({
             children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})],
             spacing:{line:276, after: 400}
@@ -1167,7 +1167,7 @@
         const children = [];
 
         // 2. Espaciado inicial
-        for(let i=0; i<3; i++) children.push(new Paragraph({text:""}));
+        for(let i=0; i<1; i++) children.push(new Paragraph({text:""}));
 
         // 3. Cabecera
         children.push(new Paragraph({
@@ -1224,7 +1224,7 @@
                 const nombresStr = listaNombres.join(", ");
                 
                 // Texto exacto solicitado
-                textoImputacion += `${conector}${nombresStr} por la presunta comisión del delito contra la Administración Pública, en la modalidad de ${delito.toUpperCase()}`;
+                textoImputacion += `${conector}${nombresStr} ,por la presunta comisión del delito contra la Administración Pública, en la modalidad de ${delito.toUpperCase()}`;
             }
         });
 
@@ -1304,7 +1304,7 @@
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })] }));
 
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, anioNombre), `Carpeta_${oficio}.docx`);
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, anioNombre), `OFICIO N.°-${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
 
     function crearCeldaTabla(texto, esNegrita) {
