@@ -200,7 +200,7 @@
         </div>
         <button class="btn-generate" onclick="generarWordAtencion()">📄 GENERAR OFICIO</button>
     </div>
-   <div id="app-juzgado" class="app-container">
+  <div id="app-juzgado" class="app-container">
         <button class="btn-back" onclick="navegar('screen-menu')">⬅ Menú</button>
         <h1 style="color: #1e3a8a; text-align: center;">Oficio para Juzgado</h1>
 
@@ -243,10 +243,11 @@
             
             <div class="form-row" style="margin-top:15px">
                 <div class="form-col">
-                    <label>Expediente N° (Automático):</label>
-                    <div style="display:flex; align-items:center; gap:5px;">
-                        <span style="font-size:14px;">02316-2025-0-1826-JR-PE-</span>
-                        <input type="text" id="j_exp_final" value="01" readonly style="width:60px; background:#e5e7eb; font-weight:bold; text-align:center;">
+                    <label>Expediente N° (Prefijo Manual + Auto):</label>
+                    <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+                        <input type="text" id="j_exp_prefix" value="02316-2025" style="width:110px; text-align:center; font-weight:bold;">
+                        <span style="font-size:14px;">-0-1826-JR-PE-</span>
+                        <input type="text" id="j_exp_final" value="01" readonly style="width:50px; background:#e5e7eb; font-weight:bold; text-align:center;">
                     </div>
                 </div>
                 <div class="form-col"><label>Carpeta Fiscal N°:</label><input type="text" id="j_carpeta"></div>
@@ -767,9 +768,13 @@ function generarWordAtencion() {
     // ===       LÓGICA OFICIO JUZGADO (BLOQUE ÚNICO)      ===
     // =======================================================
 
+   // =======================================================
+    // ===       LÓGICA OFICIO JUZGADO (ACTUALIZADA)       ===
+    // =======================================================
+
     let contadorInvestigados = 0;
 
-    // Actualiza el número de expediente automáticamente
+    // Actualiza el número de expediente automáticamente (sufijo)
     function actualizarExpediente() {
         const sel = document.getElementById('j_numero_juzgado');
         const inputExp = document.getElementById('j_exp_final');
@@ -794,8 +799,13 @@ function generarWordAtencion() {
                 <div style="display:flex; gap:5px; margin-bottom:8px; align-items:center; flex-wrap:wrap;">
                     <label style="width:80px; font-size:12px; margin:0;">Abogado:</label>
                     <input type="text" id="j_inv_val_abogado_${id}" style="flex:2; padding:6px; min-width:150px;" placeholder="Nombre del Abogado">
-                    <span id="span_cal_${id}" style="font-size:11px; white-space:nowrap; font-weight:bold; color:#444;">con Reg. CAL N.°</span>
-                    <input type="text" id="j_inv_cal_${id}" style="width:70px; padding:6px;" placeholder="N°">
+                    
+                    <span id="span_reg_${id}" style="font-size:11px; white-space:nowrap; font-weight:bold; color:#444;">con Reg.</span>
+                    <input type="text" id="j_inv_colegio_${id}" value="CAL" style="width:40px; padding:4px; text-align:center;" placeholder="Colegio">
+                    <span id="span_n_${id}" style="font-size:11px; white-space:nowrap; font-weight:bold; color:#444;">N.°</span>
+                    
+                    <input type="text" id="j_inv_cal_${id}" style="width:60px; padding:6px;" placeholder="N°">
+                    
                     <select id="j_inv_tag_abogado_${id}" style="width:25px; padding:0; font-size:14px;" onchange="verificarAbogado(${id})" title="Marcar como Desconocido">
                         <option value="dato">✔️</option>
                         <option value="NO_INFO">❌</option>
@@ -863,27 +873,39 @@ function generarWordAtencion() {
     function verificarAbogado(id) {
         const sel = document.getElementById(`j_inv_tag_abogado_${id}`).value;
         const inpNombre = document.getElementById(`j_inv_val_abogado_${id}`);
+        
+        // Elementos adicionales del abogado
         const inpCal = document.getElementById(`j_inv_cal_${id}`);
-        const spanCal = document.getElementById(`span_cal_${id}`);
+        const inpColegio = document.getElementById(`j_inv_colegio_${id}`);
+        const spanReg = document.getElementById(`span_reg_${id}`);
+        const spanN = document.getElementById(`span_n_${id}`);
         
         if (sel === "NO_INFO") {
             inpNombre.value = "A la fecha no se cuenta con dicha información dado que el investigado aún no se ha apersonado al proceso.";
             inpNombre.readOnly = true;
             inpNombre.style.backgroundColor = "#f3f4f6";
             inpNombre.style.fontSize = "11px";
+            
+            // Ocultar campos de registro
             inpCal.style.display = "none";
-            spanCal.style.display = "none";
+            inpColegio.style.display = "none";
+            spanReg.style.display = "none";
+            spanN.style.display = "none";
         } else {
             if(inpNombre.readOnly) inpNombre.value = "";
             inpNombre.readOnly = false;
             inpNombre.style.backgroundColor = "#fff";
             inpNombre.style.fontSize = "";
+            
+            // Mostrar campos
             inpCal.style.display = "inline-block";
-            spanCal.style.display = "inline";
+            inpColegio.style.display = "inline-block";
+            spanReg.style.display = "inline";
+            spanN.style.display = "inline";
         }
     }
 
-    // --- GENERADOR DE WORD JUZGADO ---
+    // --- GENERADOR DE WORD JUZGADO (ACTUALIZADO) ---
 
     function generarWordJuzgado() {
         const { Paragraph, TextRun, AlignmentType, UnderlineType } = docx;
@@ -901,29 +923,33 @@ function generarWordAtencion() {
         const txtJuzgado = selJuzgado.options[selJuzgado.selectedIndex].text;
         const juezCargo = `JUEZ DEL ${txtJuzgado} JUZGADO DE INVESTIGACIÓN PREPARATORIA DE CORRUPCIÓN DE FUNCIONARIOS Y CRIMEN ORGANIZADO DE LA CORTE SUPERIOR DE JUSTICIA DE LIMA.`;
         
-        const expNum = document.getElementById('j_exp_final').value;
-        const expediente = `02316-2025-0-1826-JR-PE-${expNum}`;
+        // EXPEDIENTE: Prefijo Manual + Fijo + Sufijo Automático
+        const expPrefix = document.getElementById('j_exp_prefix').value;
+        const expSufijo = document.getElementById('j_exp_final').value;
+        const expediente = `${expPrefix}-0-1826-JR-PE-${expSufijo}`;
+        
         const carpeta = document.getElementById('j_carpeta').value;
         const casillaJuzgado = document.getElementById('j_casilla_juzgado').value;
         const resolucion = document.getElementById('j_resolucion').value;
 
         const children = [];
 
-        // 2. ESPACIADO
-        for(let i=0; i<1; i++) children.push(new Paragraph({text:""})); 
+        // 2. ESPACIADO (3 Enters, igual que las otras)
+        for(let i=0; i<3; i++) children.push(new Paragraph({text:""})); 
 
-        // 3. Fecha y Oficio
-        
+        // 3. Fecha (En el cuerpo, derecha)
         children.push(new Paragraph({
             alignment: AlignmentType.RIGHT,
             children: [new TextRun({ text: `Lima, ${fecha}`, bold: true, size: 24, font: "Times New Roman" })]
         }));
+
+        // 4. Oficio
         children.push(new Paragraph({
             children: [new TextRun({ text: `OFICIO N. º ${oficio}-MP-FN-2ºDF-1º FPCEDCF-LIMA`, bold: true, underline: { type: UnderlineType.SINGLE }, size: 24, font: "Times New Roman" })],
             spacing: { before: 300, after: 300 }
         }));
 
-        // 4. Destinatario
+        // 5. Destinatario
         children.push(new Paragraph({ children: [new TextRun({ text: tituloDest, bold: true, size: 24, font: "Times New Roman" })] }));
         children.push(new Paragraph({ children: [new TextRun({ text: juezNombre, bold: true, size: 24, font: "Times New Roman" })] }));
         children.push(new Paragraph({ children: [new TextRun({ text: juezCargo, bold: true, size: 24, font: "Times New Roman" })] }));
@@ -932,7 +958,7 @@ function generarWordAtencion() {
             spacing: { before: 200, after: 200 }
         }));
 
-        // 5. Referencia y Casilla
+        // 6. Referencia y Casilla (Centrado/Derecha)
         const indentRef = 4500; 
         
         children.push(new Paragraph({
@@ -958,7 +984,7 @@ function generarWordAtencion() {
             spacing: { after: 300 }
         }));
 
-        // 6. Cuerpo
+        // 7. Cuerpo
         children.push(crearParrafoJustificado([
             { text: "Tengo el agrado de dirigirme a usted, a fin de saludarle cordialmente y a su vez, ", bold: false },
             { text: "RESPONDER", bold: true },
@@ -966,7 +992,7 @@ function generarWordAtencion() {
         ]));
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
 
-        // 7. Lista de Investigados
+        // 8. Lista de Investigados
         const inputsNombre = document.querySelectorAll('[id^="j_inv_nombre_"]');
         let indexEnum = 1;
 
@@ -993,15 +1019,19 @@ function generarWordAtencion() {
                 campos.forEach(c => {
                     let val = document.getElementById(`j_inv_val_${c.key}_${id}`).value || "---";
                     
-                    // Lógica Abogado + CAL
+                    // Lógica Abogado + Colegio + Nro
                     if (c.key === 'abogado') {
                         const tagAbogado = document.getElementById(`j_inv_tag_abogado_${id}`).value;
                         const calInput = document.getElementById(`j_inv_cal_${id}`);
+                        const colegioInput = document.getElementById(`j_inv_colegio_${id}`); // Valor manual del colegio (CAL, CAC, etc)
+                        
                         if (tagAbogado !== "NO_INFO" && calInput && calInput.value) {
-                            val += ` con Reg. CAL N.° ${calInput.value}`;
+                            // Construye: con Reg. [CAL] N.° [12345]
+                            const nombreColegio = colegioInput.value || "CAL";
+                            val += ` con Reg. ${nombreColegio} N.° ${calInput.value}`;
                         }
                     } 
-                    // Lógica Celular y Correo (etiquetas opcionales)
+                    // Lógica Celular y Correo
                     else if (c.key === 'cel' || c.key === 'correo') {
                         const tagSelect = document.getElementById(`j_inv_tag_${c.key}_${id}`);
                         if (tagSelect) {
@@ -1026,26 +1056,14 @@ function generarWordAtencion() {
             }
         });
 
-        // 8. Cierre (SIN FIRMA NICA)
+        // 9. Cierre
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
         children.push(crearParrafoJustificado([{ text: "Sin otro particular, hago propicia la oportunidad para expresarle los sentimientos de mi especial consideración y estima personal.", bold: false }]));
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })] }));
         
-        // Generar archivo
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, anioNombre), `OFICIO N.°-${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
-    }
-    // Pequeña ayuda para crear las líneas "Negrita: Texto normal"
-    function crearLineaDetalle(label, valor) {
-        const { Paragraph, TextRun } = docx;
-        return new Paragraph({
-            indent: { left: 720 }, // Un poco de sangría
-            children: [
-                new TextRun({ text: label, bold: true, size: 24, font: "Times New Roman" }),
-                new TextRun({ text: valor, size: 24, font: "Times New Roman" })
-            ],
-            spacing: { line: 276 }
-        });
+        // Generar archivo (Fecha vacía en header para que no salga doble)
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, "", anioNombre), `Oficio_Juzgado_${oficio}.docx`);
     }
 //CARPETAAAAAAA
     // =======================================================
