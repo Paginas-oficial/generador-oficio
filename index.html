@@ -528,25 +528,56 @@
     }
 
     // 1. GENERAR PERICIAS (COMPLETO)
-    function generarWordPericias() {
+ function generarWordPericias() {
         const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType,Header}=docx;
-        const codigo=document.getElementById('p_codigoUnico').value; const anio=document.getElementById('p_anio').value; const dia=document.getElementById('p_dia').value; const mes=document.getElementById('p_mes').value; const nombreAnio=document.getElementById('p_nombreAnio').value;
+        
+        // Datos
+        const codigo=document.getElementById('p_codigoUnico').value; 
+        const anio=document.getElementById('p_anio').value; 
+        const dia=document.getElementById('p_dia').value; 
+        const mes=document.getElementById('p_mes').value; 
+        const nombreAnio=document.getElementById('p_nombreAnio').value;
         const fechaTexto=`${dia} de ${mes} del ${anio}`;
-        const numDispo=document.getElementById('p_numDisposicion').value; const fechaDispo=formatearFechaLarga(document.getElementById('p_fechaDisposicion').value); const decision=document.getElementById('p_decision').value; const imputados=document.getElementById('p_imputados').value; const plazo=document.getElementById('p_plazoActuaciones').value;
-        let delitosArr=[]; for(let i=0;i<document.getElementById('p_cantDelitos').value;i++) delitosArr.push(document.getElementById(`p_delito_${i}`).value);
+        
+        const numDispo=document.getElementById('p_numDisposicion').value; 
+        const fechaDispo=formatearFechaLarga(document.getElementById('p_fechaDisposicion').value); 
+        const decision=document.getElementById('p_decision').value; 
+        const imputados=document.getElementById('p_imputados').value; 
+        const plazo=document.getElementById('p_plazoActuaciones').value;
+        
+        let delitosArr=[]; 
+        for(let i=0;i<document.getElementById('p_cantDelitos').value;i++) delitosArr.push(document.getElementById(`p_delito_${i}`).value);
         let delitoTexto=delitosArr.join(", ");
-        const etapa=document.getElementById('p_etapaProcesal').value; const vencimiento=formatearFechaLarga(document.getElementById('p_plazoVencimiento').value); const involucrados=document.getElementById('p_cantInvolucrados').value; const dispoOrdena=document.getElementById('p_dispoOrdena').value;
+        
+        const etapa=document.getElementById('p_etapaProcesal').value; 
+        const vencimiento=formatearFechaLarga(document.getElementById('p_plazoVencimiento').value); 
+        const involucrados=document.getElementById('p_cantInvolucrados').value; 
+        const dispoOrdena=document.getElementById('p_dispoOrdena').value;
 
         const children=[];
-        for (let i = 0; i < 2; i++) { children.push(new Paragraph({text: ""})); }
-        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N° (${codigo}) ${anio}-MP-FN-2D-1FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        
+        // 1. ESPACIADO INICIAL (Igual que Juzgado/Carpeta)
+        for (let i = 0; i < 3; i++) { children.push(new Paragraph({text: ""})); }
+
+        // 2. FECHA EN EL CUERPO (Alineada a la derecha)
+        children.push(new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [new TextRun({ text: `Lima, ${fechaTexto}`, bold: true, size: 24, font: "Times New Roman" })]
+        }));
+
+        // 3. OFICIO Y RESTO DEL DOCUMENTO
+        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N° (${codigo}) ${anio}-MP-FN-2D-1FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{before: 300, after: 300}}));
+        
         children.push(new Paragraph({children:[new TextRun({text:"SEÑORES:",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({children:[new TextRun({text:"UNIDAD DE PERITOS FECOF",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({children:[new TextRun({text:"Ministerio Público Fiscalía de la Nación",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({children:[new TextRun({text:"PRESENTE.-",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
+        
+        // Asunto y Ref
         children.push(new Paragraph({indent:{left:2835},children:[new TextRun({text:"ASUNTO: SOLICITUD DE DESIGNACIÓN DE PERITOS",bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({indent:{left:2835},children:[new TextRun({text:`Referencia: Carpeta Fiscal N.° ${codigo}`,bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
         
+        // Cuerpo
         children.push(crearParrafoJustificado([
             {text:"Tengo a bien dirigirme a usted... con el propósito de remitir adjunta la disposición N.° ",bold:false},
             {text:numDispo,bold:true}, {text:" de fecha ",bold:false}, {text:fechaDispo,bold:true},
@@ -590,18 +621,31 @@
         children.push(new Paragraph({text:"\n\n"}));
         children.push(new Paragraph({children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})],alignment:AlignmentType.CENTER}));
 
-        // CAMBIO: Usamos ${codigo} en lugar de ${oficioNum}
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, fechaTexto, nombreAnio), `OFICIO N.°-${codigo}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
-    
+        // NOTA: Pasamos "" en el segundo argumento (fecha) para que NO salga en el encabezado
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, "", nombreAnio), `OFICIO N.°-${codigo}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
 
     // 2. GENERAR MOVILIDAD (COMPLETO)
-    function generarWordMovilidad() {
+function generarWordMovilidad() {
         const {Document,Packer,Paragraph,TextRun,AlignmentType,UnderlineType,Header}=docx;
-        const oficio=document.getElementById('m_numOficio').value; const nombreAnio=document.getElementById('m_nombreAnio').value; const fecha=formatearFechaLarga(document.getElementById('m_fechaDocumento').value);
+        const oficio=document.getElementById('m_numOficio').value; 
+        const nombreAnio=document.getElementById('m_nombreAnio').value; 
+        const fecha=formatearFechaLarga(document.getElementById('m_fechaDocumento').value);
+        
         const children=[];
-        for (let i = 0; i < 2; i++) { children.push(new Paragraph({text: ""})); }
-        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{line:276,after:400}}));
+        
+        // 1. ESPACIADO
+        for (let i = 0; i < 3; i++) { children.push(new Paragraph({text: ""})); }
+
+        // 2. FECHA EN EL CUERPO
+        children.push(new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [new TextRun({ text: `Lima, ${fecha}`, bold: true, size: 24, font: "Times New Roman" })]
+        }));
+
+        // 3. OFICIO Y RESTO
+        children.push(new Paragraph({children:[new TextRun({text:`OFICIO N.° ${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.`,bold:true,underline:{type:UnderlineType.SINGLE},size:24,font:"Times New Roman"})],spacing:{before: 300, after: 400}}));
+        
         children.push(new Paragraph({children:[new TextRun({text:"Sr. Dr.",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({children:[new TextRun({text:"MIRKO DINO CANO GAMERO",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
         children.push(new Paragraph({children:[new TextRun({text:"FISCAL ADJUNTO SUPREMO TITULAR COORDINADOR NACIONAL DE LAS FISCALÍAS ESPECIALIZADAS EN DELITOS DE CORRUPCIÓN DE FUNCIONARIOS.",bold:true,size:24,font:"Times New Roman"})],spacing:{line:276}}));
@@ -640,13 +684,12 @@
         children.push(new Paragraph({text:"\n\n"}));
         children.push(new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:"Atentamente,",size:24,font:"Times New Roman"})]}));
         
-        // CAMBIO: Usamos ${oficio} en lugar de ${oficioNum}
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fecha}`, nombreAnio), `OFICIO N.°-${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
-    
+        // FECHA VACÍA EN ENCABEZADO ("")
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, "", nombreAnio), `OFICIO N.°-${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
 
     // 3. GENERAR ATENCIÓN (COMPLETO)
-    function generarWordAtencion() {
+function generarWordAtencion() {
         const { Document, Packer, Paragraph, TextRun, AlignmentType, UnderlineType, Header } = docx;
         const nombreAnio = document.getElementById('a_nombreAnio').value;
         const fechaRaw = document.getElementById('a_fecha').value;
@@ -662,23 +705,24 @@
         const refSeleccionadaTexto = document.getElementById('a_ref_respuesta').value;
 
         // Prefijo "Oficio N.° "
-        
-        
-        
         let refsArr = []; for(let i=0; i<refCount; i++) { const val=document.getElementById(`ref_input_${i}`)?.value; if(val) refsArr.push({letra:letras[i], texto:`Oficio N.° ${val}`}); }
         let refString = refsArr.map(r => `${r.letra} ${r.texto}-MP-FN-FSNCEDCF`).join("  ");
 
         const children = [];
-        for (let i = 0; i < 2; i++) { children.push(new Paragraph({text: ""})); }
         
-         children.push(new Paragraph({
+        // 1. ESPACIADO
+        for (let i = 0; i < 3; i++) { children.push(new Paragraph({text: ""})); }
+
+        // 2. FECHA EN EL CUERPO
+        children.push(new Paragraph({
             alignment: AlignmentType.RIGHT,
-            children: [new TextRun({ text: `Lima, ${fecha}`, bold: true, size: 24, font: "Times New Roman" })]
+            children: [new TextRun({ text: `Lima, ${fechaTexto}`, bold: true, size: 24, font: "Times New Roman" })]
         }));
-        
+
+        // 3. OFICIO Y RESTO
         children.push(new Paragraph({
             children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})],
-            spacing:{line:276, after: 400}
+            spacing:{before: 300, after: 400}
         }));
 
         children.push(new Paragraph({children:[new TextRun({text:`${tituloDest}`, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
@@ -715,9 +759,10 @@
         children.push(crearParrafoJustificado([{text: "Sin otro particular, renuevo a usted las expresiones de mi especial consideración y estima personal.", bold: false}]));
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, `Lima, ${fechaTexto}`, nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
+        
+        // FECHA VACÍA EN ENCABEZADO ("")
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, "", nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
-// === LÓGICA JUZGADO Y INVESTIGADOS ===
 // =======================================================
     // ===       LÓGICA OFICIO JUZGADO (BLOQUE ÚNICO)      ===
     // =======================================================
