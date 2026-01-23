@@ -712,34 +712,67 @@ function generarWordAtencion() {
         const children = [];
         
         // 1. ESPACIADO
-        for (let i = 0; i < 1; i++) { children.push(new Paragraph({text: ""})); }
+        for (let i = 0; i < 3; i++) { children.push(new Paragraph({text: ""})); }
 
-        // 2. FECHA EN EL CUERPO
+        // 2. FECHA EN EL CUERPO (Derecha)
         children.push(new Paragraph({
             alignment: AlignmentType.RIGHT,
-            children: [new TextRun({ text: `Lima, ${fechaTexto}`, bold: true, size: 24, font: "Times New Roman" })]
+            children: [new TextRun({ text: `Lima, ${fechaTexto}`, size: 24, font: "Times New Roman" })]
         }));
 
-        // 3. OFICIO Y RESTO
+        // 3. OFICIO
         children.push(new Paragraph({
             children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})],
             spacing:{before: 300, after: 400}
         }));
 
+        // Destinatario (Título y Nombre)
         children.push(new Paragraph({children:[new TextRun({text:`${tituloDest}`, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
         children.push(new Paragraph({children:[new TextRun({text:destinatario, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:cargo, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
         
+        // CARGO (Ahora Justificado)
         children.push(new Paragraph({
+            alignment: AlignmentType.JUSTIFIED, 
+            children:[new TextRun({text:cargo, size:22, font:"Times New Roman"})], 
+            spacing:{line:276}
+        }));
+        
+        // PRESENTE (Justificado por coherencia)
+        children.push(new Paragraph({
+            alignment: AlignmentType.JUSTIFIED,
             children:[new TextRun({text:"PRESENTE.-", bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], 
             spacing:{line:276, before: 400} 
         }));
 
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
-        children.push(new Paragraph({ indent: { left: 2835 }, children: [new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size:24, font: "Times New Roman" })], spacing: { line: 276 } }));
-        if(refString) { children.push(new Paragraph({ indent: { left: 2835 }, children: [new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: refString, size: 24, font: "Times New Roman" })], spacing: { line: 276 } })); }
+
+        // ASUNTO (Justificado + Sangría)
+        children.push(new Paragraph({ 
+            alignment: AlignmentType.JUSTIFIED,
+            indent: { left: 2835 }, 
+            children: [
+                new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
+                new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size:24, font: "Times New Roman" })
+            ], 
+            spacing: { line: 276 } 
+        }));
+
+        // REFERENCIA (Justificado + Sangría)
+        if(refString) { 
+            children.push(new Paragraph({ 
+                alignment: AlignmentType.JUSTIFIED,
+                indent: { left: 2835 }, 
+                children: [
+                    new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
+                    new TextRun({ text: refString, size: 24, font: "Times New Roman" })
+                ], 
+                spacing: { line: 276 } 
+            })); 
+        }
+        
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
 
+        // Cuerpo (Ya estaba justificado)
         let cuerpo = [{text: `${saludo} a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `, bold: false}, {text: refSeleccionadaTexto, bold: false}, {text: ", ", bold: false}, {text: "CUMPLO CON INFORMAR", bold: true}];
         if(tieneInfo === "NO") { cuerpo.push({text: " que este despacho ", bold: false}); cuerpo.push({text: "NO CUENTA", bold: true}); cuerpo.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento.", bold: false}); }
         else {
@@ -761,7 +794,7 @@ function generarWordAtencion() {
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
         
-        // FECHA VACÍA EN ENCABEZADO ("")
+        // Header con fecha vacía ("") porque ya está en el cuerpo
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, "", nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
 // =======================================================
@@ -1437,7 +1470,7 @@ function generarWordAtencion() {
                 properties:{
                     page: {
                         margin: {
-                            top: 1417, // 4.5 cm (Cuerpo baja)
+                            top: 1701, // 4.5 cm (Cuerpo baja)
                             right: 2068, // 4 cm
                             bottom: 1417, // 2.5 cm
                             left: 2068, // 4 cm
@@ -1448,7 +1481,7 @@ function generarWordAtencion() {
                 },
                 headers: { default: new Header({ children: [headerContent] }) },
                 children:children,
-                footers:{default:new Footer({children:[new Paragraph({children:[new TextRun({text:"Teléfono: (01) 625-5555", size:18, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Anexos: 11706 / 11705", size:18, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"E-mail: fecoflima_1f2d@mpfn.gob.pe", size:18, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Dirección: Jr. Lampa N.° 597 – Cercado de Lima.", size:18, font:"Times New Roman", color:"333333"})]})]})}
+                footers:{default:new Footer({children:[new Paragraph({children:[new TextRun({text:"Teléfono: (01) 625-5555", size:20, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Anexos: 11706 / 11705", size:20, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"E-mail: fecoflima_1f2d@mpfn.gob.pe", size:20, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Dirección: Jr. Lampa N.° 597 – Cercado de Lima.", size:20, font:"Times New Roman", color:"333333"})]})]})}
             }]
         }); 
         Packer.toBlob(doc).then(b=>saveAs(b, nombre)); 
