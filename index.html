@@ -172,25 +172,47 @@
     <div id="app-atencion" class="app-container">
         <button class="btn-back" onclick="navegar('screen-menu')">⬅ Menú</button>
         <h1 style="color: #1e3a8a; text-align: center;">Atención de Pedidos</h1>
-        <div class="section-title" onclick="toggleSection('a-sec1')">1. Datos ▼</div>
+        
+        <div class="section-title" onclick="toggleSection('a-sec1')">1. DATOS GENERALES ▼</div>
         <div id="a-sec1" class="section-content">
             <div class="form-row"><div class="form-col"><label>N° Oficio:</label><input type="text" id="a_oficio"></div><div class="form-col"><label>Fecha:</label><input type="date" id="a_fecha"></div></div>
             <div class="form-row"><div class="form-col"><label>Nombre Año (Opcional):</label><input type="text" id="a_nombreAnio"></div></div>
         </div>
-        <div class="section-title">2. Destinatario ▼</div>
-        <div class="section-content">
+        
+        <div class="section-title" onclick="toggleSection('a-sec2')">2. DESTINATARIO ▼</div>
+        <div id="a-sec2" class="section-content">
             <div class="form-row"><div class="form-col"><label>Título:</label><select id="a_dest_titulo"><option>Sr.</option><option>Dr.</option><option>Sra.</option><option>Dra.</option><option>Sr. Dr.</option><option>Sr. (a) Dr. (a)</option></select></div><div class="form-col"><label>Nombre:</label><input type="text" id="a_dest_nombre"></div></div>
             <label>Cargo:</label><input type="text" id="a_dest_cargo">
         </div>
-        <div class="section-title">3. Referencias ▼</div>
-        <div class="section-content"><div id="container-referencias"></div><button class="btn-small" onclick="agregarReferencia()">+ Referencia</button></div>
-        <div class="section-title">4. Cuerpo ▼</div>
-        <div class="section-content">
+        
+        <div class="section-title" onclick="toggleSection('a-sec3')">3. REFERENCIAS (AVANZADO) ▼</div>
+        <div id="a-sec3" class="section-content">
+            <div id="container-referencias"></div>
+            <button class="btn-small" onclick="agregarReferencia()">+ Agregar Referencia</button>
+        </div>
+        
+        <div class="section-title" onclick="toggleSection('a-sec4')">4. CUERPO ▼</div>
+        <div id="a-sec4" class="section-content">
             <label>Responder a:</label><select id="a_ref_respuesta"></select>
-            <label style="margin-top:10px;">Saludo:</label><select id="a_saludo"><option>Es grato dirigirme a usted</option><option>Es un honor dirigirme a usted</option></select>
+            
+            <label style="margin-top:10px; color:#047857; font-weight:bold;">Cita Textual del Documento (Opcional):</label>
+            <textarea id="a_texto_cita" placeholder='Pegue aquí el texto entre comillas (Ej: "(...) en relación a las investigaciones..."). Se generará en fuente Freehand521 BT.' style="height:80px; font-family:'Courier New'; font-size:13px;"></textarea>
+
+            <label style="margin-top:10px;">Saludo:</label>
+            <select id="a_saludo"><option>Es grato dirigirme a usted</option><option>Es un honor dirigirme a usted</option></select>
+            
             <div style="background:#eff6ff;padding:15px;margin-top:10px;border-radius:5px;">
                 <label>¿Tiene Información?</label>
                 <select id="a_tieneInfo" onchange="toggleInfoDespacho()"><option value="NO">NO CUENTA</option><option value="SI">SÍ CUENTA</option></select>
+                
+                <div id="panel-info-no" style="margin-top:10px;">
+                    <label>Complemento "NO CUENTA":</label>
+                    <select id="a_no_cuenta_detalle">
+                        <option value="con investigaciones relacionadas con los hechos materia del requerimiento.">con investigaciones relacionadas con los hechos materia del requerimiento.</option>
+                        <option value="con investigaciones relacionadas con las personas naturales y jurídicas antes señaladas.">con investigaciones relacionadas con las personas naturales y jurídicas antes señaladas.</option>
+                    </select>
+                </div>
+
                 <div id="panel-info-si" style="display:none;margin-top:10px;">
                     <label>Cant. Carpetas:</label><select id="a_cant_carpetas" onchange="generarCarpetasInputs()"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
                     <div id="container-carpetas"></div>
@@ -198,6 +220,31 @@
                 </div>
             </div>
         </div>
+
+        <div class="section-title" onclick="toggleSection('a-sec5')">5. PIE DE PÁGINA (SIGLAS Y CC) ▼</div>
+        <div id="a-sec5" class="section-content">
+            <label>Siglas de Redacción:</label>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <select id="a_siglas_combo" onchange="toggleManual('a_siglas_combo', 'a_siglas_manual')" style="flex:1;">
+                    <option value="NICA/ djsa.">NICA/ djsa.</option>
+                    <option value="NICA/ lms.">NICA/ lms.</option>
+                    <option value="OTRO">Manual...</option>
+                </select>
+                <input type="text" id="a_siglas_manual" style="display:none; flex:1;" placeholder="Ej: JUAN/ abcd.">
+            </div>
+
+            <label style="margin-top:10px;">Copia (CC):</label>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <select id="a_cc_combo" onchange="toggleManual('a_cc_combo', 'a_cc_manual')" style="flex:1;">
+                    <option value="CC. FSNCEDCF">CC. FSNCEDCF</option>
+                    <option value="CC. ARCHIVO">CC. ARCHIVO</option>
+                    <option value="OTRO">Manual...</option>
+                    <option value="NINGUNO">(Ninguno)</option>
+                </select>
+                <input type="text" id="a_cc_manual" style="display:none; flex:1;" placeholder="Ej: CC. JEFATURA">
+            </div>
+        </div>
+
         <button class="btn-generate" onclick="generarWordAtencion()">📄 GENERAR OFICIO</button>
     </div>
   <div id="app-juzgado" class="app-container">
@@ -690,8 +737,106 @@ function generarWordMovilidad() {
     }
 
     // 3. GENERAR ATENCIÓN (COMPLETO)
-function generarWordAtencion() {
+// =======================================================
+    // ===           LÓGICA ATENCIÓN DE PEDIDOS            ===
+    // =======================================================
+    
+    let refCount = 0; 
+    const letras = ['a)', 'b)', 'c)', 'd)', 'e)'];
+
+    // Inicializar al cargar
+    setTimeout(() => {
+        if(refCount === 0 && document.getElementById('container-referencias')) agregarReferencia(); 
+    }, 1000);
+
+    // Agrega una fila compleja de referencia
+    function agregarReferencia() {
+        if(refCount >= 5) return;
+        const c = document.getElementById('container-referencias');
+        const id = refCount;
+        
+        const div = document.createElement('div');
+        div.className = 'ref-box-complex';
+        div.style.marginBottom = "10px";
+        div.style.padding = "10px";
+        div.style.border = "1px solid #e5e7eb";
+        div.style.backgroundColor = "#f9fafb";
+        div.style.borderRadius = "6px";
+        
+        div.innerHTML = `
+            <div style="font-weight:bold; color:#1e3a8a; margin-bottom:5px;">Referencia ${letras[id]}</div>
+            <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:130px;">
+                    <select id="ref_pre_combo_${id}" style="width:100%; font-size:12px;" onchange="toggleRefManual('ref_pre_combo_${id}', 'ref_pre_man_${id}')">
+                        <option value="OFICIO N.°">OFICIO N.°</option>
+                        <option value="OFICIO MULTIPLE">OFICIO MULTIPLE</option>
+                        <option value="OFICIO CIRCULAR">OFICIO CIRCULAR</option>
+                        <option value="CARTA N.°">CARTA N.°</option>
+                        <option value="OTRO">Manual...</option>
+                    </select>
+                    <input type="text" id="ref_pre_man_${id}" placeholder="Prefijo..." style="display:none; width:100%; margin-top:2px; font-size:12px;">
+                </div>
+
+                <div style="flex:1; min-width:100px;">
+                    <input type="text" id="ref_num_${id}" placeholder="Número (Ej: 001-2025)" style="width:100%;" oninput="actualizarComboReferencias()">
+                </div>
+
+                <div style="flex:1; min-width:130px;">
+                    <select id="ref_suf_combo_${id}" style="width:100%; font-size:12px;" onchange="toggleRefManual('ref_suf_combo_${id}', 'ref_suf_man_${id}')">
+                        <option value="-MP-FN-FSNCEDCF">-MP-FN-FSNCEDCF</option>
+                        <option value="-MP-FN">-MP-FN</option>
+                        <option value="">(Ninguno)</option>
+                        <option value="OTRO">Manual...</option>
+                    </select>
+                    <input type="text" id="ref_suf_man_${id}" placeholder="Sufijo..." style="display:none; width:100%; margin-top:2px; font-size:12px;">
+                </div>
+            </div>
+        `;
+        
+        c.appendChild(div);
+        refCount++;
+        actualizarComboReferencias();
+    }
+
+    function toggleRefManual(idCombo, idManual) {
+        const val = document.getElementById(idCombo).value;
+        document.getElementById(idManual).style.display = (val === 'OTRO') ? 'block' : 'none';
+        actualizarComboReferencias();
+    }
+
+    function actualizarComboReferencias() {
+        const s = document.getElementById('a_ref_respuesta');
+        if(!s) return;
+        s.innerHTML = '<option value="la referencia">la referencia (General)</option>';
+        for(let i=0; i<refCount; i++) {
+            const num = document.getElementById(`ref_num_${i}`).value;
+            const t = `la referencia ${letras[i]}`;
+            // Muestra un resumen en el combo para guiarse
+            const display = num ? `${t} (...${num})` : t;
+            const opt = document.createElement('option'); 
+            opt.value = t; 
+            opt.text = display; 
+            s.appendChild(opt);
+        }
+    }
+
+    function generarCarpetasInputs() {
+        const c = document.getElementById('a_cant_carpetas').value;
+        const d = document.getElementById('container-carpetas'); d.innerHTML = "";
+        for(let i=0; i<c; i++) { d.innerHTML += `<div style="display:flex; align-items:center; margin-bottom:5px;"><span style="margin-right:5px; font-weight:bold;">N.°</span><input type="text" id="a_carpeta_${i}" placeholder="Ej: 50-2024"></div>`; }
+    }
+
+    function toggleInfoDespacho() { 
+        const val = document.getElementById('a_tieneInfo').value;
+        document.getElementById('panel-info-si').style.display = (val==='SI')?'block':'none';
+        document.getElementById('panel-info-no').style.display = (val==='NO')?'block':'none';
+    }
+
+    // --- GENERADOR WORD ATENCIÓN (FULL OPCIONES) ---
+    function generarWordAtencion() {
         const { Document, Packer, Paragraph, TextRun, AlignmentType, UnderlineType, Header } = docx;
+        
+        // Datos Básicos
         const nombreAnio = document.getElementById('a_nombreAnio').value;
         const fechaRaw = document.getElementById('a_fecha').value;
         const fechaTexto = fechaRaw ? formatearFechaLarga(fechaRaw) : "_______";
@@ -704,40 +849,54 @@ function generarWordAtencion() {
         const saludo = document.getElementById('a_saludo').value;
         const tieneInfo = document.getElementById('a_tieneInfo').value;
         const refSeleccionadaTexto = document.getElementById('a_ref_respuesta').value;
+        const textoCita = document.getElementById('a_texto_cita').value; 
 
-        // Prefijo "Oficio N.° "
-        let refsArr = []; for(let i=0; i<refCount; i++) { const val=document.getElementById(`ref_input_${i}`)?.value; if(val) refsArr.push({letra:letras[i], texto:`Oficio N.° ${val}`}); }
-        let refString = refsArr.map(r => `${r.letra} ${r.texto}-MP-FN-FSNCEDCF`).join("  ");
+        // 1. Construir Referencias Dinámicas (Prefijo + Num + Sufijo)
+        let refsArr = []; 
+        for(let i=0; i<refCount; i++) { 
+            let pre = document.getElementById(`ref_pre_combo_${i}`).value;
+            if(pre === 'OTRO') pre = document.getElementById(`ref_pre_man_${i}`).value;
+            
+            let num = document.getElementById(`ref_num_${i}`).value;
+            
+            let suf = document.getElementById(`ref_suf_combo_${i}`).value;
+            if(suf === 'OTRO') suf = document.getElementById(`ref_suf_man_${i}`).value;
+            
+            if(num) {
+                // Ej: "OFICIO N.° " + "123" + "-MP-FN..."
+                let textoRef = `${pre} ${num}${suf}`;
+                refsArr.push({letra:letras[i], texto:textoRef}); 
+            }
+        }
+        // Unir referencias con doble espacio
+        let refString = refsArr.map(r => `${r.letra} ${r.texto}`).join("  ");
 
         const children = [];
         
-        // 1. ESPACIADO
+        // --- ESPACIADO Y FECHA ---
         for (let i = 0; i < 1; i++) { children.push(new Paragraph({text: ""})); }
 
-        // 2. FECHA EN EL CUERPO (Derecha)
         children.push(new Paragraph({
             alignment: AlignmentType.RIGHT,
             children: [new TextRun({ text: `Lima, ${fechaTexto}`, size: 24, font: "Times New Roman" })]
         }));
 
-        // 3. OFICIO
+        // --- CABECERA OFICIO ---
         children.push(new Paragraph({
             children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})],
             spacing:{before: 300, after: 400}
         }));
 
-        // Destinatario (Título y Nombre)
+        // --- DESTINATARIO ---
         children.push(new Paragraph({children:[new TextRun({text:`${tituloDest}`, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
         children.push(new Paragraph({children:[new TextRun({text:destinatario, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
         
-        // CARGO (Ahora Justificado)
         children.push(new Paragraph({
             alignment: AlignmentType.JUSTIFIED, 
-            children:[new TextRun({text:cargo, size:22, font:"Times New Roman"})], 
+            children:[new TextRun({text:cargo, size:24, font:"Times New Roman"})], 
             spacing:{line:276}
         }));
         
-        // PRESENTE (Justificado por coherencia)
         children.push(new Paragraph({
             alignment: AlignmentType.JUSTIFIED,
             children:[new TextRun({text:"PRESENTE.-", bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], 
@@ -746,24 +905,23 @@ function generarWordAtencion() {
 
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
 
-        // ASUNTO (Justificado + Sangría)
+        // --- ASUNTO Y REFERENCIA ---
         children.push(new Paragraph({ 
             alignment: AlignmentType.JUSTIFIED,
             indent: { left: 2835 }, 
             children: [
-                new TextRun({ text: "ASUNTO:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
+                new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
                 new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size:24, font: "Times New Roman" })
             ], 
             spacing: { line: 276 } 
         }));
 
-        // REFERENCIA (Justificado + Sangría)
         if(refString) { 
             children.push(new Paragraph({ 
                 alignment: AlignmentType.JUSTIFIED,
                 indent: { left: 2835 }, 
                 children: [
-                    new TextRun({ text: "Referencia:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
+                    new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
                     new TextRun({ text: refString, size: 24, font: "Times New Roman" })
                 ], 
                 spacing: { line: 276 } 
@@ -772,16 +930,51 @@ function generarWordAtencion() {
         
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
 
-        // Cuerpo (Ya estaba justificado)
-        let cuerpo = [{text: `${saludo} a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `, bold: false}, {text: refSeleccionadaTexto, bold: false}, {text: ", ", bold: false}, {text: "CUMPLO CON INFORMAR", bold: true}];
-        if(tieneInfo === "NO") { cuerpo.push({text: " que este despacho ", bold: false}); cuerpo.push({text: "NO CUENTA", bold: true}); cuerpo.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento.", bold: false}); }
+        // --- CUERPO PRINCIPAL ---
+        children.push(crearParrafoJustificado([
+            {text: `${saludo} a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `, bold: false}, 
+            {text: refSeleccionadaTexto, bold: false}, 
+            {text: ")", bold: false}
+        ]));
+
+        // --- CITA TEXTUAL (Freehand521 BT) ---
+        if(textoCita) {
+            children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+            children.push(new Paragraph({
+                indent: { left: 1440, right: 1440 }, // Sangría centrada visualmente
+                alignment: AlignmentType.CENTER,
+                children: [
+                    new TextRun({ 
+                        text: textoCita, 
+                        font: "Freehand521 BT", // Fuente solicitada
+                        size: 20 // Tamaño 10 pt (20 half-points)
+                    })
+                ],
+                spacing: { line: 276 }
+            }));
+            children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+        }
+
+        // --- RESPUESTA (SI/NO CUENTA) ---
+        let cuerpoResp = [{text: "Este despacho fiscal ", bold: false}, {text: "CUMPLE CON INFORMAR", bold: true}];
+        
+        if(tieneInfo === "NO") { 
+            const detalleNo = document.getElementById('a_no_cuenta_detalle').value;
+            cuerpoResp.push({text: " que ", bold: false}); 
+            cuerpoResp.push({text: "NO CONTAMOS", bold: true}); 
+            cuerpoResp.push({text: " " + detalleNo, bold: false}); 
+        }
         else {
             const cantCarp = document.getElementById('a_cant_carpetas').value;
             let carpetasArr = []; for(let i=0; i<cantCarp; i++) { let v = document.getElementById(`a_carpeta_${i}`).value; if(v) carpetasArr.push(`N.° ${v}`); }
             let carpetasTexto = carpetasArr.join(" y ");
-            cuerpo.push({text: " que este despacho ", bold: false}); cuerpo.push({text: "SÍ CUENTA", bold: true}); cuerpo.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento, encontrándose los mismos comprendidos en las Carpetas Fiscales ", bold: false}); cuerpo.push({text: carpetasTexto, bold: true}); cuerpo.push({text: ".", bold: false});
+            cuerpoResp.push({text: " que este despacho ", bold: false}); 
+            cuerpoResp.push({text: "SÍ CUENTA", bold: true}); 
+            cuerpoResp.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento, encontrándose los mismos comprendidos en las Carpetas Fiscales ", bold: false}); 
+            cuerpoResp.push({text: carpetasTexto, bold: true}); 
+            cuerpoResp.push({text: ".", bold: false});
         }
-        children.push(crearParrafoJustificado(cuerpo));
+        children.push(crearParrafoJustificado(cuerpoResp));
 
         if(tieneInfo === "SI") {
             const d = document.getElementById('chk_dispo').checked; const dc = document.getElementById('chk_declara').checked;
@@ -794,7 +987,31 @@ function generarWordAtencion() {
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
         
-        // Header con fecha vacía ("") porque ya está en el cuerpo
+        // --- PIE DE PÁGINA (SIGLAS Y CC) ---
+        children.push(new Paragraph({ text: "\n\n" })); // Espacio para firma
+        
+        // Recoger Siglas
+        let siglas = document.getElementById('a_siglas_combo').value;
+        if(siglas === 'OTRO') siglas = document.getElementById('a_siglas_manual').value;
+        
+        // Recoger CC
+        let cc = document.getElementById('a_cc_combo').value;
+        if(cc === 'OTRO') cc = document.getElementById('a_cc_manual').value;
+
+        // Imprimir Siglas
+        if(siglas) {
+            children.push(new Paragraph({
+                children: [new TextRun({ text: siglas, size: 14, font: "Times New Roman" })] // Tamaño pequeño (7pt aprox)
+            }));
+        }
+        // Imprimir CC
+        if(cc && cc !== "NINGUNO") {
+            children.push(new Paragraph({
+                children: [new TextRun({ text: cc, size: 14, font: "Times New Roman" })]
+            }));
+        }
+
+        // --- GENERAR ---
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, "", nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
 // =======================================================
