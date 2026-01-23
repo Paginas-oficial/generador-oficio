@@ -712,7 +712,7 @@ function generarWordAtencion() {
         const children = [];
         
         // 1. ESPACIADO
-        for (let i = 0; i < 3; i++) { children.push(new Paragraph({text: ""})); }
+        for (let i = 0; i < 1; i++) { children.push(new Paragraph({text: ""})); }
 
         // 2. FECHA EN EL CUERPO (Derecha)
         children.push(new Paragraph({
@@ -751,7 +751,7 @@ function generarWordAtencion() {
             alignment: AlignmentType.JUSTIFIED,
             indent: { left: 2835 }, 
             children: [
-                new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
+                new TextRun({ text: "ASUNTO:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
                 new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size:24, font: "Times New Roman" })
             ], 
             spacing: { line: 276 } 
@@ -763,7 +763,7 @@ function generarWordAtencion() {
                 alignment: AlignmentType.JUSTIFIED,
                 indent: { left: 2835 }, 
                 children: [
-                    new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
+                    new TextRun({ text: "Referencia:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
                     new TextRun({ text: refString, size: 24, font: "Times New Roman" })
                 ], 
                 spacing: { line: 276 } 
