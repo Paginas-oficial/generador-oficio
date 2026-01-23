@@ -1437,7 +1437,7 @@ function generarWordAtencion() {
                 properties:{
                     page: {
                         margin: {
-                            top: 3402, // 4.5 cm (Cuerpo baja)
+                            top: 1417, // 4.5 cm (Cuerpo baja)
                             right: 2068, // 4 cm
                             bottom: 1417, // 2.5 cm
                             left: 2068, // 4 cm
@@ -1448,7 +1448,7 @@ function generarWordAtencion() {
                 },
                 headers: { default: new Header({ children: [headerContent] }) },
                 children:children,
-                footers:{default:new Footer({children:[new Paragraph({children:[new TextRun({text:"Teléfono: (01) 625-5555", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Anexos: 11706 / 11705", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"E-mail: fecoflima_1f2d@mpfn.gob.pe", size:22, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Dirección: Jr. Lampa N.° 597 – Cercado de Lima.", size:22, font:"Times New Roman", color:"333333"})]})]})}
+                footers:{default:new Footer({children:[new Paragraph({children:[new TextRun({text:"Teléfono: (01) 625-5555", size:18, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Anexos: 11706 / 11705", size:18, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"E-mail: fecoflima_1f2d@mpfn.gob.pe", size:18, font:"Times New Roman", color:"333333"})]}),new Paragraph({children:[new TextRun({text:"Dirección: Jr. Lampa N.° 597 – Cercado de Lima.", size:18, font:"Times New Roman", color:"333333"})]})]})}
             }]
         }); 
         Packer.toBlob(doc).then(b=>saveAs(b, nombre)); 
