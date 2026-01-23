@@ -482,30 +482,6 @@
     function toggleManual(c,i){ const v=document.getElementById(c).value; document.getElementById(i).style.display=(v==='OTRO')?'block':'none'; }
     function actualizarPreviewServicio(){ const f=document.getElementById('m_diaServicio').value; const i=document.getElementById('m_horaInicio').value; const fn=document.getElementById('m_horaFin').value; if(f&&i&&fn){ const d=new Date(f+'T00:00:00'); const ft=d.toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase(); document.getElementById('m_previewServicio').innerText=`${ft}, DE ${i} A ${fn} HORAS`; document.getElementById('m_previewServicio').style.display='block';}}
 
-    // === ATENCIÓN PEDIDOS ===
-    let refCount = 0; 
-    const letras = ['a)', 'b)', 'c)', 'd)', 'e)'];
-    function agregarReferencia() {
-        if(refCount>=5)return;
-        const c=document.getElementById('container-referencias');
-        const d=document.createElement('div'); d.className='ref-box'; d.id=`ref-row-${refCount}`;
-        d.innerHTML=`<span class="ref-label">${letras[refCount]}</span><input type="text" id="ref_input_${refCount}" placeholder="Ej: 001151-2025" oninput="actualizarComboReferencias()">`;
-        c.appendChild(d); refCount++; actualizarComboReferencias();
-    }
-    function actualizarComboReferencias() {
-        const s = document.getElementById('a_ref_respuesta'); s.innerHTML = '<option value="la referencia">la referencia (General)</option>';
-        for(let i=0; i<refCount; i++) {
-            const v = document.getElementById(`ref_input_${i}`).value;
-            const t = `la referencia ${letras[i]}`;
-            const opt = document.createElement('option'); opt.value = t; opt.text = t + (v ? ` (${v.substring(0,8)}...)` : ""); s.appendChild(opt);
-        }
-    }
-    function generarCarpetasInputs() {
-        const c = document.getElementById('a_cant_carpetas').value;
-        const d = document.getElementById('container-carpetas'); d.innerHTML = "";
-        for(let i=0; i<c; i++) { d.innerHTML += `<div style="display:flex; align-items:center; margin-bottom:5px;"><span style="margin-right:5px; font-weight:bold;">N.°</span><input type="text" id="a_carpeta_${i}" placeholder="Ej: 50-2024"></div>`; }
-    }
-    function toggleInfoDespacho() { document.getElementById('panel-info-si').style.display=(document.getElementById('a_tieneInfo').value==='SI')?'block':'none'; }
 
     // === ASISTENTE VOZ ===
     const synth=window.speechSynthesis; const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition; const recognition=SpeechRecognition?new SpeechRecognition():null; if(recognition){recognition.lang='es-PE'; recognition.interimResults=false;}
