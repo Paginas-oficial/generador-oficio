@@ -508,7 +508,7 @@
     // ENCABEZADO REAL (Header) - LOGO GRANDE
     function construirEncabezado(logo, fecha, nombreAnio) {
         const {Paragraph,TextRun,Table,TableRow,TableCell,ImageRun,AlignmentType,WidthType,BorderStyle}=docx;
-        let logoRun=logo?new ImageRun({data:logo,transformation:{width:120,height:113}}):new TextRun("");
+        let logoRun=logo?new ImageRun({data:logo,transformation:{width:110,height:103}}):new TextRun("");
         let txtAnio=nombreAnio?`“${nombreAnio.replace(/“|”|"/g,'')}”`:"";
         return new Table({ 
             width:{size:100,type:WidthType.PERCENTAGE}, 
@@ -516,8 +516,8 @@
             rows:[ new TableRow({ children:[ 
                 new TableCell({width:{size:40,type:WidthType.PERCENTAGE},margins:{left:-1000},children:[
                     new Paragraph({children:[logoRun],alignment:AlignmentType.CENTER}),
-                    new Paragraph({children:[new TextRun({text:"MINISTERIO PÚBLICO",bold:false,size:14,font:"Times New Roman"})],alignment:AlignmentType.CENTER}),
-                    new Paragraph({children:[new TextRun({text:"PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-",bold:false,size:14,font:"Times New Roman"})],alignment:AlignmentType.CENTER})
+                    new Paragraph({children:[new TextRun({text:"MINISTERIO PÚBLICO",bold:false,size:12,font:"Times New Roman"})],alignment:AlignmentType.CENTER}),
+                    new Paragraph({children:[new TextRun({text:"PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-",bold:false,size:12,font:"Times New Roman"})],alignment:AlignmentType.CENTER})
                 ]}), 
                 new TableCell({width:{size:60,type:WidthType.PERCENTAGE},children:[
                     new Paragraph({children:[new TextRun({text:txtAnio,italics:true,size:18,font:"Times New Roman"})],alignment:AlignmentType.LEFT,spacing:{before:800}}),
