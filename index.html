@@ -824,11 +824,11 @@
         children.push(new Paragraph({ children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], spacing:{before: 300, after: 0} }));
         children.push(new Paragraph({children:[new TextRun({text:`${tituloDest}`, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
         children.push(new Paragraph({children:[new TextRun({text:destinatario, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
-        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, children:[new TextRun({text:cargo, size:22, font:"Times New Roman"})], spacing:{line:276} }));
+        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, children:[new TextRun({text:cargo, size:20, font:"Times New Roman"})], spacing:{line:276} }));
         children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, children:[new TextRun({text:"PRESENTE.-", bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], spacing:{line:276, before: 0} }));
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
-        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size:24, font: "Times New Roman" }) ], spacing: { line: 276 } }));
-        if(refString) { children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: refString, size: 24, font: "Times New Roman" }) ], spacing: { line: 276 } })); }
+        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "ASUNTO:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size:24, font: "Times New Roman" }) ], spacing: { line: 276 } }));
+        if(refString) { children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "Referencia:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: refString, size: 24, font: "Times New Roman" }) ], spacing: { line: 276 } })); }
         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
         
         // Cuerpo y Cita Textual
@@ -858,8 +858,8 @@
         children.push(new Paragraph({ text: "\n\n" }));
         let siglas = document.getElementById('a_siglas_combo').value; if(siglas === 'OTRO') siglas = document.getElementById('a_siglas_manual').value;
         let cc = document.getElementById('a_cc_combo').value; if(cc === 'OTRO') cc = document.getElementById('a_cc_manual').value;
-        if(siglas) { children.push(new Paragraph({ children: [new TextRun({ text: siglas, size: 14, font: "Times New Roman" })] })); }
-        if(cc && cc !== "NINGUNO") { children.push(new Paragraph({ children: [new TextRun({ text: cc, size: 14, font: "Times New Roman" })] })); }
+        if(siglas) { children.push(new Paragraph({ children: [new TextRun({ text: siglas, bold: true,size: 20, font: "Times New Roman" })] })); }
+        if(cc && cc !== "NINGUNO") { children.push(new Paragraph({ children: [new TextRun({ text: cc, size: 20, font: "Times New Roman" })] })); }
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, "", nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
 
@@ -904,7 +904,7 @@
         children.push(crearParrafoJustificado([{ text: "Sin otro particular, hago propicia la oportunidad para expresarle los sentimientos de mi especial consideración y estima personal.", bold: false }]));
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })] }));
-        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, "", anioNombre), `Oficio_Juzgado_${oficio}.docx`);
+        crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, "", anioNombre), `OFICIO N.°-${oficio}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
 
     // 5. GENERAR CARPETA
