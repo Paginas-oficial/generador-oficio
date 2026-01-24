@@ -967,7 +967,59 @@
     function crearFilaContacto(label, val) {const { TableRow, TableCell, Paragraph, TextRun, HeightRule } = docx; return new TableRow({ height: { value: 500, rule: HeightRule.AT_LEAST }, cantSplit: true, children: [ new TableCell({ children: [new Paragraph({children:[new TextRun({text: label, bold: true, size: 20, font: "Times New Roman"})]})] }), new TableCell({ children: [new Paragraph({children:[new TextRun({text: val, size: 20, font: "Times New Roman"})]})] }) ] });}
     function crearTablaContacto(m, f, tf, ta) {const { Table, TableRow, TableCell, Paragraph, TextRun, WidthType, HeightRule } = docx;return new Table({width: { size: 90, type: WidthType.PERCENTAGE }, indent: { size: 720, type: WidthType.DXA },rows: [crearFilaContacto("CORREO ELECTRÓNICO MESA DE PARTES", m),crearFilaContacto("CORREO ELECTRÓNICO FISCAL ENCARGADO", f),crearFilaContacto("TELÉFONO FISCAL", tf),crearFilaContacto("TELÉFONO ASISTENTE", ta)]});}
     function crearViñeta(t,v){const {Paragraph,TextRun}=docx; return new Paragraph({bullet:{level:0},indent:{left:1440},children:[new TextRun({text:t,bold:true,size:24,font:"Times New Roman"}),new TextRun({text:v,size:24,font:"Times New Roman"})],spacing:{line:276}});}
-    
+    // =======================================================
+    // ===            FUNCIONES DE ENCABEZADO              ===
+    // =======================================================
+
+    function construirEncabezado(logo, fecha, nombreAnio) {
+        const {Paragraph, TextRun, Table, TableRow, TableCell, ImageRun, AlignmentType, WidthType, BorderStyle} = docx;
+        
+        let logoRun = logo ? new ImageRun({
+            data: logo,
+            transformation: { width: 110, height: 103 }
+        }) : new TextRun("");
+
+        // Limpieza de comillas dobles o curvas extras en el nombre del año
+        let txtAnio = nombreAnio ? `“${nombreAnio.replace(/“|”|"/g,'')}”` : "";
+
+        return new Table({ 
+            width: { size: 100, type: WidthType.PERCENTAGE }, 
+            borders: {
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
+                insideVertical: { style: BorderStyle.NONE },
+                insideHorizontal: { style: BorderStyle.NONE }
+            }, 
+            rows: [
+                new TableRow({
+                    children: [ 
+                        // CELDA IZQUIERDA: LOGO Y TEXTO MINISTERIO
+                        new TableCell({
+                            width: { size: 40, type: WidthType.PERCENTAGE },
+                            margins: { left: -1000 }, // Mover a la izquierda
+                            children: [
+                                new Paragraph({ children: [logoRun], alignment: AlignmentType.CENTER }),
+                                new Paragraph({ children: [new TextRun({ text: "MINISTERIO PÚBLICO", bold: false, size: 12, font: "Times New Roman" })], alignment: AlignmentType.CENTER }),
+                                new Paragraph({ children: [new TextRun({ text: "PRIMERA FISCALÍA PROVINCIAL CORPORATIVA\nESPECIALIZADA EN DELITOS DE CORRUPCIÓN DE\nFUNCIONARIOS -SEGUNDO DESPACHO-", bold: false, size: 12, font: "Times New Roman" })], alignment: AlignmentType.CENTER })
+                            ]
+                        }), 
+                        // CELDA DERECHA: AÑO Y FECHA (VACÍA SI ES JUZGADO)
+                        new TableCell({
+                            width: { size: 60, type: WidthType.PERCENTAGE },
+                            children: [
+                                new Paragraph({ children: [new TextRun({ text: txtAnio, italics: true, size: 18, font: "Times New Roman" })], alignment: AlignmentType.LEFT, spacing: { before: 800 } }),
+                                new Paragraph({ text: "" }),
+                                // Si pasamos fecha vacía "", no se imprime nada (usado para Juzgado/Carpeta)
+                                new Paragraph({ children: [new TextRun({ text: fecha, size: 24, font: "Times New Roman" })], alignment: AlignmentType.RIGHT })
+                            ]
+                        }) 
+                    ]
+                })
+            ] 
+        });
+    }
     function crearYDescargarDoc(children, headerContent, nombre) { 
         const {Document,Packer,Footer,Paragraph,TextRun,Header}=docx; 
         const doc=new Document({
