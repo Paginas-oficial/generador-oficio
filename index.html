@@ -867,7 +867,12 @@
                 refsArr.push({letra:letras[i], texto:textoRef}); 
             }
         }
-        let refString = refsArr.map(r => `${r.letra} ${r.texto}`).join(".  ");
+      
+        // --- CAMBIO CLAVE AQUÍ ---
+        // Unimos con COMA Y DOBLE ESPACIO (",  ") en lugar de punto
+        let refString = refsArr.map(r => `${r.letra} ${r.texto}`).join(",  ");
+        
+        // Agregamos el PUNTO FINAL solo al terminar toda la cadena
         if(refString && !refString.endsWith(".")) refString += ".";
 
         const children = [];
@@ -881,23 +886,27 @@
         // Destinatario
         children.push(new Paragraph({ children:[new TextRun({text:`${tituloDest}`, bold:true, size:24, font:"Times New Roman"})], spacing:{after: 0, line: 240} }));
         children.push(new Paragraph({ children:[new TextRun({text:destinatario, bold:true, size:24, font:"Times New Roman"})], spacing:{after: 0, line: 240} }));
-        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, children:[new TextRun({text:cargo, size:24, font:"Times New Roman"})], spacing:{after: 0, line: 240} }));
+        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, children:[new TextRun({text:cargo, size:20, font:"Times New Roman"})], spacing:{after: 0, line: 240} }));
         children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, children:[new TextRun({text:"PRESENTE.-", bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], spacing:{before: 0, after: 300, line: 240} }));
 
         // Asunto y Referencia
         children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "ASUNTO:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: " ATIENDE PEDIDO DE INFORMACIÓN.", bold:false, size:24, font: "Times New Roman" }) ], spacing: { after: 0, line: 240 } }));
         if(refString) { 
-            children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "Referencia:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }),
-                                                                                                        
-                                                                                                        new TextRun({ text: refString, size: 24, font: "Times New Roman" }) ], spacing: { after: 0, line: 240 } })); 
-        
-         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+            children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "Referencia:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }),// 2. Espacio SIN subrayar
+        new TextRun({ 
+            text: " ", // <--- Espacio vacío
+            size: 24, 
+            font: "Times New Roman"
+            // Al no poner 'underline', no se subraya
+        }),new TextRun({ text: refString, size: 24, font: "Times New Roman" }) ], spacing: { after: 0, line: 240 } })); 
+            
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
         }
         // === CUERPO CON ESPACIADO 6pt (120 twips) ===
         
         // Párrafo 1: Saludo
         let cuerpoParts = [ 
-            {text: `${saludo} a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `, bold: false}, 
+            {text: `${saludo} , en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `, bold: false}, 
             {text: refSeleccionadaTexto, bold: false} 
         ];
         if(textoCita && textoCita.trim() !== "") { cuerpoParts.push({text: ` "${textoCita}"`, bold: false}); }
@@ -952,7 +961,9 @@
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
         children.push(new Paragraph({ text: "\n\n" }));
-        
+        children.push(new Paragraph({ text: "\n\n" }));
+        children.push(new Paragraph({ text: "\n\n" }));
+        children.push(new Paragraph({ text: "\n\n" }));
         // Pie de Página (Siglas)
         let siglas = document.getElementById('a_siglas_combo').value;
         if(siglas === 'OTRO') siglas = document.getElementById('a_siglas_manual').value;
