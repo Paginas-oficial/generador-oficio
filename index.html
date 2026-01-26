@@ -594,7 +594,7 @@
     function actualizarComboReferencias() {
         const s = document.getElementById('a_ref_respuesta');
         if(!s) return;
-        s.innerHTML = '<option value="la referencia">la referencia (General)</option>';
+        s.innerHTML = '<option value="la referencia.">la referencia (General)</option>';
         for(let i=0; i<refCount; i++) {
             const num = document.getElementById(`ref_num_${i}`).value;
             const t = `la referencia ${letras[i]}`;
@@ -919,8 +919,8 @@
             alignment: AlignmentType.JUSTIFIED,
             indent: { left: 2835 }, // Sangría a la derecha
             children: [
-                new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
-                new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size:24, font: "Times New Roman" })
+                new TextRun({ text: "ASUNTO:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
+                new TextRun({ text: " ATIENDE PEDIDO DE INFORMACIÓN.", bold:false, size:24, font: "Times New Roman" })
             ], 
             spacing: { after: 0, line: 240 } // CAMBIO: Espaciado 0 para que esté pegado a Referencia
         }));
@@ -930,7 +930,14 @@
                 alignment: AlignmentType.JUSTIFIED,
                 indent: { left: 2835 }, 
                 children: [
-                    new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
+                    new TextRun({ text: "Referencia:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }),
+                    // 2. Espacio SIN subrayar
+        new TextRun({ 
+            text: " ", // <--- Espacio vacío
+            size: 24, 
+            font: "Times New Roman"
+            // Al no poner 'underline', no se subraya
+        }),
                     new TextRun({ text: refString, size: 24, font: "Times New Roman" }) // Ya incluye el punto
                 ], 
                 spacing: { after: 0, line: 240 } // CAMBIO: Compacto
