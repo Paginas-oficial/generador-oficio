@@ -888,11 +888,11 @@
         children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "ASUNTO:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: " ATIENDE PEDIDO DE INFORMACIÓN.", bold:false, size:24, font: "Times New Roman" }) ], spacing: { after: 0, line: 240 } }));
         if(refString) { 
             children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "Referencia:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }),
-                                                                                                                 children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
-                                                                                                                 new TextRun({ text: refString, size: 24, font: "Times New Roman" }) ], spacing: { after: 0, line: 240 } })); 
+                                                                                                        
+                                                                                                        new TextRun({ text: refString, size: 24, font: "Times New Roman" }) ], spacing: { after: 0, line: 240 } })); 
+        
+         children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
         }
-     
-
         // === CUERPO CON ESPACIADO 6pt (120 twips) ===
         
         // Párrafo 1: Saludo
