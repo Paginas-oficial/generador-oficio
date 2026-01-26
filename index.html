@@ -455,25 +455,51 @@
     const listaPlazos = ["treinta (30) días naturales", "sesenta (60) días naturales", "noventa (90) días naturales", "ciento veinte (120) días naturales", "ciento cincuenta (150) días naturales", "ciento ochenta (180) días naturales"];
     const listaLugares = ["Corte Superior de Lima, Sede Zavala, ubicado en Jirón Manuel Cuadros 182, Lima", "DIRCOCOR PNP, ubicado en Av. Saenz Peña 116 Barranco, Lima", "Sede Central del Ministerio Público, ubicado en Av. Abancay cuadra 5 S/N"];
 
-    window.onload = function() {
-        try { const xhr=new XMLHttpRequest(); xhr.open('GET',NOMBRE_ARCHIVO_IMAGEN,true); xhr.responseType='arraybuffer'; xhr.onload=function(){if(xhr.status===200)logoArrayBuffer=xhr.response;}; xhr.send(); }catch(e){}
+ window.onload = function() {
+        // 1. Cargar Logo
+        try { 
+            const xhr=new XMLHttpRequest(); 
+            xhr.open('GET',NOMBRE_ARCHIVO_IMAGEN,true); 
+            xhr.responseType='arraybuffer'; 
+            xhr.onload=function(){if(xhr.status===200)logoArrayBuffer=xhr.response;}; 
+            xhr.send(); 
+        } catch(e){}
+
+        // 2. ESTABLECER NOMBRE DEL AÑO AUTOMÁTICO (NUEVO)
+        const nombreAnioOficial = "Año de la Esperanza y el Fortalecimiento de la Democracia";
+        
+        // Lista de todos los campos de "Nombre Año" en las diferentes tarjetas
+        const idsAnio = [
+            'p_nombreAnio',   // Pericias
+            'm_nombreAnio',   // Movilidad
+            'a_nombreAnio',   // Atención
+            'j_anio_nombre',  // Juzgado
+            'c_anio_nombre'   // Carpeta
+        ];
+
+        // Llenar todos automáticamente
+        idsAnio.forEach(id => {
+            const input = document.getElementById(id);
+            if(input) input.value = nombreAnioOficial;
+        });
+
+        // 3. Inicializar resto de funciones
         inicializarPericias();
         inicializarMovilidad();
         if(document.getElementById('container-referencias')) agregarReferencia();
         generarCarpetasInputs();
         
-        // Init Carpeta (combo tomos y grupo delitos)
+        // Inicializar Carpeta (Tomos y Grupos)
         setTimeout(() => {
             const sel = document.getElementById('c_cant_tomos');
             if(sel && sel.options.length <= 1) { 
                 for(let i=1; i<=50; i++) { let opt = document.createElement('option'); opt.value = i; opt.text = i; sel.add(opt); }
             }
-            if(document.getElementById('container-grupos-delito') && contadorGruposDelito === 0) {
+            if(typeof contadorGruposDelito !== 'undefined' && document.getElementById('container-grupos-delito') && contadorGruposDelito === 0) {
                 agregarGrupoDelito();
             }
         }, 1000);
     };
-
     function navegar(id) {
         document.querySelectorAll('.menu-wrapper, .app-container').forEach(e => e.style.display='none');
         document.getElementById(id).style.display='block';
