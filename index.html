@@ -230,8 +230,8 @@
             <label>Siglas de Redacción:</label>
             <div style="display:flex; gap:10px; align-items:center;">
                 <select id="a_siglas_combo" onchange="toggleManual('a_siglas_combo', 'a_siglas_manual')" style="flex:1;">
-                    <option value="NICA/ djsa.">NICA/ djsa.</option>
-                    <option value="NICA/ lms.">NICA/ lms.</option>
+                    <option value="NICA/ djsa.">NICA/djsa.</option>
+                    <option value="NICA/ lms.">NICA/lms.</option>
                     <option value="OTRO">Manual...</option>
                 </select>
                 <input type="text" id="a_siglas_manual" style="display:none; flex:1;" placeholder="Ej: JUAN/ abcd.">
@@ -594,7 +594,7 @@
     function actualizarComboReferencias() {
         const s = document.getElementById('a_ref_respuesta');
         if(!s) return;
-        s.innerHTML = '<option value="la referencia.">la referencia (General)</option>';
+        s.innerHTML = '<option value="la referencia">la referencia (General)</option>';
         for(let i=0; i<refCount; i++) {
             const num = document.getElementById(`ref_num_${i}`).value;
             const t = `la referencia ${letras[i]}`;
@@ -885,11 +885,13 @@
         children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, children:[new TextRun({text:"PRESENTE.-", bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], spacing:{before: 0, after: 300, line: 240} }));
 
         // Asunto y Referencia
-        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "ASUNTO:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN.", bold:false, size:24, font: "Times New Roman" }) ], spacing: { after: 0, line: 240 } }));
+        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "ASUNTO:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: " ATIENDE PEDIDO DE INFORMACIÓN.", bold:false, size:24, font: "Times New Roman" }) ], spacing: { after: 0, line: 240 } }));
         if(refString) { 
-            children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "Referencia ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: refString, size: 24, font: "Times New Roman" }) ], spacing: { after: 0, line: 240 } })); 
+            children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "Referencia:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }),
+                                                                                                                 children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+                                                                                                                 new TextRun({ text: refString, size: 24, font: "Times New Roman" }) ], spacing: { after: 0, line: 240 } })); 
         }
-        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+     
 
         // === CUERPO CON ESPACIADO 6pt (120 twips) ===
         
@@ -945,7 +947,7 @@
         }
 
         // Despedida
-        children.push(new Paragraph({ text: "" }));
+        
         children.push(crearParrafoJustificado([{text: "Sin otro particular, renuevo a usted las expresiones de mi especial consideración y estima personal.", bold: false}]));
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
