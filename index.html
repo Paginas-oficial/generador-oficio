@@ -832,63 +832,200 @@
     }
 
     // 3. GENERAR ATENCIÓN (FULL OPCIONES)
+   // 3. GENERAR ATENCIÓN (CORREGIDO SEGÚN VIDEO)
     function generarWordAtencion() {
         const { Document, Packer, Paragraph, TextRun, AlignmentType, UnderlineType, Header } = docx;
-        const nombreAnio = document.getElementById('a_nombreAnio').value; const fechaRaw = document.getElementById('a_fecha').value; const fechaTexto = fechaRaw ? formatearFechaLarga(fechaRaw) : "_______"; const oficioNum = document.getElementById('a_oficio').value; const oficioFull = `${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.`;
-        const tituloDest = document.getElementById('a_dest_titulo').value; const destinatario = document.getElementById('a_dest_nombre').value; const cargo = document.getElementById('a_dest_cargo').value; const saludo = document.getElementById('a_saludo').value; const tieneInfo = document.getElementById('a_tieneInfo').value; const refSeleccionadaTexto = document.getElementById('a_ref_respuesta').value; const textoCita = document.getElementById('a_texto_cita').value; 
+        
+        // Datos Básicos
+        const nombreAnio = document.getElementById('a_nombreAnio').value;
+        const fechaRaw = document.getElementById('a_fecha').value;
+        const fechaTexto = fechaRaw ? formatearFechaLarga(fechaRaw) : "_______";
+        const oficioNum = document.getElementById('a_oficio').value;
+        const oficioFull = `${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.`;
+        
+        const tituloDest = document.getElementById('a_dest_titulo').value;
+        const destinatario = document.getElementById('a_dest_nombre').value;
+        const cargo = document.getElementById('a_dest_cargo').value;
+        const saludo = document.getElementById('a_saludo').value;
+        const tieneInfo = document.getElementById('a_tieneInfo').value;
+        const refSeleccionadaTexto = document.getElementById('a_ref_respuesta').value;
+        const textoCita = document.getElementById('a_texto_cita').value; 
+
+        // 1. Construcción de Referencias
         let refsArr = []; 
         for(let i=0; i<refCount; i++) { 
-            let pre = document.getElementById(`ref_pre_combo_${i}`).value; if(pre === 'OTRO') pre = document.getElementById(`ref_pre_man_${i}`).value;
+            let pre = document.getElementById(`ref_pre_combo_${i}`).value;
+            if(pre === 'OTRO') pre = document.getElementById(`ref_pre_man_${i}`).value;
             let num = document.getElementById(`ref_num_${i}`).value;
-            let suf = document.getElementById(`ref_suf_combo_${i}`).value; if(suf === 'OTRO') suf = document.getElementById(`ref_suf_man_${i}`).value;
-            if(num) { let textoRef = `${pre} ${num}${suf}`; refsArr.push({letra:letras[i], texto:textoRef}); }
+            let suf = document.getElementById(`ref_suf_combo_${i}`).value;
+            if(suf === 'OTRO') suf = document.getElementById(`ref_suf_man_${i}`).value;
+            
+            if(num) {
+                // CAMBIO: Aseguramos que no haya coma extraña
+                let textoRef = `${pre} ${num}${suf}`;
+                refsArr.push({letra:letras[i], texto:textoRef}); 
+            }
         }
-        let refString = refsArr.map(r => `${r.letra} ${r.texto}`).join("  ");
-        const children = [];
-        for (let i = 0; i < 1; i++) { children.push(new Paragraph({text: ""})); }
-        children.push(new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: `Lima, ${fechaTexto}`, size: 24, font: "Times New Roman" })] }));
-        children.push(new Paragraph({ children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], spacing:{before: 300, after: 0} }));
-        children.push(new Paragraph({children:[new TextRun({text:`${tituloDest}`, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
-        children.push(new Paragraph({children:[new TextRun({text:destinatario, bold:true, size:24, font:"Times New Roman"})], spacing:{line:276}}));
-        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, children:[new TextRun({text:cargo, size:20, font:"Times New Roman"})], spacing:{line:276} }));
-        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, children:[new TextRun({text:"PRESENTE.-", bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], spacing:{line:276, before: 0} }));
-        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
-        children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "ASUNTO:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: " ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size:24, font: "Times New Roman" }) ], spacing: { line: 276 } }));
-        if(refString) { children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, indent: { left: 2835 }, children: [ new TextRun({ text: "Referencia:", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), new TextRun({ text: refString, size: 24, font: "Times New Roman" }) ], spacing: { line: 276 } })); }
-        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
         
-        // Cuerpo y Cita Textual
-        let cuerpoParts = [ {text: `${saludo} a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `, bold: false}, {text: refSeleccionadaTexto, bold: false} ];
+        // CAMBIO: Unir referencias con PUNTO Y ESPACIO ".  " como pediste en el video
+        let refString = refsArr.map(r => `${r.letra} ${r.texto}`).join(".  ");
+        // Asegurar que termine en punto si hay referencias
+        if(refString && !refString.endsWith(".")) refString += ".";
+
+        const children = [];
+        
+        // --- ESPACIADO INICIAL ---
+        // Reduje a 1 enter para que no baje tanto
+        children.push(new Paragraph({text: ""})); 
+
+        // Fecha
+        children.push(new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [new TextRun({ text: `Lima, ${fechaTexto}`, size: 24, font: "Times New Roman" })]
+        }));
+
+        // --- CABECERA OFICIO ---
+        children.push(new Paragraph({
+            children:[new TextRun({text:`OFICIO N.° ${oficioFull}`, bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})],
+            spacing:{before: 300, after: 0} // CAMBIO: after:0 para pegar al destinatario si quieres, o déjalo en 300 si te gusta separado del Sr.
+        }));
+        // Agregamos un espacio vacío controlado
+        children.push(new Paragraph({text:"", spacing:{line:240}})); 
+
+        // --- DESTINATARIO (Compacto) ---
+        children.push(new Paragraph({
+            children:[new TextRun({text:`${tituloDest}`, bold:true, size:24, font:"Times New Roman"})], 
+            spacing:{after: 0, line: 240} // Sin espacio extra abajo
+        }));
+        children.push(new Paragraph({
+            children:[new TextRun({text:destinatario, bold:true, size:24, font:"Times New Roman"})], 
+            spacing:{after: 0, line: 240}
+        }));
+        children.push(new Paragraph({
+            alignment: AlignmentType.JUSTIFIED, 
+            children:[new TextRun({text:cargo, size:24, font:"Times New Roman"})], 
+            spacing:{after: 0, line: 240}
+        }));
+        children.push(new Paragraph({
+            alignment: AlignmentType.JUSTIFIED,
+            children:[new TextRun({text:"PRESENTE.-", bold:true, underline:{type:UnderlineType.SINGLE}, size:24, font:"Times New Roman"})], 
+            spacing:{before: 0, after: 300, line: 240} // Pegado al cargo, espacio después
+        }));
+
+        // --- ASUNTO Y REFERENCIA (Compacto - Solución Issue #1 del video) ---
+        // Usamos spacing { after: 0 } para que las líneas estén juntas como querías
+        
+        children.push(new Paragraph({ 
+            alignment: AlignmentType.JUSTIFIED,
+            indent: { left: 2835 }, // Sangría a la derecha
+            children: [
+                new TextRun({ text: "ASUNTO: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
+                new TextRun({ text: "ATIENDE PEDIDO DE INFORMACIÓN", bold:false, size:24, font: "Times New Roman" })
+            ], 
+            spacing: { after: 0, line: 240 } // CAMBIO: Espaciado 0 para que esté pegado a Referencia
+        }));
+
+        if(refString) { 
+            children.push(new Paragraph({ 
+                alignment: AlignmentType.JUSTIFIED,
+                indent: { left: 2835 }, 
+                children: [
+                    new TextRun({ text: "Referencia: ", bold: true, underline:{type:UnderlineType.SINGLE}, size:24, font: "Times New Roman" }), 
+                    new TextRun({ text: refString, size: 24, font: "Times New Roman" }) // Ya incluye el punto
+                ], 
+                spacing: { after: 0, line: 240 } // CAMBIO: Compacto
+            })); 
+        }
+        
+        // Espacio para separar del cuerpo
+        children.push(new Paragraph({ text: "", spacing: { line: 276 } }));
+
+        // --- CUERPO PRINCIPAL ---
+        let cuerpoParts = [ 
+            {text: `${saludo} a usted, en mi condición de Fiscal Provincial del Segundo Despacho de la Primera Fiscalía Provincial Corporativa Especializada en Delitos de Corrupción de Funcionarios de Lima Centro, y en atención a lo solicitado en el documento de `, bold: false}, 
+            {text: refSeleccionadaTexto, bold: false} 
+        ];
         
         if(textoCita && textoCita.trim() !== "") {
-            // Se añade la cita a continuación, mismo formato
             cuerpoParts.push({text: ` "${textoCita}"`, bold: false});
         }
-        
-        cuerpoParts.push({text: ", ", bold: false}); // Coma de continuación
+        cuerpoParts.push({text: ", ", bold: false});
         
         let cuerpoResp = [{text: "Este despacho fiscal ", bold: false}, {text: "CUMPLE CON INFORMAR", bold: true}];
-        if(tieneInfo === "NO") { const detalleNo = document.getElementById('a_no_cuenta_detalle').value; cuerpoResp.push({text: " que ", bold: false}); cuerpoResp.push({text: "NO CONTAMOS", bold: true}); cuerpoResp.push({text: " " + detalleNo, bold: false}); }
-        else { const cantCarp = document.getElementById('a_cant_carpetas').value; let carpetasArr = []; for(let i=0; i<cantCarp; i++) { let v = document.getElementById(`a_carpeta_${i}`).value; if(v) carpetasArr.push(`N.° ${v}`); } let carpetasTexto = carpetasArr.join(" y "); cuerpoResp.push({text: " que este despacho ", bold: false}); cuerpoResp.push({text: "SÍ CUENTA", bold: true}); cuerpoResp.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento, encontrándose los mismos comprendidos en las Carpetas Fiscales ", bold: false}); cuerpoResp.push({text: carpetasTexto, bold: true}); cuerpoResp.push({text: ".", bold: false}); }
         
-        // Imprimimos primer párrafo (con la cita integrada)
+        if(tieneInfo === "NO") { 
+            const detalleNo = document.getElementById('a_no_cuenta_detalle').value;
+            cuerpoResp.push({text: " que ", bold: false}); 
+            cuerpoResp.push({text: "NO CONTAMOS", bold: true}); 
+            cuerpoResp.push({text: " " + detalleNo, bold: false}); 
+        } else {
+            const cantCarp = document.getElementById('a_cant_carpetas').value;
+            let carpetasArr = []; for(let i=0; i<cantCarp; i++) { let v = document.getElementById(`a_carpeta_${i}`).value; if(v) carpetasArr.push(`N.° ${v}`); }
+            let carpetasTexto = carpetasArr.join(" y ");
+            cuerpoResp.push({text: " que este despacho ", bold: false}); 
+            cuerpoResp.push({text: "SÍ CUENTA", bold: true}); 
+            cuerpoResp.push({text: " con investigaciones relacionadas con los hechos materia del requerimiento, encontrándose los mismos comprendidos en las Carpetas Fiscales ", bold: false}); 
+            cuerpoResp.push({text: carpetasTexto, bold: true}); 
+            cuerpoResp.push({text: ".", bold: false});
+        }
+        
+        // Imprimimos Primer Párrafo
         children.push(crearParrafoJustificado(cuerpoParts));
-        // Imprimimos párrafo de respuesta
+        
+        // Imprimimos Segundo Párrafo (Respuesta) con separación normal
+        children.push(new Paragraph({ text: "", spacing: { line: 240 } })); // Separador limpio
         children.push(crearParrafoJustificado(cuerpoResp));
 
-        if(tieneInfo === "SI") { const d = document.getElementById('chk_dispo').checked; const dc = document.getElementById('chk_declara').checked; let adj = ""; if(d && dc) adj = "las disposiciones fiscales y declaraciones pertinentes"; else if(d) adj = "las disposiciones fiscales pertinentes"; else if(dc) adj = "las declaraciones pertinentes"; if(adj) { children.push(new Paragraph({ text: "" })); children.push(crearParrafoJustificado([{text: "En tal sentido, se adjuntan ", bold: false}, {text: adj, bold: false}, {text: " para conocimiento y fines correspondientes.", bold: false}])); } }
+        if(tieneInfo === "SI") { 
+            const d = document.getElementById('chk_dispo').checked; const dc = document.getElementById('chk_declara').checked; 
+            let adj = ""; 
+            if(d && dc) adj = "las disposiciones fiscales y declaraciones pertinentes"; 
+            else if(d) adj = "las disposiciones fiscales pertinentes"; 
+            else if(dc) adj = "las declaraciones pertinentes"; 
+            if(adj) { 
+                children.push(new Paragraph({ text: "" })); 
+                children.push(crearParrafoJustificado([{text: "En tal sentido, se adjuntan ", bold: false}, {text: adj, bold: false}, {text: " para conocimiento y fines correspondientes.", bold: false}])); 
+            } 
+        }
+
         children.push(new Paragraph({ text: "" }));
         children.push(crearParrafoJustificado([{text: "Sin otro particular, renuevo a usted las expresiones de mi especial consideración y estima personal.", bold: false}]));
         children.push(new Paragraph({ text: "\n\n" }));
         children.push(new Paragraph({ children: [new TextRun({ text: "Atentamente,", size: 24, font: "Times New Roman" })], alignment: AlignmentType.CENTER }));
         children.push(new Paragraph({ text: "\n\n" }));
-        let siglas = document.getElementById('a_siglas_combo').value; if(siglas === 'OTRO') siglas = document.getElementById('a_siglas_manual').value;
-        let cc = document.getElementById('a_cc_combo').value; if(cc === 'OTRO') cc = document.getElementById('a_cc_manual').value;
-        if(siglas) { children.push(new Paragraph({ children: [new TextRun({ text: siglas, bold: true,size: 20, font: "Times New Roman" })] })); }
-        if(cc && cc !== "NINGUNO") { children.push(new Paragraph({ children: [new TextRun({ text: cc, size: 20, font: "Times New Roman" })] })); }
+        
+        // --- PIE DE PÁGINA (SIGLAS) - Solución Issue #3 del video ---
+        let siglas = document.getElementById('a_siglas_combo').value;
+        if(siglas === 'OTRO') siglas = document.getElementById('a_siglas_manual').value;
+        
+        // Lógica para separar NICA (negrita) / djsa (cursiva)
+        if(siglas) {
+            const partes = siglas.split('/'); // Separamos por el slash
+            const runSiglas = [];
+            
+            if(partes.length > 0) {
+                // Parte 1: NICA (Negrita)
+                runSiglas.push(new TextRun({ text: partes[0], bold: true, size: 14, font: "Times New Roman" }));
+            }
+            if(partes.length > 1) {
+                // Parte 2: /djsa (Cursiva)
+                runSiglas.push(new TextRun({ text: "/" + partes[1], italics: true, size: 14, font: "Times New Roman" }));
+            } else if (siglas.indexOf('/') === -1) {
+                // Si no hay slash, lo ponemos todo normal pequeño
+                runSiglas.push(new TextRun({ text: siglas, size: 14, font: "Times New Roman" }));
+            }
+
+            children.push(new Paragraph({ children: runSiglas }));
+        }
+
+        let cc = document.getElementById('a_cc_combo').value; 
+        if(cc === 'OTRO') cc = document.getElementById('a_cc_manual').value;
+        if(cc && cc !== "NINGUNO") { 
+            children.push(new Paragraph({ children: [new TextRun({ text: cc, size: 14, font: "Times New Roman" })] })); 
+        }
+
         crearYDescargarDoc(children, construirEncabezado(logoArrayBuffer, "", nombreAnio), `OFICIO N.°-${oficioNum}-MP-FN-2D-1°FPCEDCF-LIMA.docx`);
     }
-
     // 4. GENERAR JUZGADO (ACTUALIZADO)
     function generarWordJuzgado() {
         const { Paragraph, TextRun, AlignmentType, UnderlineType } = docx;
