@@ -1081,6 +1081,16 @@
     // =======================================================
     // ===       UTILIDADES COMPARTIDAS                    ===
     // =======================================================
+        function crearCeldaTabla(texto, esNegrita) {
+        const { TableCell, Paragraph, TextRun, AlignmentType, WidthType } = docx;
+        return new TableCell({
+            width: { size: 33, type: WidthType.PERCENTAGE },
+            children: [new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [new TextRun({ text: texto ? texto.toString() : "-", bold: esNegrita, size: 24, font: "Times New Roman" })]
+            })]
+        });
+    }
     function formatearFechaLarga(f){if(!f)return"_______"; const p=f.split("-"); const m=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]; return `${parseInt(p[2])} de ${m[parseInt(p[1])-1]} de ${p[0]}`;}
     function crearParrafo(t, b, u=false) { const {Paragraph,TextRun,UnderlineType}=docx; return new Paragraph({children:[new TextRun({text:t, bold:b, underline:u?{type:UnderlineType.SINGLE}:undefined, size:24, font:"Times New Roman"})], spacing:{line:276}}); }
     function crearParrafoConSangria(t, b, u=false) { const {Paragraph,TextRun,UnderlineType}=docx; return new Paragraph({indent:{left:4000}, children:[new TextRun({text:t, bold:b, underline:u?{type:UnderlineType.SINGLE}:undefined, size:24, font:"Times New Roman"})], spacing:{line:276}}); }
